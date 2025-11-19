@@ -1,0 +1,78 @@
+import React from 'react';
+import {QRCodeSVG} from 'qrcode.react';
+
+interface TooltipProps {
+  children: React.ReactNode;
+  title: string;
+  subtitle?: string;
+  qrCode?: string;
+  position?: 'top' | 'bottom' | 'left' | 'right';
+  className?: string;
+  icon?: React.ReactNode;
+}
+
+const Tooltip: React.FC<TooltipProps> = ({
+  children,
+  title,
+  subtitle,
+  qrCode,
+  position = 'top',
+  className = '',
+  icon
+}) => {
+  const getPositionClasses = () => {
+    switch (position) {
+      case 'bottom':
+        return {
+          container: 'top-full left-1/2 transform -translate-x-1/2 mt-2',
+          arrow: 'bottom-full left-1/2 transform -translate-x-1/2 border-6 border-transparent border-b-[#EEF0F1]'
+        };
+      case 'left':
+        return {
+          container: 'right-full top-1/2 transform -translate-y-1/2 mr-2',
+          arrow: 'left-full top-1/2 transform -translate-y-1/2 border-6 border-transparent border-l-[#EEF0F1]'
+        };
+      case 'right':
+        return {
+          container: 'left-full top-1/2 transform -translate-y-1/2 ml-2',
+          arrow: 'right-full top-1/2 transform -translate-y-1/2 border-6 border-transparent border-r-[#EEF0F1]'
+        };
+      default: // top
+        return {
+          container: 'bottom-full left-1/2 transform -translate-x-1/2 mb-2',
+          arrow: 'top-full left-1/2 transform -translate-x-1/2 border-6 border-transparent border-t-[#EEF0F1]'
+        };
+    }
+  };
+
+  const positionClasses = getPositionClasses();
+
+  return (
+    <div className={`group/network relative inline-block ${className}`}>
+      {children}
+      <div className={`absolute ${positionClasses.container} px-4 py-2 font-[Geist] text-[12px] text-black font-semibold leading-[normal] tracking-[0.44px] bg-[#EEF0F1] rounded-[10px] opacity-0 group-hover/network:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10 shadow-lg`}>
+        <div className="text-center">
+          <div className="font-semibold">{title}</div>
+          {qrCode && (
+              <QRCodeSVG
+                value={qrCode}
+                size={128}
+                level="M"
+                // includeMargin={false}
+                className='m-2'
+              />
+          )}
+
+          {subtitle && (
+            <div className="text-[10px] text-gray-600 font-normal mt-0.5">
+              {subtitle}
+            </div>
+          )}
+        </div>
+        <div className={`absolute ${positionClasses.arrow}`}></div>
+      </div>
+    </div>
+  );
+};
+
+export default Tooltip;
