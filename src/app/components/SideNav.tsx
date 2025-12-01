@@ -172,7 +172,7 @@ export default function SideNav() {
             </div>
 
             <div className="flex p-4 flex-col items-start gap-2.5 self-stretch">
-                <div className="flex pt-[4px] pr-[16px] pb-[4px] pl-[4px] items-center self-stretch rounded-full border-[0.6px] border-transparent group-hover/sidebar:border-[0.6px] hover:bg-[#052e21] group-hover/sidebar:border-[rgba(255,255,255,0.2)] cursor-pointer">
+                <div className="flex pt-[4px] pr-[16px] pb-[4px] pl-[4px] items-center self-stretch rounded-full border-[0.6px] border-transparent group-hover/sidebar:border-[0.6px] hover:bg-[#26C9C9]/5 group-hover/sidebar:border-[rgba(255,255,255,0.2)] cursor-pointer hover:shadow-[0_0_50px_4px_#26C9C9]/20">
                     <div className="relative flex justify-center items-center gap-2.5 flex-[1_0_0] rounded-full">
                         <FrameAvatar />
                         <div className="flex flex-col items-start gap-[1px] flex-[1_0_0]">

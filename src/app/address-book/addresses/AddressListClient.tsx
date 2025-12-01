@@ -3,8 +3,12 @@ import AddressList from "./AddressList";
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { AddressCardProps } from "./types";
 import FilterDropdown from "@/app/components/filters/FilterDropdown";
-import { SearchIcon } from "@/app/components/icons";
+import { CommandIcon, SearchIcon, AddToGroupIcon, SendIcon, CheckBoxFilledIcon } from "@/app/components/icons";
 import { useSearchParams, useRouter } from 'next/navigation';
+import NotificationIsland from "@/app/components/NotificationIsland";
+import PrimaryButton from "@/app/components/buttons/PrimaryButton";
+import TertiaryButton from "@/app/components/buttons/TertiaryButton";
+import IconButton from "@/app/components/buttons/IconButton";
 
 export default function AddressListClient({ addresses }: { addresses: AddressCardProps[] }) {
     const searchParams = useSearchParams();
@@ -13,6 +17,8 @@ export default function AddressListClient({ addresses }: { addresses: AddressCar
     const isUngrouped = searchParams.get('ungrouped') === 'true';
     const [searchTerm, setSearchTerm] = useState(initialSearch);
     const [selectedGroups, setSelectedGroups] = useState<number[]>([]);
+    const [isCommandPressed, setIsCommandPressed] = useState(false);
+    const [selectedAddressIds, setSelectedAddressIds] = useState<number[]>([]);
 
     // Add ref for search input
     const searchInputRef = useRef<HTMLInputElement>(null);
@@ -127,6 +133,11 @@ export default function AddressListClient({ addresses }: { addresses: AddressCar
     // Keyboard shortcuts
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
+            // Track CMD/Ctrl key press
+            if (e.metaKey || e.ctrlKey) {
+                setIsCommandPressed(true);
+            }
+
             if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
                 e.preventDefault();
                 searchInputRef.current?.focus();
@@ -136,8 +147,19 @@ export default function AddressListClient({ addresses }: { addresses: AddressCar
             }
         };
 
+        const handleKeyUp = (e: KeyboardEvent) => {
+            // Track CMD/Ctrl key release
+            if (e.key === 'Meta' || e.key === 'Control') {
+                setIsCommandPressed(false);
+            }
+        };
+
         document.addEventListener('keydown', handleKeyDown);
-        return () => document.removeEventListener('keydown', handleKeyDown);
+        document.addEventListener('keyup', handleKeyUp);
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+            document.removeEventListener('keyup', handleKeyUp);
+        };
     }, [searchTerm]);
 
     const hasActiveFilters = searchTerm.trim() !== '' || selectedGroups.length > 0 || isUngrouped;
@@ -200,29 +222,6 @@ export default function AddressListClient({ addresses }: { addresses: AddressCar
                                 showSelected={false}
                             />
                         )}
-
-                        {/* Group Filter Dropdown */}
-                        {/* {groupFilterOptions.length > 0 && (
-                            <FilterDropdown
-                                options={groupFilterOptions}
-                                selectedValues={selectedGroups}
-                                onSelectionChange={handleGroupSelectionChange}
-                                label="Groups"
-                                showSelected={true}
-                            />
-                        )} */}
-
-                        {/* Clear All Filters Button */}
-                        {/* {hasActiveFilters && (
-                            <button
-                                onClick={clearAllFilters}
-                                className="flex items-center flex-shrink-0 gap-1 pt-[3px] pr-[8px] pb-[3px] pl-[8px] rounded-full bg-[#F8FCFF]/16 hover:bg-[#F8FCFF]/16 border-solid border-[1px] border-[#F8FCFF]/32 hover:border-[#F8FCFF]/64"
-                            >
-                                <span className="font-[Geist] text-sm">
-                                    Clear all
-                                </span>
-                            </button>
-                        )} */}
                     </div>
 
                     {/* Filter Status Text */}
@@ -231,7 +230,6 @@ export default function AddressListClient({ addresses }: { addresses: AddressCar
                             <span className='font-medium'>
                                 Showing <span className="font-bold">{showingCount}</span> of{' '}
                                 <span className="font-medium">{totalCount}</span> addresses
-                                {/* {isUngrouped && ' (not in any group)'} */}
                             </span>
                         ) : (
                             <span>
@@ -242,8 +240,56 @@ export default function AddressListClient({ addresses }: { addresses: AddressCar
                 </div>
 
                 {/* Address List */}
-                <AddressList addresses={filteredAddresses} />
+                <div className="group/group flex w-full max-w-[1040px] mx-auto flex pt-[10px] pr-[16px] pb-[10px] pl-[8px] items-center gap-4 self-stretch bg-[#18191B]">
+                    <div className="flex w-[187px] items-center gap-2">
+                        <CommandIcon className={`h-4 w-4 transition-colors duration-150 ${isCommandPressed ? 'text-[#26C9C9]' : 'text-[#515355]'}`} />
+                        {isCommandPressed ? (
+                            <span className="text-[#26C9C9] font-[Geist] text-sm not-italic font-medium leading-[normal] tracking-[1.12px]">
+                                + A to select all
+                            </span>
+                        ) : (
+                            <span className="text-[#F8FCFF] opacity-82 font-[Geist] text-sm not-italic font-light leading-[normal] tracking-[1.12px]">Name</span>
+                        )}
+                    </div>
+                    <span className="w-[406px] text-[#F8FCFF] opacity-82 font-[Geist] text-sm not-italic font-light leading-[normal] tracking-[1.12px]">Address</span>
+                    <span className="w-[154px] text-[#F8FCFF] opacity-82 font-[Geist] text-sm not-italic font-light leading-[normal] tracking-[1.12px]">Last interacted</span>
+                    <span className="w-[160px] text-[#F8FCFF] opacity-82 font-[Geist] text-sm not-italic font-light leading-[normal] tracking-[1.12px]">Groups</span>
+                </div>
+                <AddressList addresses={filteredAddresses}
+                    selectedIds={selectedAddressIds}
+                    onSelectionChange={setSelectedAddressIds} />
             </div>
+            {selectedAddressIds.length > 0 && (
+                <NotificationIsland
+                    title={`${selectedAddressIds.length} ${selectedAddressIds.length === 1 ? 'address' : 'addresses'} selected`}
+                    titleAction={
+                        <TertiaryButton
+                            label="Clear"
+                            size="sm"
+                            status="neutral"
+                            onClick={() => setSelectedAddressIds([])}
+                        />
+                    }
+                    mainActions={
+                        <>
+                            <PrimaryButton
+                                label="Make a group"
+                                size="md"
+                                variant="neutral"
+                                leadingIcon={<AddToGroupIcon />}
+
+                            />
+                            <PrimaryButton
+                                label="Send tokens"
+                                size="md"
+                                variant="neutral"
+                                leadingIcon={<SendIcon />}
+
+                            />
+                        </>
+                    }
+                />
+            )}
         </div>
     );
 }

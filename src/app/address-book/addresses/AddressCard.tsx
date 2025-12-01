@@ -56,9 +56,9 @@ export default function AddressCard({ address, onSelect, selected }: AddressCard
         <div className="flex w-[187px] items-center gap-2">
             <IconButton
                 icon={selected ? <CheckBoxFilledIcon /> : <CheckBoxOutlineIcon />}
-                status={selected ? "brand" : "neutral"}
+                status={selected ? "success" : "neutral"}
                 size="sm"
-                className={`${selected ? "opacity-100" : "opacity-30"} group-hover/address:opacity-100`}
+                className={`${selected ? "opacity-100" : "opacity-30"} group-hover/address:opacity-80`}
                 onClick={handleCheckboxClick}
             />
             <span className="w-[293px] text-[#F8FCFF] font-[Geist] text-sm not-italic font-medium leading-[normal] tracking-[0.7px] line-clamp-1 flex-[1_0_0]">{address.name}</span>

@@ -5,7 +5,7 @@ import Tooltip from "../../components/TooltipComponent";
 
 interface IconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   size?: "sm" | "md" | "lg";
-  status?: "brand" | "neutral" | "danger" | "neutral-brand" | "neutral-danger";
+  status?: "brand" | "neutral" | "danger" | "neutral-brand" | "neutral-danger" | "success";
   tooltipTitle?: string;
   qrCode?: string;
   tooltipSubtitle?: string;
@@ -48,6 +48,7 @@ export default function IconButton({
     "danger": "bg-transparent text-[#EF4444] hover:bg-[#EF4444]/16 focus:bg-[#EF4444]/8 focus:ring-[1px] focus:ring-[#EF4444] focus:ring-offset-[2px] focus:ring-offset-black",
     "neutral-brand": "bg-transparent text-[#EDEEEE] hover:bg-[#26C9C9]/16 hover:text-[#26C9C9] focus:bg-[#26C9C9]/8 focus:ring-[1px] focus:ring-[#EDEEEE] focus:ring-offset-[2px] focus:ring-offset-black",
     "neutral-danger": "bg-transparent text-[#EDEEEE] hover:bg-[#EF4444]/16 hover:text-[#EF4444] focus:bg-[#EF4444]/8 focus:ring-[1px] focus:ring-[#EF4444] focus:ring-offset-[2px] focus:ring-offset-black",
+    "success": "bg-transparent text-[#22C55E] hover:bg-[#209762]/16 focus:bg-[#209762]/8 focus:ring-[1px] focus:ring-[#22C55E] focus:ring-offset-[2px] focus:ring-offset-black",
   }[status];
 
   const button = (

@@ -154,7 +154,7 @@ export default function GroupCard({ group }: GroupProps) {
                 <span className="w-[291px] text-[#F8FCFF] font-[Geist] text-sm not-italic font-medium leading-[normal] tracking-[0.7px]">{group.name}</span>
                 <div className="flex w-[301px] items-center gap-2">
                     <GroupIcon className="h-4 w-4 p-[1px] opacity-70" />
-                    <span className="text-[#F8FCFF] font-[Geist] text-sm not-italic font-extralight leading-[normal] tracking-[1.12px]">{group.count}</span>
+                    <span className="text-[#F8FCFF] opacity-82 font-[Geist] text-sm not-italic font-light leading-[normal] tracking-[1.12px]">{group.count}</span>
                 </div>
                 <div className="flex flex-grow justify-end items-center gap-4 h-4">
                     <TertiaryButton 
