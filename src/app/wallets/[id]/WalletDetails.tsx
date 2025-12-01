@@ -2134,6 +2134,9 @@ export default function WalletDetails({
     const activeTab = externalActiveTab !== undefined ? externalActiveTab as TabType : internalActiveTab;
     const activeProposalFilter = externalActiveProposalFilter !== undefined ? externalActiveProposalFilter : internalActiveProposalFilter;
 
+    // const activeTab = (externalActiveTab !== undefined ? externalActiveTab : internalActiveTab) as TabType;
+    // const activeProposalFilter = externalActiveProposalFilter !== undefined ? externalActiveProposalFilter : internalActiveProposalFilter;
+
     const [hasAutoSwitched, setHasAutoSwitched] = useState(false);
     const [isInitialLoad, setIsInitialLoad] = useState(true);
 
