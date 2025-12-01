@@ -8,7 +8,7 @@ import AssetList from './AssetList';
 
 interface AssetListClientProps {
   assets: Asset[];
-    initialWalletFilter?: string;
+  initialWalletFilter?: string;
 }
 
 export default function AssetListClient({ assets, initialWalletFilter }: AssetListClientProps) {
@@ -78,7 +78,7 @@ export default function AssetListClient({ assets, initialWalletFilter }: AssetLi
     });
   }, [assets, selectedTokens, selectedBlockchains]);
 
-  
+
 
   const assetsForBlockchainOptions = useMemo(() => {
     return assets.filter(asset => {
@@ -173,7 +173,7 @@ export default function AssetListClient({ assets, initialWalletFilter }: AssetLi
       const matchingWallet = walletOptions.find(
         option => option.displayProps.fullName.toLowerCase() === initialWalletFilter.toLowerCase()
       );
-      
+
       if (matchingWallet && !selectedWallets.includes(matchingWallet.value)) {
         setSelectedWallets([matchingWallet.value]);
       }
@@ -345,7 +345,21 @@ export default function AssetListClient({ assets, initialWalletFilter }: AssetLi
           </div>
         </div>
       </div>
-      <AssetList assets={filteredAssets} />
+      <div className="flex flex-col">
+        <div className="group/group flex w-full max-w-[1040px] mx-auto flex pt-[10px] pr-[16px] pb-[10px] pl-[11.5px] items-center gap-4 self-stretch bg-[#18191B]">
+          <span className="w-[262px] text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px]">Token & Network</span>
+          <div className="w-[248px] flex items-center justify-between gap-4">
+            <span className="text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px] text-right w-[116px]">Price</span>
+            <span className="text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px] w-[116px]">Last 24 Hrs</span>
+          </div>
+          <div className="flex items-center justify-between gap-4">
+            <span className="w-[160px] text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px] text-right ">Token value</span>
+            <span className="w-[160px] text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px]">USD</span>
+          </div>
+          <span className="w-[150px] text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px]">Wallets</span>
+        </div>
+        <AssetList assets={filteredAssets} />
+      </div>
       <div className="flex items-start justify-end text-[#E7E8E9] text-sm items-center opacity-80 self-stretch">
         {hasActiveFilters ? (
           <span className='font-medium'>

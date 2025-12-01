@@ -108,8 +108,8 @@ export default function NonExpandableAsset({ asset }: NonExpandableAssetProps) {
                     </div>
                 </div>
                 <div className="flex w-[248px] justify-center items-center gap-4 shrink-0">
-                    <span className="line-clamp-1 flex-grow shrink-0 basis-0 overflow-hidden text-[#F8FCFF] text-right text-ellipsis font-[Geist] text-sm not-italic font-light leading-[normal] tracking-[0.7px]">${formatCurrency(asset.price)}</span>
-                    <div className="flex pt-px items-center gap-1 flex-[1_0_0]">
+                    <span className="line-clamp-1 flex-grow shrink-0 basis-0 overflow-hidden text-[#F8FCFF] text-right text-ellipsis font-[Geist] text-sm not-italic font-light leading-[normal] tracking-[0.7px] ">${formatCurrency(asset.price)}</span>
+                    <div className="flex pt-px items-center gap-1 flex-[1_0_0] ">
                         {asset.percent_change_24h < 0 ?
                             <div className="flex pt-px items-center gap-1">
                                 <ArrowDownIcon className="h-3 w-3 text-[#F37272]" />
@@ -121,13 +121,13 @@ export default function NonExpandableAsset({ asset }: NonExpandableAssetProps) {
                                 <span className="text-[#64DEA7] font-[Geist Mono] text-[13px] not-italic font-light leading-[100%] tracking-[1.56px]">{formatSmallNumber(asset.percent_change_24h)}%</span>
                             </div>
                         }
-                        <span className="text-[#E7E8E9] font-[Geist] text-[13px] not-italic font-thin leading-[100%] tracking-[1.56px] line-clamp-1">24 Hrs</span>
+                        {/* <span className="text-[#E7E8E9] font-[Geist] text-[13px] not-italic font-thin leading-[100%] tracking-[1.56px] line-clamp-1">24 Hrs</span> */}
                         <IconButton className="hidden opacity-0 group-hover:opacity-100 transition-all duration-200 scale-0 group-hover:scale-100" icon={<ExternalLinkIcon className="text-[#EDEEEE]" />} size="sm" status="neutral" tooltipTitle="Coin Market Cap" />
                     </div>
                 </div>
                 <div className="flex w-[336px] items-start gap-4 shrink-0">
-                    <span className=" flex-grow shrink-0 basis-0 overflow-hidden text-[#F8FCFF] text-right text-ellipsis font-[Geist] text-sm not-italic font-semibold leading-[normal] tracking-[0.7px]">{asset.totalTokens}</span>
-                    <div className="flex items-baseline gap-2 flex-[1_0_0]">
+                    <span className=" flex-grow shrink-0 basis-0 overflow-hidden text-[#F8FCFF] text-right text-ellipsis font-[Geist] text-sm not-italic font-semibold leading-[normal] tracking-[0.7px] ">{asset.totalTokens}</span>
+                    <div className="flex items-baseline gap-2 flex-[1_0_0] ">
                         <div className="flex items-baseline gap-0">
                             <span className="text-[#F8FCFF] font-[Geist] text-sm not-italic font-light leading-[normal] tracking-[0.7px]">${formatDollars(asset.USD)}</span>
                             <span className="text-[#F8FCFF] font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.7px]">.{formatCents(asset.USD)}</span>

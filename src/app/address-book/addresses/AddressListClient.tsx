@@ -244,16 +244,16 @@ export default function AddressListClient({ addresses }: { addresses: AddressCar
                     <div className="flex w-[187px] items-center gap-2">
                         <CommandIcon className={`h-4 w-4 transition-colors duration-150 ${isCommandPressed ? 'text-[#26C9C9]' : 'text-[#515355]'}`} />
                         {isCommandPressed ? (
-                            <span className="text-[#26C9C9] font-[Geist] text-sm not-italic font-medium leading-[normal] tracking-[1.12px]">
+                            <span className="text-[#26C9C9] font-[Geist] text-xs not-italic font-medium leading-[normal] tracking-[0.96px]">
                                 + A to select all
                             </span>
                         ) : (
-                            <span className="text-[#F8FCFF] opacity-82 font-[Geist] text-sm not-italic font-light leading-[normal] tracking-[1.12px]">Name</span>
+                            <span className="text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px]">Name</span>
                         )}
                     </div>
-                    <span className="w-[406px] text-[#F8FCFF] opacity-82 font-[Geist] text-sm not-italic font-light leading-[normal] tracking-[1.12px]">Address</span>
-                    <span className="w-[154px] text-[#F8FCFF] opacity-82 font-[Geist] text-sm not-italic font-light leading-[normal] tracking-[1.12px]">Last interacted</span>
-                    <span className="w-[160px] text-[#F8FCFF] opacity-82 font-[Geist] text-sm not-italic font-light leading-[normal] tracking-[1.12px]">Groups</span>
+                    <span className="w-[406px] text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px]">Address</span>
+                    <span className="w-[154px] text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px]">Last interacted</span>
+                    <span className="w-[160px] text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px]">Groups</span>
                 </div>
                 <AddressList addresses={filteredAddresses}
                     selectedIds={selectedAddressIds}

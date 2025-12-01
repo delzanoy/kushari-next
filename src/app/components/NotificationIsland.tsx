@@ -31,7 +31,7 @@ export default function NotificationIsland({
   actionsClassName = '',
 }: NotificationIslandProps) {
   return (
-    <div className={`flex pt-[4px] pr-[4px] pb-[4px] pl-[20px] justify-between items-center gap-6 rounded-[14px] border-[0.5px] border-solid border-[#454545] shadow-[0_0_75px_25px_#0E1011] absolute left-1/2 -translate-x-1/2 bottom-6 bg-[#1C1E1F] ${className}`}>
+    <div className={`flex pt-[4px] pr-[4px] pb-[4px] pl-[20px] justify-between items-center gap-6 rounded-[14px] border-[0.5px] border-solid border-[#454545] shadow-[0_0_50px_25px_#1C1E1F] absolute left-1/2 -translate-x-1/2 bottom-6 bg-[#1C1E1F]/50 backdrop-blur-lg ${className}`}>
       {/* Left Section */}
       <div className={`flex items-center gap-4 flex-1 ${contentClassName}`}>
         {leadingIcon && (

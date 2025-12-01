@@ -135,12 +135,14 @@ export default function TransactionHeader({ transaction, uniqueClassifications, 
 
       <div className="flex w-[152px] flex-col justify-end items-start gap-[1px]">
         <div className="flex w-[152px] h-[13px] items-center gap-2.5">
-          <span className={`text-[#F8FCFF] font-[Geist] text-[10px] not-italic font-normal leading-[normal] transition-opacity duration-200 ${expanded ? 'hidden' : 'group-hover/card:hidden'
+          {/* Regular date (shown by default, hidden on hover AND when expanded) */}
+          <span className={`text-[#F8FCFF] font-[Geist] text-[10px] not-italic font-normal leading-[normal] transition-opacity duration-200 ${expanded ? 'hidden' : 'group-hover/transaction:hidden'
             }`}>
             {displayDate}
           </span>
+
           {/* Hover date (shown on hover for all transactions AND when expanded) */}
-          <span className={`text-[#F8FCFF] font-[Geist] text-[10px] not-italic font-normal leading-[normal] ${expanded ? 'block' : 'hidden group-hover/card:block'
+          <span className={`text-[#F8FCFF] font-[Geist] text-[10px] not-italic font-normal leading-[normal] ${expanded ? 'block' : 'hidden group-hover/transaction:block'
             }`}>
             {hoverDate}
           </span>

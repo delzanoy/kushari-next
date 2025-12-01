@@ -407,7 +407,7 @@ export default function TransactionListClient({
             const matchingWallet = walletOptions.find(
                 option => option.displayProps.fullName.toLowerCase() === initialWalletFilter.toLowerCase()
             );
-            
+
             if (matchingWallet) {
                 // Set the wallet filter
                 updateFieldCriteria('wallet', [matchingWallet.value]);
@@ -895,11 +895,23 @@ export default function TransactionListClient({
                         )}
                     </div>
                 </div>
-                <TransactionList
-                    transactions={paginatedTransactions}
-                    addresses={addresses}
-                    uniqueClassifications={uniqueClassifications}
-                />
+
+
+                <div className="flex flex-col">
+                    <div className="group/group flex w-full max-w-[1040px] mx-auto flex pt-[10px] pr-[16px] pb-[10px] pl-[8px] items-center gap-4 self-stretch bg-[#18191B]">
+                        <span className="w-[154px] text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px]">Type & time</span>
+                        <span className="w-[160px] text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px]">Wallet & Network</span>
+                        <span className="w-[160px] text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px]">To/From</span>
+                        <span className="w-[160px] text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px]">In</span>
+                        <span className="w-[160px] text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px]">Out</span>
+                        <span className="w-[150px] text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px]">Classification</span>
+                    </div>
+                    <TransactionList
+                        transactions={paginatedTransactions}
+                        addresses={addresses}
+                        uniqueClassifications={uniqueClassifications}
+                    />
+                </div>
 
                 {totalPages > 1 && (
                     <div className="flex gap-2 items-center justify-end self-stretch">

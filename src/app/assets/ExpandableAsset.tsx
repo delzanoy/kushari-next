@@ -150,7 +150,7 @@ export default function ExpandableAsset({ asset }: ExpandableAssetProps) {
                                 <span className="text-[#64DEA7] font-[Geist Mono] text-[13px] not-italic font-light leading-[100%] tracking-[1.56px]">{formatSmallNumber(asset.percent_change_24h)}%</span>
                             </div>
                         }
-                        <span className="text-[#E7E8E9] font-[Geist] text-[13px] not-italic font-thin leading-[100%] tracking-[1.56px] line-clamp-1">24 Hrs</span>
+                        {/* <span className="text-[#E7E8E9] font-[Geist] text-[13px] not-italic font-thin leading-[100%] tracking-[1.56px] line-clamp-1">24 Hrs</span> */}
                         <IconButton className="hidden opacity-0 group-hover:opacity-100 transition-all duration-200 scale-0 group-hover:scale-100" icon={<ExternalLinkIcon className="text-[#EDEEEE]" />} size="sm" status="neutral" tooltipTitle="Coin Market Cap" />
                     </div>
                 </div>

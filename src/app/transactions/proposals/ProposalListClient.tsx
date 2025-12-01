@@ -969,8 +969,8 @@ interface ProposalListProps {
     uniqueClassifications: string[];
     initialSearchQuery?: string;
     initialPage?: number;
-        initialWalletFilter?: string; // ADD THIS LINE
-            initialTab?: ProposalCategory; // ADD THIS LINE
+    initialWalletFilter?: string; // ADD THIS LINE
+    initialTab?: ProposalCategory; // ADD THIS LINE
     onSearchChange?: (query: string) => void;
 }
 
@@ -1372,12 +1372,12 @@ export default function ProposalListClient({
             const matchingWallet = walletOptions.find(
                 option => option.displayProps.fullName.toLowerCase() === initialWalletFilter.toLowerCase()
             );
-            
+
             if (matchingWallet) {
                 // Check if this filter isn't already applied
                 const existingWalletFilter = filterCriteria.find(c => c.field === 'wallet');
                 const isAlreadyFiltered = existingWalletFilter?.value.includes(matchingWallet.value);
-                
+
                 if (!isAlreadyFiltered) {
                     // Apply the wallet filter using the existing updateFieldCriteria function
                     updateFieldCriteria('wallet', [matchingWallet.value]);
@@ -1553,36 +1553,36 @@ export default function ProposalListClient({
 
     // Count proposals for each category with specific logic - BASED ON FILTERED RESULTS
     const categoryCounts = useMemo(() => {
-    return {
-        // Needs approval: Only count ACTION_REQUIRED from filtered results
-        [ProposalCategory.NEEDS_APPROVAL]: filteredAllProposals.filter(p =>
-            p.status === ProposalStatus.ACTION_REQUIRED
-        ).length,
+        return {
+            // Needs approval: Only count ACTION_REQUIRED from filtered results
+            [ProposalCategory.NEEDS_APPROVAL]: filteredAllProposals.filter(p =>
+                p.status === ProposalStatus.ACTION_REQUIRED
+            ).length,
 
-        // Ready to execute: Count of FAILED + READY from filtered results
-        [ProposalCategory.READY_TO_EXECUTE]: filteredAllProposals.filter(p =>
-            p.status === ProposalStatus.FAILED ||
-            p.status === ProposalStatus.READY
-        ).length,
+            // Ready to execute: Count of FAILED + READY from filtered results
+            [ProposalCategory.READY_TO_EXECUTE]: filteredAllProposals.filter(p =>
+                p.status === ProposalStatus.FAILED ||
+                p.status === ProposalStatus.READY
+            ).length,
 
-        // Discarded: Count all discarded proposals from filtered results
-        [ProposalCategory.DISCARDED]: filteredAllProposals.filter(p =>
-            p.category === ProposalCategory.DISCARDED
-        ).length,
-        
-        // NEW: Special count for NavTab that only includes FAILED_REJECTED
-        navTabDiscardedCount: filteredAllProposals.filter(p =>
-            p.status === ProposalStatus.FAILED_REJECTED
-        ).length,
-    };
-}, [filteredAllProposals]);
+            // Discarded: Count all discarded proposals from filtered results
+            [ProposalCategory.DISCARDED]: filteredAllProposals.filter(p =>
+                p.category === ProposalCategory.DISCARDED
+            ).length,
 
-const { 
-    [ProposalCategory.NEEDS_APPROVAL]: needsApprovalCount,
-    [ProposalCategory.READY_TO_EXECUTE]: readyToExecuteCount, 
-    [ProposalCategory.DISCARDED]: discardedCount,
-    navTabDiscardedCount 
-} = categoryCounts;
+            // NEW: Special count for NavTab that only includes FAILED_REJECTED
+            navTabDiscardedCount: filteredAllProposals.filter(p =>
+                p.status === ProposalStatus.FAILED_REJECTED
+            ).length,
+        };
+    }, [filteredAllProposals]);
+
+    const {
+        [ProposalCategory.NEEDS_APPROVAL]: needsApprovalCount,
+        [ProposalCategory.READY_TO_EXECUTE]: readyToExecuteCount,
+        [ProposalCategory.DISCARDED]: discardedCount,
+        navTabDiscardedCount
+    } = categoryCounts;
 
     // Pagination calculations
     const totalPages = Math.ceil(filteredProposals.length / ITEMS_PER_PAGE);
@@ -1861,11 +1861,23 @@ const {
                     </div>
 
                     <div className="flex flex-col gap-4">
-                        <ProposalList
-                            proposals={paginatedProposals}
-                            addresses={addresses}
-                            uniqueClassifications={uniqueClassifications}
-                        />
+                        <div className="flex flex-col">
+                            <div className="group/group flex w-full max-w-[1040px] mx-auto flex pt-[10px] pr-[16px] pb-[10px] pl-[8px] items-center gap-4 self-stretch bg-[#18191B]">
+                                <span className="w-[154px] text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px]">Initiated</span>
+                                <span className="w-[160px] text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px]">Wallet & Network</span>
+                                <span className="w-[160px] text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px]">To</span>
+                                <span className="w-[160px] text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px]">Tokens</span>
+                                <span className="w-[160px] text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px]">Classification</span>
+                                <span className="w-[150px] text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px]">Status</span>
+                            </div>
+
+
+                            <ProposalList
+                                proposals={paginatedProposals}
+                                addresses={addresses}
+                                uniqueClassifications={uniqueClassifications}
+                            />
+                        </div>
                         <div className="flex gap-2 items-center justify-end flex-grow">
                             {totalPages > 1 && (
                                 <PageSelector
