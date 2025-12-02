@@ -5,6 +5,7 @@ import "@cryptofonts/cryptofont/cryptofont.css";
 import DataPreloader from "../app/components/DataPreloader";
 
 import SideNav from "./components/SideNav";
+import WalletDataPreloader from "./components/WalletDataPreloader";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,12 +34,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="h-full">
-      <head>
-        <DataPreloader />
-      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased h-[100vh] relative`}
       >
+        <DataPreloader />
+        <WalletDataPreloader />
         <div className="flex min-h-screen bg-[#0E1011]">
           <SideNav />
           <main className="flex-1 pb-[256px] h-[100vh] overflow-auto">{children}</main>

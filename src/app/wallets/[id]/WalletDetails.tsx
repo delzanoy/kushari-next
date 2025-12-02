@@ -378,7 +378,7 @@
 //     // NEW: Use external state if provided, otherwise internal state
 //     const [internalActiveTab, setInternalActiveTab] = useState<TabType>(tabOrder[0]);
 //     const [internalActiveProposalFilter, setInternalActiveProposalFilter] = useState<ProposalCategory | null>(null);
-    
+
 //     // Use external state if provided, otherwise internal state
 //     const activeTab = externalActiveTab !== undefined ? externalActiveTab as TabType : internalActiveTab;
 //     const activeProposalFilter = externalActiveProposalFilter !== undefined ? externalActiveProposalFilter : internalActiveProposalFilter;
@@ -1238,7 +1238,7 @@
 
 //     const [internalActiveTab, setInternalActiveTab] = useState<TabType>(tabOrder[0]);
 //     const [internalActiveProposalFilter, setInternalActiveProposalFilter] = useState<ProposalCategory | null>(null);
-    
+
 //     const activeTab = externalActiveTab !== undefined ? externalActiveTab as TabType : internalActiveTab;
 //     const activeProposalFilter = externalActiveProposalFilter !== undefined ? externalActiveProposalFilter : internalActiveProposalFilter;
 
@@ -1332,7 +1332,7 @@
 //     // FIX: Calculate the appropriate default tab for this wallet - MOVED AFTER DEPENDENCIES
 //     const getDefaultTabForWallet = useCallback((): { tab: TabType; proposalFilter: ProposalCategory | null } => {
 //         const tabOrder = getTabOrder(wallet.type);
-        
+
 //         // If this is a tracked wallet, default to assets
 //         if (wallet.type === 3) {
 //             return { tab: 'assets' as TabType, proposalFilter: null };
@@ -1358,7 +1358,7 @@
 //         const currentIndex = TAB_ORDER.indexOf(activeTab);
 //         const newIndex = TAB_ORDER.indexOf(newTab);
 //         setAnimationDirection(currentIndex, newIndex);
-        
+
 //         if (onTabStateChange) {
 //             // Parent controls state - notify parent of change
 //             onTabStateChange(newTab, newTab !== 'proposals' ? null : activeProposalFilter);
@@ -1373,7 +1373,7 @@
 
 //     const handleProposalFilterChange = useCallback((subtitleName: string) => {
 //         const category = getCategoryFromHumanReadable(subtitleName);
-        
+
 //         // Animation logic
 //         if (activeProposalFilter) {
 //             const currentIndex = [ProposalCategory.NEEDS_APPROVAL, ProposalCategory.READY_TO_EXECUTE, ProposalCategory.DISCARDED].indexOf(activeProposalFilter);
@@ -1419,13 +1419,13 @@
 //         if (!isInitialLoad) {
 //             // Reset auto-switch flag when wallet changes
 //             setHasAutoSwitched(false);
-            
+
 //             const currentTabOrder = getTabOrder(wallet.type);
 //             const defaultTabState = getDefaultTabForWallet();
-            
+
 //             // Check if current tab is valid for this wallet type
 //             const isCurrentTabValid = currentTabOrder.includes(activeTab as any);
-            
+
 //             if (!isCurrentTabValid) {
 //                 // Current tab is not valid for this wallet type, switch to default
 //                 if (onTabStateChange) {
@@ -2130,7 +2130,7 @@ export default function WalletDetails({
 
     const [internalActiveTab, setInternalActiveTab] = useState<TabType>(tabOrder[0]);
     const [internalActiveProposalFilter, setInternalActiveProposalFilter] = useState<ProposalCategory | null>(null);
-    
+
     const activeTab = externalActiveTab !== undefined ? externalActiveTab as TabType : internalActiveTab;
     const activeProposalFilter = externalActiveProposalFilter !== undefined ? externalActiveProposalFilter : internalActiveProposalFilter;
 
@@ -2227,7 +2227,7 @@ export default function WalletDetails({
     // FIX: Calculate the appropriate default tab for this wallet - MOVED AFTER DEPENDENCIES
     const getDefaultTabForWallet = useCallback((): { tab: TabType; proposalFilter: ProposalCategory | null } => {
         const tabOrder = getTabOrder(wallet.type);
-        
+
         // If this is a tracked wallet, default to assets
         if (wallet.type === 3) {
             return { tab: 'assets' as TabType, proposalFilter: null };
@@ -2267,15 +2267,15 @@ export default function WalletDetails({
         if (isInitialLoad) {
             return;
         }
-        
+
         // Reset auto-switch flag when wallet changes
         setHasAutoSwitched(false);
-        
+
         const currentTabOrder = getTabOrder(wallet.type);
-        
+
         // Check if current tab is valid for this wallet type
         const isCurrentTabValid = currentTabOrder.includes(activeTab as any);
-        
+
         if (!isCurrentTabValid) {
             // Current tab is not valid for this wallet type, switch to default
             const defaultTabState = getDefaultTabForWallet();
@@ -2317,7 +2317,7 @@ export default function WalletDetails({
         const currentIndex = TAB_ORDER.indexOf(activeTab);
         const newIndex = TAB_ORDER.indexOf(newTab);
         setAnimationDirection(currentIndex, newIndex);
-        
+
         if (onTabStateChange) {
             // Parent controls state - notify parent of change
             if (newTab === 'proposals' && transformedProposals.length > 0) {
@@ -2341,7 +2341,7 @@ export default function WalletDetails({
 
     const handleProposalFilterChange = useCallback((subtitleName: string) => {
         const category = getCategoryFromHumanReadable(subtitleName);
-        
+
         // Animation logic
         if (activeProposalFilter) {
             const currentIndex = [ProposalCategory.NEEDS_APPROVAL, ProposalCategory.READY_TO_EXECUTE, ProposalCategory.DISCARDED].indexOf(activeProposalFilter);
@@ -2486,6 +2486,14 @@ export default function WalletDetails({
         }
         return (
             <div className="relative">
+                <div className="group/group flex w-full max-w-[1040px] mx-auto flex pt-[10px] pr-[16px] pb-[10px] pl-[8px] items-center gap-4 self-stretch bg-[#18191B]">
+                    <span className="w-[154px] text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px]">Initiated</span>
+                    <span className="w-[160px] text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px]">Wallet & Network</span>
+                    <span className="w-[160px] text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px]">To</span>
+                    <span className="w-[160px] text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px]">Tokens</span>
+                    <span className="w-[160px] text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px]">Classification</span>
+                    <span className="w-[150px] text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px]">Status</span>
+                </div>
                 <ProposalList
                     proposals={previewProposals}
                     addresses={addresses}
@@ -2513,6 +2521,18 @@ export default function WalletDetails({
             <div>
                 {previewAssets.length > 0 ? (
                     <div>
+                        <div className="group/group flex w-full max-w-[1040px] mx-auto flex pt-[10px] pr-[16px] pb-[10px] pl-[11.5px] items-center gap-4 self-stretch bg-[#18191B]">
+                            <span className="w-[262px] text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px]">Token & Network</span>
+                            <div className="w-[248px] flex items-center justify-between gap-4">
+                                <span className="text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px] text-right w-[116px]">Price</span>
+                                <span className="text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px] w-[116px]">Last 24 Hrs</span>
+                            </div>
+                            <div className="flex items-center justify-between gap-4">
+                                <span className="w-[160px] text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px] text-right ">Token value</span>
+                                <span className="w-[160px] text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px]">USD</span>
+                            </div>
+                            <span className="w-[150px] text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px]">Wallets</span>
+                        </div>
                         <AssetList assets={previewAssets} />
                         {memoizedTransformedAssets.length > PREVIEW_ITEMS_COUNT && (
                             <div className="absolute bottom-0 flex w-full justify-center py-5 bg-gradient-to-t from-[#0E1011] to-transparent" onClick={handleViewAllAssets}>
@@ -2568,6 +2588,14 @@ export default function WalletDetails({
             <div>
                 {memoizedTransformedTransactions.length > 0 ? (
                     <div>
+                        <div className="group/group flex w-full max-w-[1040px] mx-auto flex pt-[10px] pr-[16px] pb-[10px] pl-[8px] items-center gap-4 self-stretch bg-[#18191B]">
+                            <span className="w-[154px] text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px]">Type & time</span>
+                            <span className="w-[160px] text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px]">Wallet & Network</span>
+                            <span className="w-[160px] text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px]">To/From</span>
+                            <span className="w-[160px] text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px]">In</span>
+                            <span className="w-[160px] text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px]">Out</span>
+                            <span className="w-[150px] text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px]">Classification</span>
+                        </div>
                         <TransactionList
                             transactions={previewTransactions}
                             addresses={addresses}

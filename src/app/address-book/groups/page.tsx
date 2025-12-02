@@ -8,7 +8,7 @@ export default async function GroupsPage() {
   );
 
   if (!res.ok) {
-    return <div className="p-8">Failed to load assets</div>;
+    return <div className="p-8">Failed to load groups</div>;
   }
 
   const groupsData: GroupCardProps[] = await res.json();
