@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import SideNavItem from "./SideNavItem";
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -39,30 +39,9 @@ function MenuIcon({ className = "" }: { className?: string }) {
 
 import Image from "next/image";
 import IconButton from "./buttons/IconButton";
-import TertiaryButton from "./buttons/TertiaryButton";
 
 function FrameAvatar() {
     return (
-        // <div className="overflow-clip relative rounded-[120px] w-[40px] h-[40px] z-10 group-hover/sidebar:hidden">
-        //     <Image
-        //         src="/avatar/Rectangle.png"
-        //         alt="Avatar"
-        //         width={40}
-        //         height={40}
-        //         className="absolute left-0 top-0 rounded-[70px] w-[40px] h-[40px] object-cover"
-        //     />
-        //     <div
-        //         className="absolute border-[0.5px] border-solid border-white inset-0 pointer-events-none rounded-[70px]"
-        //         aria-hidden="true"
-        //     />
-        //     <div
-        //         className="absolute font-bold leading-[0] text-[16px] text-nowrap text-white tracking-[1.28px]"
-        //         style={{ top: "calc(50% - 9px)", left: "calc(50% - 11px)" }}
-        //     >
-        //         <p className="leading-[normal] whitespace-pre">De</p>
-        //     </div>
-        // </div>
-
         <div className="overflow-clip relative rounded-full w-[33px] h-[33px] z-10 ">
             <div
                 className="relative w-[33px] h-[33px] rounded-full flex items-center justify-center text-white font-[geist] font-semibold text-[16px] bg-red-500">
@@ -81,6 +60,7 @@ function FrameAvatar() {
 
 export default function SideNav() {
     const pathname = usePathname();
+    const [externalHoverTarget, setExternalHoverTarget] = useState<string | null>(null);
 
     const navSections = [
         {
@@ -117,17 +97,24 @@ export default function SideNav() {
         },
     ];
 
-    const allNavItems = navSections.flatMap(section => section.items);
+    // Listen for group card hover events
+    useEffect(() => {
+        const handleGroupCardHover = (event: CustomEvent) => {
+            const { isHovering, targetNav } = event.detail;
+            setExternalHoverTarget(isHovering ? targetNav : null);
+        };
 
-    const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+        window.addEventListener('groupCardHover', handleGroupCardHover as EventListener);
+        return () => {
+            window.removeEventListener('groupCardHover', handleGroupCardHover as EventListener);
+        };
+    }, []);
 
     // Helper function to check if a nav item is active
     const isNavItemActive = (itemHref: string, currentPathname: string) => {
         if (itemHref === '/wallets') {
-            // For wallets, check if current path starts with /wallets
             return currentPathname.startsWith('/wallets');
         }
-        // For other items, use exact match or check if it's the root path
         return currentPathname === itemHref || (currentPathname === '/' && itemHref === '/wallets');
     };
 
@@ -156,12 +143,15 @@ export default function SideNav() {
                     <SideNavSection key={index} title={section.title} pill={section.pill}>
                         {section.items && section.items.map((item) => {
                             const isActive = isNavItemActive(item.href, pathname);
+                            const isExternallyHovered = externalHoverTarget === item.href;
+                            
                             return (
                                 <Link href={item.href} key={item.label} className="w-full">
                                     <SideNavItem
                                         icon={item.icon}
                                         label={item.label}
                                         active={isActive}
+                                        externalHover={isExternallyHovered}
                                     />
                                 </Link>
                             );
