@@ -1,174 +1,3 @@
-// "use client";
-
-// import { ReactNode } from "react";
-// import Tooltip from "../../components/TooltipComponent";
-
-// type ButtonVariant =
-//   | "brand"
-//   | "brand-tonal"
-//   | "neutral"
-//   | "danger"
-//   | "neutral-brand"
-//   | "neutral-danger"
-//   | "danger-prominent"
-//   | "inverted";
-
-// type ButtonSize = "sm" | "md" | "lg";
-
-// type PrimaryButtonProps = {
-//   label: string;
-//   labelOnHover?: string;
-//   variant?: ButtonVariant;
-//   size?: ButtonSize;
-//   leadingIcon?: ReactNode;
-//   trailingIcon?: ReactNode;
-//   tooltipTitle?: string;
-//   tooltipSubtitle?: string;
-//   tooltipPosition?: "top" | "bottom" | "left" | "right";
-//   disabled?: boolean;
-//   className?: string;
-// };
-
-// export default function PrimaryButton({
-//   label,
-//   labelOnHover,
-//   variant = "brand",
-//   size = "md",
-//   leadingIcon,
-//   trailingIcon,
-//   tooltipTitle,
-//   tooltipSubtitle,
-//   tooltipPosition = "top",
-//   disabled = false,
-//   className = "",
-// }: PrimaryButtonProps) {
-//   // Size rules
-//   const sizeClasses = {
-//     lg: "h-10 pt-[8px] pr-[16px] pb-[8px] pl-[14px] gap-2.5 rounded-[14px]",
-//     md: "pt-[4px] pr-[12px] pb-[4px] pl-[10px] gap-2 rounded-[10px]",
-//     sm: "pt-[4px] pr-[10px] pb-[4px] pl-[8px] gap-1.5 rounded-[8px]",
-//   }[size];
-
-//   // Typography
-//   const textClasses = {
-//     lg: "text-base font-semibold leading-[22px] tracking-[0.64px]",
-//     md: "text-sm font-medium leading-[22px] tracking-[0.56px]",
-//     sm: "text-xs font-medium leading-[normal] tracking-[0.48px]",
-//   }[size];
-
-//   // Icon
-//   const iconSizes = {
-//     lg: "w-[18px] h-[18px]",
-//     md: "w-[16px] h-[16px]",
-//     sm: "w-[14px] h-[14px]",
-//   }[size];
-
-//   // Variants (Fixed for border consistency)
-//   const variantClasses = {
-//     brand: {
-//       base: "border-[0.8px] border-solid border-[rgba(156,236,236,0.4)] shadow-[0_34px_20px_0_rgba(38,201,200,0.00),0_22px_14px_0_rgba(38,201,200,0.01),0_12px_11px_0_rgba(38,201,200,0.05)] bg-gradient-to-b from-[#1E8889] to-[#155455]",
-//       hover: "hover:border-[#9CECEC] hover:from-[#2D898B] hover:to-[#145D5D]",
-//       text: "text-[#FBFEFE]",
-//     },
-//     "brand-tonal": {
-//       base: "border-[0.8px] border-solid border-transparent bg-[#0C2627]",
-//       hover: "hover:border-[#9CECEC] hover:bg-gradient-to-b hover:from-[#0C2627] hover:to-[#071C1D]",
-//       text: "text-[#6CDFE0]",
-//     },
-//     neutral: {
-//       base: "border-[0.8px] border-solid border-transparent bg-[rgba(248,252,255,0.10)]",
-//       hover: "hover:border-[#F8FCFF] hover:bg-[rgba(248,252,255,0.16)]",
-//       text: "text-[#FBFEFE]",
-//     },
-//     "neutral-brand": {
-//       base: "border-[0.8px] border-solid border-transparent bg-[#F8FCFF]/10",
-//       hover: "hover:border-[#9CECEC] hover:bg-gradient-to-b hover:from-[#0C2627] hover:to-[#071C1D]",
-//       text: "text-[#FBFEFE]",
-//     },
-//     "neutral-danger": {
-//       base: "border-[0.8px] border-solid border-transparent bg-[rgba(248,252,255,0.10)]",
-//       hover: "hover:border-[#EF4444] hover:bg-[#2E1C1C]",
-//       text: "text-[#FBFEFE]",
-//     },
-//     danger: {
-//       base: "border-[0.8px] border-solid border-transparent bg-[#201313]",
-//       hover: "hover:border-[#EF4444] hover:bg-[#2E1C1C]",
-//       text: "text-[#EF4444]",
-//     },
-//     "danger-prominent": {
-//       base: "border-[0.8px] border-solid border-[#A2473D] bg-[#A2473D]",
-//       hover: "hover:border-[#FDB5B5] hover:bg-[#D54130]",
-//       text: "text-[#FBFEFE]",
-//     },
-//     inverted: {
-//       base: "border-[0.8px] border-solid border-[#DDDFDF] bg-gradient-to-b from-[#D7DCF4] to-[#C8CEEF]",
-//       hover: "hover:border-[#F7F8F8] hover:shadow-[0_51px_14px_0_rgba(242,244,251,0.00),0_33px_13px_0_rgba(242,244,251,0.01),0_19px_11px_0_rgba(242,244,251,0.05),0_8px_8px_0_rgba(242,244,251,0.09),0_2px_5px_0_rgba(242,244,251,0.10)] hover:from-white hover:to-[#EFF1FA]",
-//       text: "text-[#010404]",
-//     },
-//   }[variant];
-
-//   // Combine
-//   const baseClasses = `
-//     inline-flex items-center shrink-0 justify-center
-//     transition-all duration-150 ease-in-out
-//     ${sizeClasses} ${variantClasses.base} ${variantClasses.hover}
-//     ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
-//     ${className}
-//   `;
-
-//   const button = (
-//     <button
-//       disabled={disabled}
-//       className={`group relative overflow-hidden ${baseClasses}`}
-//     >
-//       {/* Leading Icon */}
-//       {leadingIcon && (
-//         <div className={`${iconSizes} ${variantClasses.text}`}>
-//           {leadingIcon}
-//         </div>
-//       )}
-//       {/* Text */}
-//       <span
-//         className={`font-[Geist] not-italic ${textClasses} ${variantClasses.text} ${
-//           labelOnHover ? "group-hover:opacity-0" : ""
-//         } transition-all duration-150`}
-//       >
-//         {label}
-//       </span>
-//       {/* Hover Label */}
-//       {labelOnHover && (
-//         <span
-//           className={`absolute opacity-0 group-hover:opacity-100 transition-all duration-150 font-[Geist] not-italic ${textClasses} ${variantClasses.text}`}
-//         >
-//           {labelOnHover}
-//         </span>
-//       )}
-//       {/* Trailing Icon */}
-//       {trailingIcon && (
-//         <div className={`${iconSizes} ${variantClasses.text}`}>
-//           {trailingIcon}
-//         </div>
-//       )}
-//     </button>
-//   );
-
-//   if (tooltipTitle) {
-//     return (
-//       <Tooltip
-//         title={tooltipTitle}
-//         subtitle={tooltipSubtitle}
-//         position={tooltipPosition}
-//       >
-//         {button}
-//       </Tooltip>
-//     );
-//   }
-
-//   return button;
-// }
-
-
-
 "use client";
 
 import { ReactNode, useState } from "react";
@@ -199,6 +28,9 @@ type PrimaryButtonProps = {
   disabled?: boolean;
   className?: string;
   rounded?: boolean;
+  onClick?: () => void;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 };
 
 export default function PrimaryButton({
@@ -214,6 +46,9 @@ export default function PrimaryButton({
   disabled = false,
   className = "",
   rounded = false,
+  onClick,
+  onMouseEnter,
+  onMouseLeave,
 }: PrimaryButtonProps) {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -321,12 +156,23 @@ export default function PrimaryButton({
     ${className}
   `;
 
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+    onMouseEnter?.();
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    onMouseLeave?.();
+  };
+
   const button = (
     <button
       disabled={disabled}
       className={baseClasses}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onClick={onClick}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       {/* Leading Icon */}
       {leadingIcon && (
