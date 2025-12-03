@@ -7,9 +7,12 @@ import { BSCIcon, EthereumIcon, PolygonIcon } from "../components/icons";
 import TertiaryButton from "../components/buttons/TertiaryButton";
 import Tooltip from "../components/TooltipComponent";
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import FeatureUnderDevelopment from "../components/FeatureUnderDevelopment";
 
 export default function WalletList({ wallets }: { wallets: WalletSummary[] }) {
     const router = useRouter();
+        const [showModal, setShowModal] = useState(false); // Add state for modal
 
     const vaultWallets = wallets.filter(wallet => wallet.type === 1);
     const gnosisSafeWallets = wallets.filter(wallet => wallet.type === 2);
@@ -20,6 +23,25 @@ export default function WalletList({ wallets }: { wallets: WalletSummary[] }) {
     };
 
     return (
+        <>
+
+{showModal && (
+                <div 
+                    className="fixed inset-0 z-50 flex justify-center"
+                    style={{
+                        background: 'rgba(14, 16, 17, 0.01)',
+                        backdropFilter: 'blur(3px)'
+                    }}
+                    onClick={() => setShowModal(false)} // Close modal when clicking overlay
+                >
+                    {/* Modal Container - 80px from top, centered */}
+                    <div className="relative top-20" onClick={(e) => e.stopPropagation()}>
+                        <FeatureUnderDevelopment onClose={() => setShowModal(false)} />
+                    </div>
+                </div>
+            )}
+
+        
         <div className="flex flex-col items-start gap-12 max-w-[1040px] mx-auto">
             <div className="flex w-full max-w-[1040px] flex-col items-start gap-3.5">
                 <div className="flex justify-between items-baseline self-stretch">
@@ -37,14 +59,14 @@ export default function WalletList({ wallets }: { wallets: WalletSummary[] }) {
                             </Tooltip>
                         </div>
                     </div>
-                    <TertiaryButton size="lg" label="Create Vault" />
+                    <TertiaryButton size="lg" label="Create Vault" onClick={() => setShowModal(true)} />
                 </div>
                 <div className="flex items-start content-start gap-4 flex-wrap">
                     {vaultWallets.map((wallet) => (
                         <MPCVaultCard
-                            key={wallet.id}
-                            wallet={wallet}
-                            onClick={() => handleWalletClick(wallet.id)}
+                        key={wallet.id}
+                        wallet={wallet}
+                        onClick={() => handleWalletClick(wallet.id)}
                         />
                     ))}
                 </div>
@@ -59,9 +81,9 @@ export default function WalletList({ wallets }: { wallets: WalletSummary[] }) {
                 <div className="flex items-start w-full max-w-[1040px] content-start gap-4">
                     {gnosisSafeWallets.map((wallet) => (
                         <GnosisSafeCard
-                            key={wallet.id}
-                            wallet={wallet}
-                            onClick={() => handleWalletClick(wallet.id)}
+                        key={wallet.id}
+                        wallet={wallet}
+                        onClick={() => handleWalletClick(wallet.id)}
                         />
                     ))}
                 </div>
@@ -76,13 +98,14 @@ export default function WalletList({ wallets }: { wallets: WalletSummary[] }) {
                 <div className="flex flex-col items-start w-full max-w-[1040px] content-start gap-4">
                     {trackedWallets.map((wallet) => (
                         <TrackedWalletCard
-                            key={wallet.id}
-                            wallet={wallet}
-                            onClick={() => handleWalletClick(wallet.id)}
+                        key={wallet.id}
+                        wallet={wallet}
+                        onClick={() => handleWalletClick(wallet.id)}
                         />
                     ))}
                 </div>
             </div>
         </div>
+                    </>
     )
 }

@@ -273,18 +273,6 @@ const WalletHeader = memo(({
                     <TertiaryButton label="Wallets" size="sm" status="neutral" onClick={onBackToWallets} />
                     <span className="text-[12px] font-medium truncate font-[Geist] not-italic leading-[normal] tracking-[0.48px]">/</span>
 
-                    {/* <TertiaryButtonWithDropdown
-                        label={displayName}
-                        dropdownOptions={dropdownOptions}
-                        dropdownValue={wallet.id.toString()}
-                        onDropdownChange={handleWalletChange}
-                        groups={WALLET_GROUPS}
-                        status="neutral"
-                        size="sm"
-                        dropdownPlaceholder={displayName}
-                        walletType={wallet.type as 1 | 2 | 3}
-                        leadingIcon={renderWalletIcon(wallet.type)}
-                    /> */}
                     <TertiaryButtonWithDropdown
                         label={displayName}
                         dropdownOptions={dropdownOptions}
