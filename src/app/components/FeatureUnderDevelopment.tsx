@@ -1,8 +1,8 @@
 import IconButton from "./buttons/IconButton";
 import PrimaryButton from "./buttons/PrimaryButton";
 import { BracesIcon, CloseIcon, DoubleQuotesL } from "./icons";
-import TextArea from "./TextArea";
-import TextInput from "./TextInput";
+import TextArea from "./forms/TextArea";
+import TextInput from "./forms/TextInput";
 
 interface FeatureUnderDevelopmentProps {
     onClose?: () => void;
@@ -39,6 +39,14 @@ export default function FeatureUnderDevelopment({ onClose }: FeatureUnderDevelop
                 />
 
                 <TextInput
+                    label="Username"
+                    placeholder="Enter your username"
+                    width="full"
+                    disabled={true}
+                    helperText="Choose a unique username"
+                />
+
+                <TextInput
                     label="Email Address"
                     placeholder="your@email.com"
                     leadingIcon={<DoubleQuotesL className="w-4 h-4 text-[#F8FCFF]/70" />}
@@ -58,7 +66,7 @@ export default function FeatureUnderDevelopment({ onClose }: FeatureUnderDevelop
                     label="Description"
                     placeholder="Enter a detailed description..."
                     rows={4}
-                    width="full"
+                    width={150}
                     helperText="Minimum 50 characters"
                 />
 
