@@ -58,3 +58,5 @@ export { ArrowRightUpBoxFill } from "./ArrowRightUpBoxFill";
 export { ArrowLeftUpBoxFill } from "./ArrowLeftUpBoxFill";
 export { CommandIcon } from "./CommandIcon";
 export { BracesIcon } from "./BracesIcon";
+export { DoubleQuotesL } from "./DoubleQuotesL";
+export { DoubleQuotesR } from "./DoubleQuotesR";

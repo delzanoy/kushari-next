@@ -3,17 +3,6 @@ import { getGroups } from "../../api/server-data";
 // import { GroupCardProps } from "./types"
 
 export default async function GroupsPage() {
-  // const res = await fetch(
-  //   `${process.env.NEXT_PUBLIC_BASE_URL}/groups`,
-  //   { cache: "no-store" }
-  // );
-
-  // if (!res.ok) {
-  //   return <div className="p-8">Failed to load groups</div>;
-  // }
-
-  // const groupsData: GroupCardProps[] = await res.json();
-
   const groups = await getGroups();
 
   return (
