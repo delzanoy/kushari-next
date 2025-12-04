@@ -1,13 +1,16 @@
-// hooks/useModal.ts
-import { useModalManager } from "../components/modal/ModalProvider";
+"use client";
 import React from "react";
-import type { ModalOptions } from "../components/modal/types";
+import { useModalProvider } from "../components/modal/ModalProvider";
 
+/**
+ * useModal gives you imperative helpers to open modal components.
+ */
 export default function useModal() {
-  const { open, close } = useModalManager();
-
-  const openModal = React.useCallback((content: React.ReactNode, options?: ModalOptions) => open(content, options), [open]);
-  const closeModal = React.useCallback((id?: string) => close(id), [close]);
-
-  return { openModal, closeModal };
-}
+  const ctx = useModalProvider();
+  return {
+    open: (el: React.ReactElement) => ctx.open(el),
+    close: (id: number) => ctx.close(id),
+    closeTop: () => ctx.closeTop(),
+    count: ctx.count,
+  };
+};

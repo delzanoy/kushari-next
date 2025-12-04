@@ -1,108 +1,64 @@
-// components/modal/ModalProvider.tsx
 "use client";
-import React, { createContext, useContext, useRef, useState, useCallback, useEffect } from "react";
-import { createPortal } from "react-dom";
-import { v4 as uuidv4 } from "uuid";
-import type { ModalOptions } from "./types";
-import ModalHost from "./ModalHost";
+import React, { createContext, useCallback, useContext, useMemo, useRef, useState } from "react";
 
-type ModalStackItem = {
-  id: string;
-  content: React.ReactNode;
-  options: ModalOptions;
+type ModalNode = {
+  id: number;
+  element: React.ReactElement;
 };
 
-type ModalContextType = {
-  open: (content: React.ReactNode, options?: ModalOptions) => string; // returns id
-  close: (id?: string) => void; // default closes top
-  closeAll: () => void;
-  getStack: () => ModalStackItem[];
+type ModalContextValue = {
+  open: (element: React.ReactElement) => number;
+  close: (id: number) => void;
+  closeTop: () => void;
+  count: number;
 };
 
-const ModalContext = createContext<ModalContextType | undefined>(undefined);
+const ModalContext = createContext<ModalContextValue | null>(null);
 
-export const useModalManager = () => {
-  const ctx = useContext(ModalContext);
-  if (!ctx) throw new Error("useModalManager must be used within ModalProvider");
-  return ctx;
-};
+export const ModalProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const idRef = useRef(1);
+  const [modals, setModals] = useState<ModalNode[]>([]);
 
-export default function ModalProvider({ children }: { children: React.ReactNode }) {
-  const [stack, setStack] = useState<ModalStackItem[]>([]);
-  const stackRef = useRef(stack);
-  stackRef.current = stack;
-
-  // Open modal: push onto stack
-  const open = useCallback((content: React.ReactNode, options: ModalOptions = {}) => {
-    const id = options.id || uuidv4();
-    const item: ModalStackItem = { id, content, options };
-    setStack((s) => [...s, item]);
+  const open = useCallback((element: React.ReactElement) => {
+    const id = idRef.current++;
+    setModals((s) => [...s, { id, element }]);
     return id;
   }, []);
 
-  // Close a specific modal by id, or top if omitted
-  const close = useCallback((id?: string) => {
-    setStack((s) => {
-      if (s.length === 0) return s;
-      if (!id) return s.slice(0, -1);
-      const idx = s.findIndex((m) => m.id === id);
-      if (idx === -1) return s;
-      // remove that modal and any above it
-      return s.slice(0, idx).concat(s.slice(idx + 1));
-    });
+  const close = useCallback((id: number) => {
+    setModals((s) => s.filter((m) => m.id !== id));
   }, []);
 
-  const closeAll = useCallback(() => setStack([]), []);
-
-  const getStack = useCallback(() => stackRef.current, []);
-
-  // Portal root management: ensure a container exists. If the page includes
-  // a `div#modal-root`, use it; otherwise create one and append to body.
-  const modalRootRef = React.useRef<HTMLElement | null>(null);
-  React.useEffect(() => {
-    if (typeof window === "undefined") return;
-    let root = document.getElementById("modal-root");
-    let created = false;
-    if (!root) {
-      root = document.createElement("div");
-      root.setAttribute("id", "modal-root");
-      document.body.appendChild(root);
-      created = true;
-    }
-    modalRootRef.current = root;
-
-    return () => {
-      // If we created the root and it's still present, remove it on unmount
-      if (created && root && root.parentNode) {
-        root.parentNode.removeChild(root);
-      }
-    };
+  const closeTop = useCallback(() => {
+    setModals((s) => s.slice(0, -1));
   }, []);
 
-  const modalRoot = modalRootRef.current;
+  const value = useMemo(
+    () => ({ open, close, closeTop, count: modals.length }),
+    [open, close, closeTop, modals.length]
+  );
 
   return (
-    <ModalContext.Provider value={{ open, close, closeAll, getStack }}>
+    <ModalContext.Provider value={value}>
       {children}
-      {modalRoot && createPortal(
-        <div aria-hidden={stack.length === 0 ? "true" : "false"}>
-          {stack.map((item, index) => {
-            const level = index; // 0-based
-            const isTop = index === stack.length - 1;
-            return (
-              <ModalHost
-                key={item.id}
-                id={item.id}
-                level={level}
-                isTop={isTop}
-                content={item.content}
-                options={item.options}
-              />
-            );
-          })}
-        </div>,
-        modalRoot
-      )}
+      {modals.map((m, idx) => {
+        const zIndex = 1000 + idx * 100;
+        const isTop = idx === modals.length - 1;
+        return React.cloneElement(m.element, {
+          key: m.id,
+          "data-modal-id": m.id,
+          internalModalId: m.id,
+          internalZIndex: zIndex,
+          internalStackIndex: idx,
+          internalIsTop: isTop,
+        } as any);
+      })}
     </ModalContext.Provider>
   );
-}
+};
+
+export const useModalProvider = (): ModalContextValue => {
+  const ctx = useContext(ModalContext);
+  if (!ctx) throw new Error("useModalProvider must be used within ModalProvider");
+  return ctx;
+};

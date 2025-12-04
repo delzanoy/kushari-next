@@ -7,7 +7,7 @@ import DataPreloader from "../app/components/DataPreloader";
 import SideNav from "./components/SideNav";
 import WalletDataPreloader from "./components/WalletDataPreloader";
 
-import ModalProvider from "./components/modal/ModalProvider";
+import ModalHost from "./components/modal/ModalHost";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,7 +39,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased h-[100vh] relative`}
       >
-        <ModalProvider>
+        <ModalHost>
           <DataPreloader />
           <WalletDataPreloader />
           <div className="flex min-h-screen bg-[#0E1011]">
@@ -52,7 +52,7 @@ export default function RootLayout({
               Product, design & development by <span className="font-bold">Delanoy Kunil</span>
             </span>
           </div>
-        </ModalProvider>
+        </ModalHost>
       </body>
     </html>
   );
