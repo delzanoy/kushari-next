@@ -21,7 +21,8 @@
     "react-dom": "19.1.0",
     "remixicon": "^4.7.0",
     "save": "^2.9.0",
-    "swr": "^2.3.6"
+    "swr": "^2.3.6",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

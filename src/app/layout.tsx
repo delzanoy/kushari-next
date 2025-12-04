@@ -7,6 +7,8 @@ import DataPreloader from "../app/components/DataPreloader";
 import SideNav from "./components/SideNav";
 import WalletDataPreloader from "./components/WalletDataPreloader";
 
+import ModalProvider from "./components/modal/ModalProvider";
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -37,17 +39,20 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased h-[100vh] relative`}
       >
-        <DataPreloader />
-        <WalletDataPreloader />
-        <div className="flex min-h-screen bg-[#0E1011]">
-          <SideNav />
-          <main className="flex-1 pb-[256px] h-[100vh] overflow-auto">{children}</main>
-        </div>
-        <div className="group/credit absolute right-[16px] bottom-[16px] opacity-50 hover:opacity-100 cursor-pointer transition-opacity duration-200">
-          <span className="line-clamp-1 overflow-hidden text-[#F8FCFF] text-ellipsis font-[Geist] text-sm not-italic font-light leading-[normal] tracking-[0.7px]">
-            Product, design & development by <span className="font-bold">Delanoy Kunil</span>
-          </span>
-        </div>
+        <ModalProvider>
+          <DataPreloader />
+          <WalletDataPreloader />
+          <div className="flex min-h-screen bg-[#0E1011]">
+            <div id="modal-root" />
+            <SideNav />
+            <main className="flex-1 pb-[256px] h-[100vh] overflow-auto">{children}</main>
+          </div>
+          <div className="group/credit absolute right-[16px] bottom-[16px] opacity-50 hover:opacity-100 cursor-pointer transition-opacity duration-200">
+            <span className="line-clamp-1 overflow-hidden text-[#F8FCFF] text-ellipsis font-[Geist] text-sm not-italic font-light leading-[normal] tracking-[0.7px]">
+              Product, design & development by <span className="font-bold">Delanoy Kunil</span>
+            </span>
+          </div>
+        </ModalProvider>
       </body>
     </html>
   );
