@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import emailjs from "@emailjs/browser";
 import IconButton from "./buttons/IconButton";
 import PrimaryButton from "./buttons/PrimaryButton";
 import { BracesIcon, CloseIcon, DoubleQuotesL, EmailAtIcon } from "./icons";
@@ -14,20 +15,71 @@ export default function FeatureUnderDevelopment({ onClose }: FeatureUnderDevelop
     const [email, setEmail] = useState("");
     const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
     const [errorMessage, setErrorMessage] = useState("");
+    const [helperText, setHelperText] = useState("Min. 10 chars");
+    const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzo1rL9yjw6ESYaSV_Cpr36dOu370eBNanX-HpTqEkNgEsVWHjyr44qpC0vsqoFbdVh/exec";
+    // Focus textarea when component mounts
+    useEffect(() => {
+        if (textareaRef.current) {
+            textareaRef.current.focus();
+        }
+    }, []);
+
+    // Update helper text based on character count
+    useEffect(() => {
+        const currentLength = note.trim().length;
+        
+        if (currentLength >= 10) {
+            setHelperText(""); // Empty string will hide the helper text
+        } else {
+            const remaining = 10 - currentLength;
+            if (remaining === 10) {
+                setHelperText("Min. 10 chars");
+            } else if (remaining === 1) {
+                setHelperText("1 more char");
+            } else {
+                setHelperText(`${remaining} more chars`);
+            }
+        }
+    }, [note]);
+
+    // For Next.js, use process.env
+    const getEmailJSConfig = () => {
+        const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
+        const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
+        const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
+        
+        if (!serviceId || !templateId || !publicKey) {
+            const message = process.env.NODE_ENV === 'development'
+                ? `EmailJS is not configured. Please add these to your .env.local file:\n` +
+                  `NEXT_PUBLIC_EMAILJS_SERVICE_ID=your_service_id\n` +
+                  `NEXT_PUBLIC_EMAILJS_TEMPLATE_ID=your_template_id\n` +
+                  `NEXT_PUBLIC_EMAILJS_PUBLIC_KEY=your_public_key\n\n` +
+                  `Get these from EmailJS.com dashboard`
+                : "Email service is temporarily unavailable. Please try again later.";
+            
+            throw new Error(message);
+        }
+        
+        return { serviceId, templateId, publicKey };
+    };
 
     const isValidEmail = (email: string) => {
-        if (!email.trim()) return true; // Email is optional, so empty is valid
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        const trimmed = email.trim();
+        if (!trimmed) return true;
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed);
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Validation - email is optional, but if provided, must be valid
         if (email.trim() && !isValidEmail(email)) {
             setErrorMessage("Please enter a valid email address or leave it empty");
+            return;
+        }
+
+        if (note.trim().length < 10) {
+            setErrorMessage("Please write a message (at least 10 characters)");
             return;
         }
 
@@ -35,41 +87,45 @@ export default function FeatureUnderDevelopment({ onClose }: FeatureUnderDevelop
         setErrorMessage("");
 
         try {
-            // Using a proxy approach to avoid CORS issues with Google Apps Script
-            // Google Apps Script doesn't support CORS headers, so we need to use a workaround
+            const config = getEmailJSConfig();
             
-            const payload = {
+            const templateParams = {
                 email: email.trim() || "No email provided",
-                note: note.trim() || "No message",
-                timestamp: new Date().toISOString(),
-                source: "feature_feedback"
+                note: note.trim(),
+                timestamp: new Date().toLocaleString(),
+                source: "Feature Feedback Form",
+                pageUrl: typeof window !== 'undefined' ? window.location.href : ''
             };
 
-            // Method 1: Using no-cors mode (you won't get response, assume success)
-            await fetch(GOOGLE_SCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors', // Important: This prevents CORS errors
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(payload)
-            });
+            const response = await emailjs.send(
+                config.serviceId,
+                config.templateId,
+                templateParams,
+                config.publicKey
+            );
 
-            // Since we use 'no-cors', we can't read the response
-            // So we assume success if no network error
-            setStatus('success');
+            console.log('EmailJS Response:', response);
             
-            // Clear form
-            setNote("");
-            setEmail("");
-            
-            // Reset status after 3 seconds
-            setTimeout(() => setStatus('idle'), 3000);
+            if (response.status === 200) {
+                setStatus('success');
+                setNote("");
+                setEmail("");
+                setHelperText("Min. 10 chars");
+                
+                setTimeout(() => setStatus('idle'), 3000);
+            } else {
+                throw new Error(`EmailJS returned status: ${response.status}`);
+            }
 
         } catch (error) {
-            console.error('Submission error:', error);
+            console.error('EmailJS Error:', error);
             setStatus('error');
-            setErrorMessage("Failed to send. Please try again.");
+            
+            if (error instanceof Error) {
+                setErrorMessage(error.message);
+            } else {
+                setErrorMessage("An unexpected error occurred.");
+            }
         }
     };
 
@@ -78,6 +134,7 @@ export default function FeatureUnderDevelopment({ onClose }: FeatureUnderDevelop
         setEmail("");
         setErrorMessage("");
         setStatus('idle');
+        setHelperText("Min. 10 chars");
     };
 
     return (
@@ -95,8 +152,12 @@ export default function FeatureUnderDevelopment({ onClose }: FeatureUnderDevelop
                     />
                 </div>
                 <div className="flex py-[0] px-[12px] flex-col items-start gap-2.5 self-stretch">
-                    <span className="text-[#F8FCFF] font-[Figtree] text-[26px] not-italic font-medium leading-[normal] tracking-[1.04px]">Feature under development</span>
-                    <span className="text-[#EDEEEE] font-[Geist] text-sm not-italic font-normal leading-[normal] tracking-[0.56px]">I'd love your input.</span>
+                    <span className="text-[#F8FCFF] font-[Figtree] text-[26px] not-italic font-medium leading-[normal] tracking-[1.04px]">
+                        Feature under development
+                    </span>
+                    <span className="text-[#EDEEEE] font-[Geist] text-sm not-italic font-normal leading-[normal] tracking-[0.56px]">
+                        I'd love your input.
+                    </span>
                     <span className="text-[#EDEEEE] font-[Geist] text-sm not-italic font-normal leading-[normal] tracking-[0.56px]">
                         - del
                     </span>
@@ -105,50 +166,61 @@ export default function FeatureUnderDevelopment({ onClose }: FeatureUnderDevelop
 
             <form onSubmit={handleSubmit} className="w-full">
                 <div className="flex flex-col items-start gap-4 self-stretch">
-                    {/* Status messages at the top */}
                     {errorMessage && (
                         <div className="w-full p-3 rounded-lg bg-red-500/10 border border-red-500/20">
-                            <p className="text-red-400 text-sm font-medium">{errorMessage}</p>
+                            <p className="text-red-400 text-sm font-medium flex items-center gap-2">
+                                <span className="text-lg">⚠️</span>
+                                {errorMessage}
+                            </p>
                         </div>
                     )}
                     
                     {status === 'success' && (
                         <div className="w-full p-3 rounded-lg bg-green-500/10 border border-green-500/20">
-                            <p className="text-green-400 text-sm font-medium">
-                                ✅ Thank you! Your feedback has been sent.
+                            <p className="text-green-400 text-sm font-medium flex items-center gap-2">
+                                <span className="text-lg">✅</span>
+                                Thank you! Your feedback has been sent.
+                            </p>
+                            <p className="text-green-400/80 text-xs mt-1 pl-7">
+                                I'll get back to you if you left an email!
                             </p>
                         </div>
                     )}
                     
-                    {status === 'error' && !errorMessage && (
-                        <div className="w-full p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
-                            <p className="text-yellow-400 text-sm font-medium">
-                                ⚠️ Something went wrong. Please try again.
+                    {status === 'sending' && (
+                        <div className="w-full p-3 rounded-lg bg-blue-500/10 border border-blue-500/20">
+                            <p className="text-blue-400 text-sm font-medium flex items-center gap-2">
+                                <span className="animate-spin">⏳</span>
+                                Sending your message...
                             </p>
                         </div>
                     )}
 
                     <div className="flex py-[0] px-[12px] flex-col items-start gap-4 self-stretch">
                         <TextArea
-                            placeholder="Or just leave a note to say hi!"
+                            ref={textareaRef}
+                            placeholder="Share your thoughts, ideas, or just say hi!"
                             leadingIcon={<DoubleQuotesL />}
                             value={note}
                             onChange={(e) => setNote(e.target.value)}
                             rows={3}
                             width="full"
                             disabled={status === 'sending' || status === 'success'}
+                            helperText={helperText}
+                            error={note.trim().length < 10 && note.trim().length > 0}
                         />
                     </div>
                     
                     <div className="flex py-[0] px-[12px] flex-col items-end gap-3 self-stretch">
                         <TextInput
-                            placeholder="email (so I can respond)"
+                            placeholder="email"
                             leadingIcon={<EmailAtIcon />}
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             width={256}
                             disabled={status === 'sending' || status === 'success'}
-                            error={!!errorMessage}
+                            error={!!errorMessage && errorMessage.includes("email")}
+                            helperText="Optional, so I can respond"
                         />
                         
                         <div className="flex items-center gap-3">
@@ -156,7 +228,7 @@ export default function FeatureUnderDevelopment({ onClose }: FeatureUnderDevelop
                                 type="button"
                                 onClick={handleClear}
                                 className="px-4 py-2 text-sm text-[#52525B] hover:text-[#F8FCFF]/70 transition-colors disabled:opacity-50"
-                                disabled={status === 'sending'}
+                                disabled={status === 'sending' || status === 'success'}
                             >
                                 Clear
                             </button> */}
@@ -170,7 +242,7 @@ export default function FeatureUnderDevelopment({ onClose }: FeatureUnderDevelop
                                     'Send to del'
                                 }
                                 type="submit"
-                                disabled={status === 'sending' || status === 'success'}
+                                disabled={status === 'sending' || status === 'success' || note.trim().length < 10}
                             />
                         </div>
                     </div>
