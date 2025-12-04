@@ -41,12 +41,11 @@ export default function FeatureUnderDevelopment({ onClose }: FeatureUnderDevelop
 
 
             </div>
-            <div className="flex flex-col items-end gap-3 self-stretch bg-pink-500">
+            <div className="flex flex-col items-end gap-3 self-stretch">
                 <TextInput
                     placeholder="email(so I can respond)"
                     leadingIcon={<EmailAtIcon />}
                     width={256}
-                    className="bg-blue-500"
                 />
                 <PrimaryButton size="md" variant="brand" label="Send to del" disabled />
             </div>

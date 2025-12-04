@@ -53,7 +53,7 @@ export const InputIcon: React.FC<InputIconProps> = ({
       // For textareas: leading icon at top, trailing icon at bottom
       return position === "leading" 
         ? "flex items-start justify-center pt-[2px]"
-        : "flex items-end justify-center pt-[2px] self-stretch";
+        : "flex items-end justify-center pb-[2px] self-stretch";
     }
     
     // For regular inputs: both icons centered

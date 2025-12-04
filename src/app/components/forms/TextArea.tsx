@@ -60,10 +60,12 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
         const containerClasses = `flex flex-col items-start gap-1.5 ${className}`;
         const containerStyle = typeof width === "number" ? { width: `${width}px` } : {};
         const widthClass = width === "full" ? "w-full" : "";
-        const innerWidthClass = width === "full" ? "self-stretch" : "";
+        
+        // FIXED: Always make the inner container full width
+        const innerWidthClass = "w-full";
 
         // Base container styles (adjusted for textarea)
-        const baseContainerClasses = `flex pt-[8px] pr-[12px] pb-[8px] pl-[8px] items-start gap-2.5 self-stretch rounded-[10px] border-[0.5px] border-solid min-h-[64px] relative`;
+        const baseContainerClasses = `flex pt-[8px] pr-[12px] pb-[8px] pl-[8px] items-start gap-2.5 rounded-[10px] border-[0.5px] border-solid min-h-[64px] relative`;
 
         // Get styles based on state
         const borderColor = getBorderColor(state);

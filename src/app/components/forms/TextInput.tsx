@@ -56,10 +56,12 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
     const containerClasses = `flex flex-col items-start gap-1.5 ${className}`;
     const containerStyle = typeof width === "number" ? { width: `${width}px` } : {};
     const widthClass = width === "full" ? "w-full" : "";
-    const innerWidthClass = width === "full" ? "self-stretch" : "";
+    
+    // FIXED: Always make the inner container stretch or inherit width
+    const innerWidthClass = "w-full"; // Always take full width of parent
 
     // Base container styles
-    const baseContainerClasses = `flex p-2 items-center gap-2.5 self-stretch rounded-[10px] border-[0.5px] border-solid relative`;
+    const baseContainerClasses = `flex p-2 items-center gap-2.5 rounded-[10px] border-[0.5px] border-solid relative`;
 
     // Get styles based on state
     const borderColor = getBorderColor(state);
@@ -103,7 +105,7 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
             />
           )}
           
-          {/* Input Container */}
+          {/* Input Container - Now this will take the full width of its parent */}
           <div
             className={`${baseContainerClasses} ${borderColor} ${backgroundColor} transition-all duration-200 ${
               state.disabled ? "cursor-not-allowed opacity-70" : "cursor-text"
