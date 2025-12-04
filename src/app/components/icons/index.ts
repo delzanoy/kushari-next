@@ -61,3 +61,4 @@ export { BracesIcon } from "./BracesIcon";
 export { DoubleQuotesL } from "./DoubleQuotesL";
 export { DoubleQuotesR } from "./DoubleQuotesR";
 export { EmailAtIcon } from "./EmailAtIcon";
+export { MailFilledIcon } from "./MailFilledIcon";
