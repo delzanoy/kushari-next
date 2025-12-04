@@ -28,6 +28,7 @@ type PrimaryButtonProps = {
   disabled?: boolean;
   className?: string;
   rounded?: boolean;
+  type?: "button" | "submit" | "reset";
   onClick?: () => void;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
@@ -46,6 +47,7 @@ export default function PrimaryButton({
   disabled = false,
   className = "",
   rounded = false,
+  type = "button",
   onClick,
   onMouseEnter,
   onMouseLeave,
@@ -168,6 +170,7 @@ export default function PrimaryButton({
 
   const button = (
     <button
+      type={type}
       disabled={disabled}
       className={baseClasses}
       onClick={onClick}
@@ -182,9 +185,8 @@ export default function PrimaryButton({
       )}
       {/* Text */}
       <span
-        className={`font-[Geist] not-italic ${textClasses} ${textColor} ${
-          labelOnHover ? "group-hover:opacity-0" : ""
-        } transition-all duration-150`}
+        className={`font-[Geist] not-italic ${textClasses} ${textColor} ${labelOnHover ? "group-hover:opacity-0" : ""
+          } transition-all duration-150`}
       >
         {label}
       </span>
