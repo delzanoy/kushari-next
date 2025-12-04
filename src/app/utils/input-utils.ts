@@ -42,22 +42,39 @@ export const getBorderColor = (state: InputState): string => {
   if (state.disabled) return `border-[${Colors.border}]/24`;
   if (state.error) return "border-[#EF4444]/70";
   if (state.focused) return `border-[${Colors.primary}]`;
-  if (state.hovered) return `border-[${Colors.primary}]/70`;
+  if (state.hovered) return "border-[#26C9C9]/70";
   return `border-[${Colors.border}]/24`;
 };
 
 export const getBackgroundColor = (state: InputState): string => {
   if (state.disabled) return "bg-[#F8FCFF]/3";
-  if (state.focused && !state.error) return "bg-[#26C9C9]/2";
+  
+  // Error state backgrounds
+  if (state.error) {
+    if (state.focused) {
+      return "bg-[#3A2526]/50"; // 50% opacity when focused in error state
+    }
+    return "bg-[#3A2526]/25"; // 25% opacity for error state
+  }
+  
+  // Normal focused state
+  if (state.focused) return "bg-[#26C9C9]/2";
+  
   return "bg-[#F8FCFF]/6";
 };
 
 export const getOuterBorderStyle = (state: InputState): React.CSSProperties | null => {
   if (state.disabled) return null;
   
-  if (state.error && (state.focused || state.hovered)) {
+  if (state.error && state.focused) {
     return {
-      border: `2px solid ${Colors.errorLight}`,
+      border: "2px solid rgba(237, 9, 13, 0.12)", // ED090D at 12% opacity
+    };
+  }
+  
+  if (state.error && state.hovered) {
+    return {
+      border: "2px solid rgba(237, 9, 13, 0.12)", // Also apply on hover when in error state
     };
   }
   

@@ -1,6 +1,6 @@
 import IconButton from "./buttons/IconButton";
 import PrimaryButton from "./buttons/PrimaryButton";
-import { BracesIcon, CloseIcon, DoubleQuotesL } from "./icons";
+import { BracesIcon, CloseIcon, DoubleQuotesL, DoubleQuotesR, EmailAtIcon } from "./icons";
 import TextArea from "./forms/TextArea";
 import TextInput from "./forms/TextInput";
 
@@ -31,73 +31,23 @@ export default function FeatureUnderDevelopment({ onClose }: FeatureUnderDevelop
                 </div>
             </div>
             <div className="flex py-[0] px-[12px] flex-col items-start gap-4 self-stretch">
-                <TextInput
-                    label="Username"
-                    placeholder="Enter your username"
-                    width="full"
-                    helperText="Choose a unique username"
-                />
-
-                <TextInput
-                    label="Username"
-                    placeholder="Enter your username"
-                    width="full"
-                    disabled={true}
-                    helperText="Choose a unique username"
-                />
-
-                <TextInput
-                    label="Email Address"
-                    placeholder="your@email.com"
-                    leadingIcon={<DoubleQuotesL className="w-4 h-4 text-[#F8FCFF]/70" />}
-                    error={true}
-                    helperText="Invalid email format"
-                    width={300}
-                />
-
-                <TextInput
-                    label="Search"
-                    placeholder="Search for something..."
-                    leadingIcon={<DoubleQuotesL className="w-4 h-4 text-[#F8FCFF]/70" />}
-                    trailingIcon={<DoubleQuotesL className="w-4 h-4 text-[#F8FCFF]/70" />}
-                    width="full"
-                />
                 <TextArea
-                    label="Description"
-                    placeholder="Enter a detailed description..."
-                    rows={4}
-                    width={150}
-                    helperText="Minimum 50 characters"
-                />
-
-                <TextArea
-                    label="Quote"
-                    placeholder="Type your favorite quote..."
-                    leadingIcon={<DoubleQuotesL className="w-4 h-4 text-[#F8FCFF]/70" />}
-                    trailingIcon={<DoubleQuotesL className="w-4 h-4 text-[#F8FCFF]/70" />}
+                    // label="Quote"
+                    placeholder="Or just leave a note to say hi!"
+                    leadingIcon={<DoubleQuotesL />}
                     rows={3}
                     width="full"
                 />
 
-                <TextArea
-                    label="Read-only Content"
-                    value="This is pre-filled content that cannot be edited."
-                    disabled={true}
-                    rows={2}
-                    width="full"
-                />
 
-                <TextArea
-                    label="Error State"
-                    placeholder="This will show an error..."
-                    error={true}
-                    rows={3}
-                    width="full"
-                    helperText="This field is required"
-                />
             </div>
-            <div className="flex flex-col items-end gap-3 self-stretch">
-
+            <div className="flex flex-col items-end gap-3 self-stretch bg-pink-500">
+                <TextInput
+                    placeholder="email(so I can respond)"
+                    leadingIcon={<EmailAtIcon />}
+                    width={256}
+                    className="bg-blue-500"
+                />
                 <PrimaryButton size="md" variant="brand" label="Send to del" disabled />
             </div>
         </div>

@@ -21,15 +21,20 @@ export const InputIcon: React.FC<InputIconProps> = ({
   const iconSizeClass = getIconSizeClass(iconSize);
   
   const getIconColor = (): string => {
-    if (state.error) return "text-[#52525B]";
-    if (state.disabled) return "text-[#52525B]";
-    
-    // For trailing icon: change to #F8FCFF with 50% opacity on hover
-    if (position === "trailing" && state.hovered) {
-      return "text-[#F8FCFF]/50";
+    // Leading icon: always #52525B
+    if (position === "leading") {
+      return "text-[#52525B]";
     }
     
-    // Default color for both icons
+    // Trailing icon: #52525B by default, #F8FCFF at 50% opacity on hover
+    if (position === "trailing") {
+      if (state.hovered) {
+        return "text-[#F8FCFF]/50";
+      }
+      return "text-[#52525B]";
+    }
+    
+    // Fallback
     return "text-[#52525B]";
   };
 
@@ -43,9 +48,19 @@ export const InputIcon: React.FC<InputIconProps> = ({
     : icon;
 
   // Different container styles for textarea vs input
-  const containerClasses = isTextArea 
-    ? "flex items-start justify-center pt-[10px]" 
-    : "flex items-center justify-center";
+  const getContainerClasses = () => {
+    if (isTextArea) {
+      // For textareas: leading icon at top, trailing icon at bottom
+      return position === "leading" 
+        ? "flex items-start justify-center pt-[2px]"
+        : "flex items-end justify-center pt-[2px] self-stretch";
+    }
+    
+    // For regular inputs: both icons centered
+    return "flex items-center justify-center";
+  };
+
+  const containerClasses = getContainerClasses();
 
   return (
     <div className={containerClasses} aria-hidden="true">

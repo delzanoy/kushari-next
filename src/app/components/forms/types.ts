@@ -29,6 +29,7 @@ export const Colors = {
   primaryLight: "rgba(38, 201, 201, 0.12)",
   error: "#FF5356",
   errorLight: "rgba(237, 9, 13, 0.12)",
+  errorBackground: "#3A2526",
   text: "#F8FCFF",
   textDisabled: "#A3A7A8",
   textMuted: "#52525B",
