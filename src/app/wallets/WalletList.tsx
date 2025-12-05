@@ -9,11 +9,13 @@ import Tooltip from "../components/TooltipComponent";
 import { useRouter } from 'next/navigation';
 import useModal from "../hooks/useModal";
 import { Modal } from "../components/modal/Modal";
-import FeatureUnderDevelopment from "../components/FeatureUnderDevelopment";
+import FeatureUnderDevelopment from "../components/FeatureUnderDevlopment/FeatureUnderDevelopment";
+import SendingModal from "../components/FeatureUnderDevlopment/SendingModal";
+import SuccessModal from "../components/FeatureUnderDevlopment/SuccessModal";
 
 export default function WalletList({ wallets }: { wallets: WalletSummary[] }) {
     const router = useRouter();
-        const { open, closeTop } = useModal();
+    const { open, closeTop } = useModal();
 
 
     const vaultWallets = wallets.filter(wallet => wallet.type === 1);
@@ -27,7 +29,7 @@ export default function WalletList({ wallets }: { wallets: WalletSummary[] }) {
     return (
         <>
 
-            
+
 
 
             <div className="flex flex-col items-start gap-12 max-w-[1040px] mx-auto">
@@ -75,7 +77,14 @@ export default function WalletList({ wallets }: { wallets: WalletSummary[] }) {
                         <div className="flex items-center gap-3">
                             <span className="text-[#A3A7A8] font-[Geist] text-base not-italic font-normal leading-[normal]">Gnosis Safe</span>
                         </div>
-                        <TertiaryButton size="lg" label="Connect safe" />
+                        <TertiaryButton size="lg" label="Connect safe" 
+                        onClick={() =>    
+                            open(
+                                <Modal onClose={() => closeTop()}>
+                                    <SendingModal message="Connecting Gnosis Safe..." />
+                                </Modal>
+                            )
+                        } />
                     </div>
                     <div className="flex items-start w-full max-w-[1040px] content-start gap-4">
                         {gnosisSafeWallets.map((wallet) => (
@@ -92,7 +101,15 @@ export default function WalletList({ wallets }: { wallets: WalletSummary[] }) {
                         <div className="flex items-center gap-3">
                             <span className="text-[#A3A7A8] font-[Geist] text-base not-italic font-normal leading-[normal]">Tracked wallets</span>
                         </div>
-                        <TertiaryButton size="lg" label="Track wallet" />
+                        <TertiaryButton size="lg" label="Track wallet" 
+                        onClick={() =>    
+                            open(
+                                <Modal onClose={() => closeTop()}>
+                                    <SuccessModal message="Adding tracked wallet..." />
+                                </Modal>
+                            )
+                         }
+                        />
                     </div>
                     <div className="flex flex-col items-start w-full max-w-[1040px] content-start gap-4">
                         {trackedWallets.map((wallet) => (
