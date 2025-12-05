@@ -11,6 +11,7 @@ interface IconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> 
   tooltipSubtitle?: string;
   tooltipPosition?: "top" | "bottom" | "left" | "right";
   icon: ReactNode;
+    showTooltip?: boolean; // Add this
 }
 
 export default function IconButton({
@@ -22,6 +23,7 @@ export default function IconButton({
   tooltipPosition = "top",
   icon,
   className,
+    showTooltip = false, // Default to false
   ...props
 }: IconButtonProps) {
   const containerSizes = {
@@ -68,13 +70,14 @@ export default function IconButton({
   );
 
   // Wrap with tooltip only if tooltipTitle is passed
-  if (tooltipTitle) {
+  if (tooltipTitle && showTooltip) {
     return (
       <Tooltip
         title={tooltipTitle}
         qrCode={qrCode}
         subtitle={tooltipSubtitle}
         position={tooltipPosition}
+        open={showTooltip}
       >
         {button}
       </Tooltip>
