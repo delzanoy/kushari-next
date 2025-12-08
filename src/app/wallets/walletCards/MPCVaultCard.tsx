@@ -2,6 +2,9 @@ import { ArrowDownIcon, ArrowUpIcon, ZeroIcon, VaultIcon, QRCodeIcon, SendIcon }
 import { WalletSummary } from "../type";
 import { formatCents, formatDollars, formatSmallNumber } from "@/app/components/helpers";
 import IconButton from "@/app/components/buttons/IconButton";
+import useModal from "@/app/hooks/useModal";
+import { Modal } from "@/app/components/modal/Modal";
+import MakeDeposit from "../modals/MakeDeposit";
 
 interface Wallet {
     wallet: WalletSummary;
@@ -9,6 +12,32 @@ interface Wallet {
 }
 
 export default function MPCVaultCard({ wallet, onClick }: Wallet) {
+    const { open, closeTop } = useModal(); // Get closeTop from useModal
+
+    const handleQRCodeClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        openMakeDepositModal();
+    };
+
+    const handleSendClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        console.log("Send clicked for wallet:", wallet.name);
+    };
+
+    // Function to open the MakeDeposit modal
+    const openMakeDepositModal = () => {
+        open(
+            <Modal onRequestClose={() => {
+                closeTop(); // Close the modal when onRequestClose is called
+                return true; // Allow the modal to close
+            }}>
+                <MakeDeposit 
+                    wallet={wallet}
+                    onClose={closeTop} // Pass closeTop to MakeDeposit
+                />
+            </Modal>
+        );
+    };
 
     const render24hPercentage = (percentage: number) => {
         if (percentage < 0) {
@@ -39,7 +68,7 @@ export default function MPCVaultCard({ wallet, onClick }: Wallet) {
         hover:bg-[#1C2325] 
         hover:shadow-[0_34px_10px_0_rgba(38,201,200,0.00),0_22px_9px_0_rgba(38,201,200,0.01),0_12px_7px_0_rgba(38,201,200,0.05),0_5px_5px_0_rgba(38,201,200,0.09),0_1px_3px_0_rgba(38,201,200,0.10)]
         transition-all duration-150 ease-in-out hover:scale-101 cursor-pointer active:scale-98"
-        onClick={onClick}
+            onClick={onClick}
         >
             <div className="flex w-[165px] flex-col items-start gap-6 shrink-0">
                 <div className="flex items-center gap-1.5 self-stretch">
@@ -61,8 +90,8 @@ export default function MPCVaultCard({ wallet, onClick }: Wallet) {
                 </div>
             </div>
             <div className="h-6 flex justify-end items-center gap-6 flex-[1_0_0] opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
-                <IconButton icon={<QRCodeIcon />} size="md" status="brand" className="transition-all duration-200 scale-0 group-hover:scale-100" />
-                <IconButton icon={<SendIcon />} size="md" status="brand" className="transition-all duration-200 scale-0 group-hover:scale-100" />
+                <IconButton icon={<QRCodeIcon />} size="md" status="brand" className="transition-all duration-200 scale-0 group-hover:scale-100" onClick={handleQRCodeClick} />
+                <IconButton icon={<SendIcon />} size="md" status="brand" className="transition-all duration-200 scale-0 group-hover:scale-100" onClick={handleSendClick} />
             </div>
         </div>
     );

@@ -3,6 +3,9 @@ import { WalletSummary } from "../type";
 import { formatCents, formatDollars, formatSmallNumber } from "@/app/components/helpers";
 import Tooltip from "@/app/components/TooltipComponent";
 import IconButton from "@/app/components/buttons/IconButton";
+import useModal from "@/app/hooks/useModal";
+import { Modal } from "@/app/components/modal/Modal";
+import MakeDeposit from "../modals/MakeDeposit";
 
 interface Wallet {
     wallet: WalletSummary;
@@ -10,6 +13,39 @@ interface Wallet {
 }
 
 export default function TrackedWalletCard({ wallet, onClick }: Wallet) {
+    const { open, closeTop } = useModal();
+
+    const handleQRCodeClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        openMakeDepositModal();
+    };
+
+    const handleUnlinkClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        console.log("Unlink clicked for wallet:", wallet.name);
+        // You could open an Unlink confirmation modal here
+    };
+
+    const handleExternalLinkClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        console.log("External link clicked for wallet:", wallet.name);
+        // You could open the wallet in a block explorer
+    };
+
+    // Function to open the MakeDeposit modal
+    const openMakeDepositModal = () => {
+        open(
+            <Modal onRequestClose={() => {
+                closeTop();
+                return true;
+            }}>
+                <MakeDeposit 
+                    wallet={wallet}
+                    onClose={closeTop}
+                />
+            </Modal>
+        );
+    };
 
     const render24hPercentage = (percentage: number) => {
         if (percentage < 0) {
@@ -127,8 +163,27 @@ export default function TrackedWalletCard({ wallet, onClick }: Wallet) {
                 </div>
             </div>
             <div className="h-6 flex justify-end items-center gap-6 flex-[1_0_0] opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
-                <IconButton icon={<QRCodeIcon />} size="md" status="brand" className="transition-all duration-200 scale-0 group-hover:scale-100" />
-                <IconButton icon={<UnlinkIcon />} size="md" status="danger" className="transition-all duration-200 scale-0 group-hover:scale-100" />
+                <IconButton 
+                    icon={<QRCodeIcon />} 
+                    size="md" 
+                    status="brand" 
+                    className="transition-all duration-200 scale-0 group-hover:scale-100" 
+                    onClick={handleQRCodeClick} 
+                />
+                <IconButton 
+                    icon={<UnlinkIcon />} 
+                    size="md" 
+                    status="danger" 
+                    className="transition-all duration-200 scale-0 group-hover:scale-100" 
+                    onClick={handleUnlinkClick}
+                />
+                <IconButton 
+                    icon={<ExternalLinkIcon />} 
+                    size="md" 
+                    status="neutral" 
+                    className="transition-all duration-200 scale-0 group-hover:scale-100" 
+                    onClick={handleExternalLinkClick}
+                />
             </div>
         </div>
     );

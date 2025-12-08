@@ -1,6 +1,6 @@
 import TertiaryButton from "@/app/components/buttons/TertiaryButton";
 import PrimaryButton from "@/app/components/buttons/PrimaryButton";
-import { VaultIcon, GnosisSafeIcon, TrackedWalletIcon, EthereumIcon, BSCIcon, PolygonIcon, GnosisIcon, OPTIMISMIcon, SOLIcon, QRCodeIcon, SendIcon, ArrowLeftUpBoxFill, EditIcon } from "@/app/components/icons";
+import { VaultIcon, GnosisSafeIcon, TrackedWalletIcon, EthereumIcon, BSCIcon, PolygonIcon, GnosisIcon, OPTIMISMIcon, SOLIcon, QRCodeIcon, SendIcon, ArrowLeftUpBoxFill } from "@/app/components/icons";
 import Tooltip from "../../components/TooltipComponent";
 import { formatCents, formatDollars } from "@/app/components/helpers";
 import { Wallet, MPCVaultWallet, GnosisSafeWallet, TrackedWallet } from "../type";
@@ -11,7 +11,7 @@ import React, { useState, useMemo, useEffect, useCallback, memo } from "react";
 import ProposalList from "@/app/transactions/proposals/ProposalList";
 import TransactionList from "@/app/transactions/view-all/TransactionList";
 import AssetList from "@/app/assets/AssetList";
-import { Asset, WalletInfo } from "@/app/assets/types"
+import { WalletInfo } from "@/app/assets/types"
 import { AddressCardProps } from "@/app/address-book/addresses/types";
 import { transformApiDataToProposals } from "@/app/transactions/proposals/transformProposals";
 import { QRCodeSVG } from 'qrcode.react';

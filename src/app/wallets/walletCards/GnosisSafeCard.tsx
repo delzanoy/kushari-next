@@ -3,12 +3,43 @@ import { WalletSummary } from "../type";
 import { formatDollars, formatSmallNumber, formatCents } from "@/app/components/helpers";
 import Tooltip from "@/app/components/TooltipComponent";
 import IconButton from "@/app/components/buttons/IconButton";
+import useModal from "@/app/hooks/useModal";
+import { Modal } from "@/app/components/modal/Modal";
+import MakeDeposit from "../modals/MakeDeposit";
+
 interface Wallet {
     wallet: WalletSummary;
     onClick?: () => void;
 }
 
 export default function GnosisSafeCard({ wallet, onClick }: Wallet) {
+    const { open, closeTop } = useModal();
+
+    const handleQRCodeClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        openMakeDepositModal();
+    };
+
+    const handleSendClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        console.log("Send clicked for wallet:", wallet.name);
+        // You could open a Send modal here if you have one
+    };
+
+    // Function to open the MakeDeposit modal
+    const openMakeDepositModal = () => {
+        open(
+            <Modal onRequestClose={() => {
+                closeTop();
+                return true;
+            }}>
+                <MakeDeposit 
+                    wallet={wallet}
+                    onClose={closeTop}
+                />
+            </Modal>
+        );
+    };
 
     const render24hPercentage = (percentage: number) => {
         if (percentage < 0) {
@@ -94,6 +125,7 @@ export default function GnosisSafeCard({ wallet, onClick }: Wallet) {
     };
 
     wallet.name = wallet.name.charAt(0).toUpperCase() + wallet.name.slice(1);
+    
     return (
         <div className="group flex w-full max-w-[1040px] mx-auto pt-[16px] pr-[16px] pb-[16px] pl-[24px] items-end gap-2.5 shrink-0 rounded-3xl border-[0.8px] border-solid border-[#2E3435] bg-[#121315]
         hover:border-[0.5px] 
@@ -123,9 +155,21 @@ export default function GnosisSafeCard({ wallet, onClick }: Wallet) {
                 </div>
             </div>
             <div className="h-6 flex justify-end items-center gap-6 flex-[1_0_0] opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
-                <IconButton icon={<QRCodeIcon />} size="md" status="brand" className="transition-all duration-200 scale-0 group-hover:scale-100" />
-                <IconButton icon={<SendIcon />} size="md" status="brand" className="transition-all duration-200 scale-0 group-hover:scale-100" />
+                <IconButton 
+                    icon={<QRCodeIcon />} 
+                    size="md" 
+                    status="brand" 
+                    className="transition-all duration-200 scale-0 group-hover:scale-100" 
+                    onClick={handleQRCodeClick}
+                />
+                <IconButton 
+                    icon={<SendIcon />} 
+                    size="md" 
+                    status="brand" 
+                    className="transition-all duration-200 scale-0 group-hover:scale-100" 
+                    onClick={handleSendClick}
+                />
             </div>
         </div>
     );
-}   
+}
