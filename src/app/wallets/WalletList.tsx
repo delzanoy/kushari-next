@@ -10,11 +10,16 @@ import { useRouter } from 'next/navigation';
 import useModal from "../hooks/useModal";
 import { Modal } from "../components/modal/Modal";
 import FeatureUnderDevelopment from "../components/FeatureUnderDevlopment/FeatureUnderDevelopment";
+import TrackWallet from "./modals/TrackWallet";
+import CreateVault from "./modals/CreateVault";
+import { useMembers } from "../hooks/useData";
 
 export default function WalletList({ wallets }: { wallets: WalletSummary[] }) {
     const router = useRouter();
     const { open, closeTop } = useModal();
+    const { members } = useMembers();
 
+    console.log(members)
 
     const vaultWallets = wallets.filter(wallet => wallet.type === 1);
     const gnosisSafeWallets = wallets.filter(wallet => wallet.type === 2);
@@ -48,7 +53,10 @@ export default function WalletList({ wallets }: { wallets: WalletSummary[] }) {
                         onClick={() =>
                             open(
                                 <Modal onClose={() => closeTop()}>
-                                    <FeatureUnderDevelopment onClose={() => closeTop()} />
+                                    <CreateVault 
+                                        onClose={() => closeTop()} 
+                                        members={members || []}
+                                    />
                                 </Modal>
                             )
                         }
@@ -102,7 +110,7 @@ export default function WalletList({ wallets }: { wallets: WalletSummary[] }) {
                         onClick={() =>
                             open(
                                 <Modal onClose={() => closeTop()}>
-                                    <FeatureUnderDevelopment onClose={() => closeTop()} />
+                                    <TrackWallet onClose={() => closeTop()} />
                                 </Modal>
                             )
                         }

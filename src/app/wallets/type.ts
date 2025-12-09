@@ -10,6 +10,8 @@ export interface BlockchainInfo {
 export interface Member {
   memberId: number;
   role: string | string[];
+  email?: string;
+  name?: string;
 }
 
 export interface AssetBalance {

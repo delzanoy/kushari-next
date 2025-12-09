@@ -1,6 +1,7 @@
 // src/types/input.ts
 export type InputSize = "sm" | "md" | "lg";
 export type InputWidth = number | "full";
+export type HorizontalAlignment = "start" | "center" | "end" | "between" | "around" | "evenly";
 
 // Instead of a union type, we'll track states separately
 export interface InputState {
@@ -37,3 +38,42 @@ export const Colors = {
   border: "#F8FCFF",
   placeholder: "rgba(248, 252, 255, 0.5)",
 } as const;
+
+
+
+export interface RadioOption {
+  value: string;
+  label: string;
+  description?: string;
+  disabled?: boolean;
+  icon?: React.ReactNode;
+}
+
+export interface RadioButtonProps {
+  value: string;
+  label: string;
+  description?: string;
+  name: string;
+  checked: boolean;
+  disabled?: boolean;
+  error?: boolean;
+  onChange: (value: string) => void;
+  icon?: React.ReactNode;
+  size?: InputSize;
+}
+
+export interface RadioGroupProps {
+  name: string;
+  label?: string;
+  options: RadioOption[];
+  value: string;
+  onChange: (value: string) => void;
+  orientation?: 'vertical' | 'horizontal';
+  align?: HorizontalAlignment;
+  error?: boolean;
+  helperText?: string;
+  disabled?: boolean;
+  size?: InputSize;
+  width?: InputWidth;
+  className?: string;
+}

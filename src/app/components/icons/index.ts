@@ -63,3 +63,5 @@ export { DoubleQuotesR } from "./DoubleQuotesR";
 export { EmailAtIcon } from "./EmailAtIcon";
 export { MailFilledIcon } from "./MailFilledIcon";
 export { TrackWalletIcon } from "./TrackWalletIcon";
+export { RadioButtonIcon } from "./RadioButtonIcon";
+export { InfoIcon } from "./InfoIcon";

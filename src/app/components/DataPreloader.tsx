@@ -8,7 +8,8 @@ import {
   useTransactions, 
   useProposals, 
   useAddresses, 
-  useGroups
+  useGroups,
+  useMembers
 } from '../hooks/useData'
 
 // This component runs on the client and preloads all data in the background
@@ -22,5 +23,6 @@ export default function DataPreloader() {
   useProposals()
   useAddresses()
   useGroups()
+  useMembers()
   return null
 }

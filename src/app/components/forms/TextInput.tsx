@@ -3,16 +3,24 @@ import React, { ComponentProps, forwardRef } from "react";
 import { useInput } from "../../hooks/useInput";
 import { InputIcon } from "./InputIcon";
 import { BaseInputProps } from "./types";
-import { 
-  getInputClasses, 
-  getPlaceholderClasses, 
+import {
+  getInputClasses,
+  getPlaceholderClasses,
   getHelperTextClasses,
   getBorderColor,
   getBackgroundColor,
   getOuterBorderStyle,
 } from "../../utils/input-utils";
+import { InfoIcon } from "../icons";
+import Tooltip from "../TooltipComponent";
 
-interface TextInputProps extends BaseInputProps, Omit<ComponentProps<"input">, "width"> {}
+interface TextInputProps extends BaseInputProps, Omit<ComponentProps<"input">, "width"> {
+  // Update info prop to support both string and object with title/subtitle
+  info?: string | {
+    title: string;
+    subtitle?: string;
+  };
+}
 
 const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
   function TextInput(
@@ -31,6 +39,7 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
       onBlur,
       onChange,
       id,
+      info, // Can be string or object with title/subtitle
       ...inputProps
     },
     ref
@@ -56,7 +65,7 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
     const containerClasses = `flex flex-col items-start gap-1.5 ${className}`;
     const containerStyle = typeof width === "number" ? { width: `${width}px` } : {};
     const widthClass = width === "full" ? "w-full" : "";
-    
+
     // FIXED: Always make the inner container stretch or inherit width
     const innerWidthClass = "w-full"; // Always take full width of parent
 
@@ -71,6 +80,10 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
     const helperTextClass = getHelperTextClasses(state);
     const outerBorderStyle = getOuterBorderStyle(state);
 
+    // Parse info prop for Tooltip
+    const tooltipTitle = typeof info === 'string' ? info : info?.title || "";
+    const tooltipSubtitle = typeof info === 'object' ? info.subtitle : undefined;
+
     return (
       <div
         className={`${containerClasses} ${widthClass}`}
@@ -78,21 +91,33 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
       >
         {/* Label */}
         {label && (
-          <label
-            htmlFor={inputId}
-            className={`text-[#F8FCFF] font-[Geist] text-sm not-italic font-normal leading-[normal] tracking-[0.112px] ${
-              state.disabled ? "opacity-50" : ""
-            }`}
-          >
-            {label}
-          </label>
+          <div className="flex items-center gap-1.5">
+            <label
+              htmlFor={inputId}
+              className={`text-[#F8FCFF] font-[Geist] text-sm not-italic font-normal leading-[normal] tracking-[0.112px] ${
+                state.disabled ? "opacity-50" : ""
+              }`}
+            >
+              {label}
+            </label>
+            {/* Conditionally render InfoIcon with Tooltip */}
+            {info && (
+              <Tooltip 
+                title={tooltipTitle} 
+                subtitle={tooltipSubtitle}
+                position="top"
+              >
+                <InfoIcon className="flex w-4 h-4 justify-center items-center aspect-square opacity-60 text-[#EDEEEE]/60" />
+              </Tooltip>
+            )}
+          </div>
         )}
 
         {/* Input Container with outer border effect */}
         <div className={`relative ${innerWidthClass}`}>
           {/* Outer border effect */}
           {outerBorderStyle && (
-            <div 
+            <div
               className="absolute pointer-events-none"
               style={{
                 top: "-2px",
@@ -104,7 +129,7 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
               }}
             />
           )}
-          
+
           {/* Input Container - Now this will take the full width of its parent */}
           <div
             className={`${baseContainerClasses} ${borderColor} ${backgroundColor} transition-all duration-200 ${
@@ -130,7 +155,7 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
               type="text"
               placeholder={placeholder}
               disabled={state.disabled}
-              className={`flex-1 bg-transparent outline-none ${inputClass} ${placeholderClass} placeholder:opacity-50 ${
+              className={`flex-1 bg-transparent outline-none ${inputClass} ${placeholderClass} ${
                 state.disabled ? "cursor-not-allowed" : ""
               }`}
               onFocus={handleFocus}

@@ -9,6 +9,8 @@
 //   position?: 'top' | 'bottom' | 'left' | 'right';
 //   className?: string;
 //   icon?: React.ReactNode;
+//   open?: boolean; // Add this for external control
+//   onOpenChange?: (open: boolean) => void; // Optional: for controlled state
 // }
 
 // const Tooltip: React.FC<TooltipProps> = ({
@@ -18,7 +20,9 @@
 //   qrCode,
 //   position = 'top',
 //   className = '',
-//   icon
+//   icon,
+//   open, // External control prop
+//   onOpenChange
 // }) => {
 //   const getPositionClasses = () => {
 //     switch (position) {
@@ -47,10 +51,25 @@
 
 //   const positionClasses = getPositionClasses();
 
+//   // Determine visibility based on props
+//   const isControlled = open !== undefined;
+//   const showTooltip = isControlled ? open : false;
+  
+//   // Use group-hover only when not controlled
+//   const visibilityClass = isControlled
+//     ? (showTooltip ? 'opacity-100' : 'opacity-0')
+//     : 'opacity-0 group-hover/network:opacity-100';
+
 //   return (
-//     <div className={`group/network relative inline-block ${className}`}>
+//     <div 
+//       className={`${isControlled ? '' : 'group/network'} relative inline-block ${className}`}
+//       onMouseEnter={isControlled ? () => onOpenChange?.(true) : undefined}
+//       onMouseLeave={isControlled ? () => onOpenChange?.(false) : undefined}
+//     >
 //       {children}
-//       <div className={`absolute ${positionClasses.container} px-4 py-2 font-[Geist] text-[12px] text-black font-semibold leading-[normal] tracking-[0.44px] bg-[#EEF0F1] rounded-[10px] opacity-0 group-hover/network:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10 shadow-lg`}>
+//       <div 
+//         className={`absolute ${positionClasses.container} px-4 py-2 font-[Geist] text-[12px] text-black font-semibold leading-[normal] tracking-[0.44px] bg-[#EEF0F1] rounded-[10px] transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10 shadow-lg ${visibilityClass}`}
+//       >
 //         <div className="text-center">
 //           <div className="font-semibold">{title}</div>
 //           {qrCode && (
@@ -58,7 +77,6 @@
 //                 value={qrCode}
 //                 size={128}
 //                 level="M"
-//                 // includeMargin={false}
 //                 className='m-2'
 //               />
 //           )}
@@ -78,19 +96,20 @@
 // export default Tooltip;
 
 
+
 import React from 'react';
 import {QRCodeSVG} from 'qrcode.react';
 
 interface TooltipProps {
   children: React.ReactNode;
   title: string;
-  subtitle?: string;
+  subtitle?: string | React.ReactNode;
   qrCode?: string;
   position?: 'top' | 'bottom' | 'left' | 'right';
   className?: string;
   icon?: React.ReactNode;
-  open?: boolean; // Add this for external control
-  onOpenChange?: (open: boolean) => void; // Optional: for controlled state
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
 const Tooltip: React.FC<TooltipProps> = ({
@@ -101,7 +120,7 @@ const Tooltip: React.FC<TooltipProps> = ({
   position = 'top',
   className = '',
   icon,
-  open, // External control prop
+  open,
   onOpenChange
 }) => {
   const getPositionClasses = () => {
@@ -140,6 +159,9 @@ const Tooltip: React.FC<TooltipProps> = ({
     ? (showTooltip ? 'opacity-100' : 'opacity-0')
     : 'opacity-0 group-hover/network:opacity-100';
 
+  // Determine if we should align left (when subtitle is present)
+  const shouldAlignLeft = !!subtitle;
+
   return (
     <div 
       className={`${isControlled ? '' : 'group/network'} relative inline-block ${className}`}
@@ -148,22 +170,36 @@ const Tooltip: React.FC<TooltipProps> = ({
     >
       {children}
       <div 
-        className={`absolute ${positionClasses.container} px-4 py-2 font-[Geist] text-[12px] text-black font-semibold leading-[normal] tracking-[0.44px] bg-[#EEF0F1] rounded-[10px] transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10 shadow-lg ${visibilityClass}`}
+        className={`absolute ${positionClasses.container} px-4 py-2 font-[Geist] text-[12px] text-black font-semibold leading-[normal] tracking-[0.44px] bg-[#EEF0F1] rounded-[10px] transition-opacity duration-200 pointer-events-none z-10 shadow-lg ${visibilityClass} max-w-xs`}
+        style={{ minWidth: '200px', width: 'max-content' }}
       >
-        <div className="text-center">
-          <div className="font-semibold">{title}</div>
+        <div className={shouldAlignLeft ? 'text-left' : 'text-center'}>
+          {/* Title */}
+          <div className="text-black font-[Geist] text-[11px] not-italic font-semibold leading-[normal] tracking-[0.44px]">{title}</div>
+          
+          {/* QR Code - Keep centered regardless of alignment */}
           {qrCode && (
+            <div className="flex justify-center my-2">
               <QRCodeSVG
                 value={qrCode}
                 size={128}
                 level="M"
-                className='m-2'
               />
+            </div>
           )}
 
+          {/* Subtitle - Align left when present */}
           {subtitle && (
-            <div className="text-[10px] text-gray-600 font-normal mt-0.5">
-              {subtitle}
+            <div className="mt-0.5">
+              {typeof subtitle === 'string' ? (
+                <div className="text-black font-[Geist] text-[10px] not-italic font-normal whitespace-pre-line leading-relaxed">
+                  {subtitle}
+                </div>
+              ) : (
+                <div className="text-black font-[Geist] text-[10px] not-italic font-normal leading-relaxed">
+                  {subtitle}
+                </div>
+              )}
             </div>
           )}
         </div>
