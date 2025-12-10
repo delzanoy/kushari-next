@@ -310,7 +310,7 @@ Get Keys: Your API Key (Public) and Secret Key will be displayed. Copy them imme
                 )}
             </div>
 
-            <div className="flex py-[0] px-[12px] flex-col items-end gap-3 self-stretch">
+            <div className="flex flex-col items-end gap-3 self-stretch">
                 <PrimaryButton
                     size="md"
                     variant="brand"

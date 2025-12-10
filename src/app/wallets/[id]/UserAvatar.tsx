@@ -71,38 +71,7 @@ export default function UserAvatar({ member, index }: UserAvatarProps) {
             <div className="flex flex-col items-start gap-[1px]">
                 <span className="text-[#F8FCFF] font-[Geist] text-sm not-italic font-semibold leading-[normal] tracking-[0.7px]">{member.name}</span>
                 <span className="text-[#F8FCFF] font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.8px] opacity-70">{Math.floor(Math.random() * 10) + 1} days ago</span>
-
-                {/* <div className="flex flex-wrap gap-1 justify-center max-w-[80px]">
-                    {roles.map((role: string, index: number) => (
-                        <span
-                            key={index}
-                            className="text-[10px] px-1 py-0.5 rounded bg-gray-700 text-gray-300 capitalize"
-                        >
-                            {role}
-                        </span>
-                    ))}
-                </div> */}
             </div>
-
-
-
-            {/* <div className="overflow-clip relative rounded-[120px] w-[40px] h-[40px] z-10">
-            
-            <div
-                className="absolute border-[0.5px] border-solid border-white inset-0 pointer-events-none rounded-[70px]"
-                aria-hidden="true"
-            />
-            <div
-                className="absolute font-bold leading-[0] text-[16px] text-nowrap text-white tracking-[1.28px]"
-                style={{ top: "calc(50% - 9px)", left: "calc(50% - 11px)" }}
-            >
-                <p className="leading-[normal] whitespace-pre">De</p>
-            </div>
-        </div> */}
-
-
-
-
         </div>
     );
 }

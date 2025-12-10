@@ -171,7 +171,7 @@ const Tooltip: React.FC<TooltipProps> = ({
       {children}
       <div 
         className={`absolute ${positionClasses.container} px-4 py-2 font-[Geist] text-[12px] text-black font-semibold leading-[normal] tracking-[0.44px] bg-[#EEF0F1] rounded-[10px] transition-opacity duration-200 pointer-events-none z-10 shadow-lg ${visibilityClass} max-w-xs`}
-        style={{ minWidth: '200px', width: 'max-content' }}
+        style={{ width: 'max-content' }}
       >
         <div className={shouldAlignLeft ? 'text-left' : 'text-center'}>
           {/* Title */}

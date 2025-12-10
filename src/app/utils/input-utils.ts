@@ -28,8 +28,8 @@ export const getPlaceholderClasses = (state: InputState, isDropdown = false): st
   if (isDropdown) {
     // For dropdown (div element), use regular text color classes
     if (state.disabled) return `text-[${Colors.textDisabled}]/50`;
-    if (state.error) return `text-[${Colors.text}]/50`;
-    return `text-[${Colors.placeholder}]`;
+  if (state.error) return `text-[${Colors.text}]/50`;
+  return `text-[${Colors.placeholder}]`;
   }
   
   // For input elements, use placeholder:text-* classes

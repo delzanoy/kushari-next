@@ -313,7 +313,7 @@ export default function FilterDropdown<T>({
                             <div className="flex items-baseline gap-1.5 flex-[1_0_0] w-full">
                               <span className="text-[#F8FCFF] font-[Geist] text-sm not-italic font-light leading-[normal] tracking-[0.7px]">{option.displayProps.fullName}</span>
                               {option.displayProps.metaData && (
-                                <span className="text-[#F8FCFF] font-[Geist] text-[10px] not-italic font-thin leading-[normal] uppercase">{option.displayProps.metaData}</span>
+                                <span className="text-[#F8FCFF] font-[Geist] text-[10px] not-italic font-thin leading-[normal] uppercase tracking-[1.2px]">{option.displayProps.metaData}</span>
                               )}
                             </div>
                             <div className="h-4 w-4 min-h-4 min-w-4 inline-flex items-center justify-center">
