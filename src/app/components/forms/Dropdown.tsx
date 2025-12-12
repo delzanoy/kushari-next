@@ -1,4 +1,3 @@
-// src/components/forms/Dropdown.tsx
 import React, { ComponentProps, forwardRef, useState, useRef, useEffect, useMemo } from "react";
 import { useInput } from "../../hooks/useInput";
 import { InputIcon } from "./InputIcon";
@@ -185,6 +184,31 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
       searchQuery.trim() &&
       !normalizedExisting.includes(searchQuery.trim().toLowerCase());
 
+    // Get display text for selected values
+    const getDisplayText = (): string => {
+      if (!multiple) {
+        // For single select, value could be string or array
+        const selectedValue = Array.isArray(value) ? value[0] : value;
+        if (selectedValue) {
+          const option = parsedOptions.find(opt => opt.value === selectedValue);
+          return option?.label || selectedValue;
+        }
+        return "";
+      }
+
+      // For multi-select, handle differently
+      if (selectedValues.length > 0) {
+        // Return count of selected items or first item
+        if (selectedValues.length === 1) {
+          const option = parsedOptions.find(opt => opt.value === selectedValues[0]);
+          return option?.label || selectedValues[0];
+        }
+        return `${selectedValues.length} selected`;
+      }
+
+      return "";
+    };
+
     // Handle option selection
     const handleOptionClick = (optionValue: string) => {
       if (multiple) {
@@ -202,6 +226,7 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
           }
         }
       } else {
+        // Single select - just set the value
         onChange(optionValue);
         setIsOpen(false);
         setIsTyping(false);
@@ -223,6 +248,7 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
             triggerInputRef.current.focus();
           }
         } else {
+          // Single select - just set the value
           onChange(searchQuery.trim());
           setIsOpen(false);
           setIsTyping(false);
@@ -251,16 +277,6 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
     // Parse info prop for Tooltip
     const tooltipTitle = typeof info === "string" ? info : info?.title || "";
     const tooltipSubtitle = typeof info === "object" ? info.subtitle : undefined;
-
-    // Get display text for selected values (single select only)
-    const getDisplayText = (): string => {
-      if (!multiple && selectedValues.length > 0) {
-        const option = parsedOptions.find(opt => opt.value === selectedValues[0]);
-        return option?.label || selectedValues[0];
-      }
-
-      return "";
-    };
 
     const displayText = getDisplayText();
 
@@ -330,12 +346,22 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
         return searchQuery;
       }
 
-      // For multi-select, always show placeholder when closed
-      if (!isOpen && multiple) {
-        return placeholder;
+      // For single select, show the selected label when closed
+      if (!isOpen && !multiple) {
+        return displayText || placeholder;
       }
 
-      return displayText || placeholder;
+      // For multi-select, when closed, show the selected options' labels
+      if (!isOpen && multiple && selectedValues.length > 0) {
+        // Get the labels for the selected values
+        const selectedLabels = selectedValues.map(val => {
+          const option = parsedOptions.find(opt => opt.value === val);
+          return option ? option.label : val;
+        });
+        return selectedLabels.join(', ');
+      }
+
+      return placeholder;
     };
 
     const triggerDisplayValue = getTriggerDisplayValue();
@@ -434,7 +460,15 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
                   onClick={(e) => e.stopPropagation()}
                 />
               ) : (
-                <span className={`truncate text-sm font-normal ${displayText && !multiple ? "text-[#F8FCFF]" : "text-[#F8FCFF]/50"}`}>
+                <span 
+                  className={`truncate text-sm font-normal ${displayText && !multiple ? "text-[#F8FCFF]" : "text-[#F8FCFF]/50"}`}
+                  style={{ 
+                    display: '-webkit-box',
+                    WebkitLineClamp: 1,
+                    WebkitBoxOrient: 'vertical',
+                    overflow: 'hidden'
+                  }}
+                >
                   {triggerDisplayValue}
                 </span>
               )}
@@ -497,9 +531,6 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
                             )}
 
                             {/* Content */}
-
-
-
                             <div className="flex items-baseline gap-1.5 flex-[1_0_0] w-full">
                               {/* Title/Name */}
                               <span className={`text-[#F8FCFF] font-[Geist] text-sm not-italic font-light leading-[normal] tracking-[0.7px] truncate ${isSelected ? "text-[#A6FCFC] font-medium" : ""}`}>

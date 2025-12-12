@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import emailjs from "@emailjs/browser";
 import IconButton from "../buttons/IconButton";
 import PrimaryButton from "../buttons/PrimaryButton";
-import { BracesIcon, CloseIcon, DoubleQuotesL, EmailAtIcon } from "../icons";
+import { BracesIcon, CloseIcon, CloseCircleFilledIcon, DoubleQuotesL, EmailAtIcon } from "../icons";
 import TextArea from "../forms/TextArea";
 import TextInput from "../forms/TextInput";
 import useModal from "../../hooks/useModal";
@@ -161,7 +161,7 @@ export default function FeatureUnderDevelopment({ onClose }: FeatureUnderDevelop
                     </div>
 
                     <IconButton
-                        icon={<CloseIcon />}
+                        icon={showEscTooltip ? <CloseCircleFilledIcon /> : <CloseIcon />}
                         size="sm"
                         status={showEscTooltip ? "danger" : "neutral"}
                         onClick={onClose}

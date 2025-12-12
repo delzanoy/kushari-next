@@ -1,6 +1,6 @@
 import IconButton from "@/app/components/buttons/IconButton";
 import { useState, useEffect } from "react";
-import { TrackWalletIcon, CloseIcon } from "@/app/components/icons";
+import { TrackWalletIcon, CloseIcon, CloseCircleFilledIcon } from "@/app/components/icons";
 import { useModalContext } from "../../components/modal/Modal";
 import { RadioGroup } from "@/app/components/forms/RadioGroup";
 import { TextInput } from "@/app/components/forms";
@@ -202,7 +202,7 @@ export default function TrackWallet({ onClose }: TrackWalletProps) {
                     </div>
 
                     <IconButton
-                        icon={<CloseIcon />}
+                        icon={showEscTooltip ? <CloseCircleFilledIcon /> : <CloseIcon />}
                         size="sm"
                         status={showEscTooltip ? "danger" : "neutral"}
                         onClick={onClose}

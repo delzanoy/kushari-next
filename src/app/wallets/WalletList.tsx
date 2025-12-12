@@ -13,6 +13,8 @@ import FeatureUnderDevelopment from "../components/FeatureUnderDevlopment/Featur
 import TrackWallet from "./modals/TrackWallet";
 import CreateVault from "./modals/CreateVault";
 import { useMembers } from "../hooks/useData";
+import ConnectSafe from "./modals/ConnectSafe";
+import NoSafeFound from "./modals/NoSafeFound";
 
 export default function WalletList({ wallets }: { wallets: WalletSummary[] }) {
     const router = useRouter();
@@ -83,7 +85,9 @@ export default function WalletList({ wallets }: { wallets: WalletSummary[] }) {
                         onClick={() =>
                             open(
                                 <Modal onClose={() => closeTop()}>
-                                    <FeatureUnderDevelopment onClose={() => closeTop()} />
+                                    <ConnectSafe onClose={() => closeTop()}
+                                    members={members || []}
+                                     />
                                 </Modal>
                             )
                         }

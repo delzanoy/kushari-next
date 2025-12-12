@@ -65,3 +65,8 @@ export { MailFilledIcon } from "./MailFilledIcon";
 export { TrackWalletIcon } from "./TrackWalletIcon";
 export { RadioButtonIcon } from "./RadioButtonIcon";
 export { InfoIcon } from "./InfoIcon";
+export { InactiveLineIcon, ActiveLineIcon } from "./LineIcon";
+export { MetamaskIcon } from "./MetamaskIcon";
+export { WalletConnectIcon } from "./WalletConnectIcon";
+export { ForbiddenIcon } from "./ForbiddenIcon";
+export { ArrowLeftIcon } from "./ArrowLeftIcon";

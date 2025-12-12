@@ -70,18 +70,6 @@ export default function SendingModal({ message = "Sending..." }: { message?: str
     }
   }, []);
 
-  // Handler for opening the 2nd level modal
-  // const handleOpenSecondModal = () => {
-  //   open(
-  //     <Modal onClose={() => closeTop()}>
-  //       <SuccessModal 
-  //         message="Adding tracked wallet..." 
-  //         onClose={() => closeTop()}
-  //       />
-  //     </Modal>
-  //   );
-  // };
-
   return (
     <div 
       ref={ref} 
