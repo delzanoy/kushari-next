@@ -13,8 +13,7 @@ import {
     PolygonIcon,
     GnosisIcon,
     EthereumIcon,
-    ArrowLeftIcon,
-    SearchIcon
+    ArrowLeftIcon
 } from "../../components/icons";
 import IconButton from "@/app/components/buttons/IconButton";
 import useModal from "@/app/hooks/useModal";
