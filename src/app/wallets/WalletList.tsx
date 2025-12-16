@@ -9,19 +9,15 @@ import Tooltip from "../components/TooltipComponent";
 import { useRouter } from 'next/navigation';
 import useModal from "../hooks/useModal";
 import { Modal } from "../components/modal/Modal";
-import FeatureUnderDevelopment from "../components/FeatureUnderDevlopment/FeatureUnderDevelopment";
 import TrackWallet from "./modals/TrackWallet";
 import CreateVault from "./modals/CreateVault";
 import { useMembers } from "../hooks/useData";
 import ConnectSafe from "./modals/ConnectSafe";
-import NoSafeFound from "./modals/NoSafeFound";
 
 export default function WalletList({ wallets }: { wallets: WalletSummary[] }) {
     const router = useRouter();
     const { open, closeTop } = useModal();
     const { members } = useMembers();
-
-    console.log(members)
 
     const vaultWallets = wallets.filter(wallet => wallet.type === 1);
     const gnosisSafeWallets = wallets.filter(wallet => wallet.type === 2);

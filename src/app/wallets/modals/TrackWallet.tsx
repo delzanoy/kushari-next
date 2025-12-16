@@ -2,8 +2,7 @@ import IconButton from "@/app/components/buttons/IconButton";
 import { useState, useEffect } from "react";
 import { TrackWalletIcon, CloseIcon, CloseCircleFilledIcon } from "@/app/components/icons";
 import { useModalContext } from "../../components/modal/Modal";
-import { RadioGroup } from "@/app/components/forms/RadioGroup";
-import { TextInput } from "@/app/components/forms";
+import { TextInput, RadioGroup } from "@/app/components/forms";
 import PrimaryButton from "../../components/buttons/PrimaryButton";
 
 interface TrackWalletProps {

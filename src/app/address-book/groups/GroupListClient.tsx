@@ -2,19 +2,77 @@
 import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { GroupCardProps } from './types';
 import GroupList from "./GroupList";
-import FilterDropdown from '../../components/filters/FilterDropdown';
-import { SearchIcon } from "@/app/components/icons";
+import { AddToGroupIcon, CloseCircleFilledIcon, SearchIcon } from "@/app/components/icons";
+import CreateGroupModal from './CreateGroupModal';
+import PrimaryButton from '@/app/components/buttons/PrimaryButton';
+import { Modal } from '@/app/components/modal/Modal';
+import useModal from '@/app/hooks/useModal';
+import { AddressCardProps } from '../addresses/types';
+import { TextInput } from '@/app/components/forms';
+import { getUserGroups, createGroup as createDemoGroup } from '@/app/api/mock-cache';
+import IconButton from '@/app/components/buttons/IconButton';
 
-export default function GroupListClient({ groups }: { groups: GroupCardProps[] }) {
+export default function GroupListClient({ groups, addresses }: { groups: GroupCardProps[], addresses: AddressCardProps[] }) {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedGroups, setSelectedGroups] = useState<number[]>([]);
+    const { open, closeTop } = useModal();
+
+    const [demoGroups, setDemoGroups] = useState<GroupCardProps[]>([]);
+    const [loadingDemoGroups, setLoadingDemoGroups] = useState(true);
+
+    useEffect(() => {
+        loadDemoGroups();
+    }, []);
+
+    const loadDemoGroups = async () => {
+        try {
+            const demoGroupsData = await getUserGroups();
+            setDemoGroups(demoGroupsData);
+        } catch (error) {
+            console.error('Failed to load demo groups:', error);
+        } finally {
+            setLoadingDemoGroups(false);
+        }
+    };
+
+    const handleCreateGroup = async (payload: { name: string; count: number }) => {
+        try {
+            // Call your createGroup function from mock-cache
+            // This will create the demo group and save to sessionStorage
+            console.log('Creating group:', payload);
+            // After successful creation, you might want to close the modal
+            closeTop();
+            // Optionally refresh the groups list
+        } catch (error) {
+            console.error('Failed to create group:', error);
+        }
+    };
 
     // Add ref for search input
     const searchInputRef = useRef<HTMLInputElement>(null);
 
+    // Combine API groups with demo groups
+    const allGroups = useMemo(() => {
+        // Mark API groups with source
+        const apiGroupsWithSource = groups.map(group => ({
+            ...group,
+            source: 'api' as const,
+            demo: false
+        }));
+
+        // Mark demo groups with source (already should have it from mock cache)
+        const demoGroupsWithSource = demoGroups.map(group => ({
+            ...group,
+            source: group.source || 'user',
+            demo: true
+        }));
+
+        return [...apiGroupsWithSource, ...demoGroupsWithSource];
+    }, [groups, demoGroups]);
+
     // Prepare filter options from groups
     const groupFilterOptions = useMemo(() => {
-        return groups.filter(group => group.id !== 0)
+        return allGroups.filter(group => group.id !== 0)
             .sort((a, b) => a.name.localeCompare(b.name))
             .map(group => ({
                 value: group.id,
@@ -25,7 +83,7 @@ export default function GroupListClient({ groups }: { groups: GroupCardProps[] }
                 id: group.id.toString(),
                 searchText: group.name.toLowerCase(),
             }));
-    }, [groups]);
+    }, [allGroups]);
 
     // Search function for groups
     const searchGroups = useCallback((group: GroupCardProps, query: string): boolean => {
@@ -43,7 +101,7 @@ export default function GroupListClient({ groups }: { groups: GroupCardProps[] }
 
     // Filter groups based on search and selection
     const filteredGroups = useMemo(() => {
-        let result = groups;
+        let result = allGroups; // Changed from groups to allGroups
 
         // Apply search filter
         if (searchTerm.trim()) {
@@ -60,7 +118,7 @@ export default function GroupListClient({ groups }: { groups: GroupCardProps[] }
         }
 
         return result;
-    }, [groups, searchTerm, selectedGroups, searchGroups]);
+    }, [allGroups, searchTerm, selectedGroups, searchGroups]);
 
     const handleGroupSelectionChange = (selectedIds: number[]) => {
         setSelectedGroups(selectedIds);
@@ -93,47 +151,57 @@ export default function GroupListClient({ groups }: { groups: GroupCardProps[] }
 
     const hasActiveFilters = searchTerm.trim() !== '' || selectedGroups.length > 0;
     const showingCount = filteredGroups.filter(group => group.id !== 0).length;
-    const totalCount = groups.filter(group => group.id !== 0).length;
+    const totalCount = allGroups.filter(group => group.id !== 0).length;
 
     return (
         <div className="flex flex-col w-full max-w-[1040px] mx-auto items-start gap-16 flex-[1_0_0]">
             {/* Header Section */}
-            <div className="flex items-end gap-2.5 self-stretch pt-[52px]">
-                <h1 className="text-[#F8FCFF] font-[Figtree] text-[26px] not-italic font-medium leading-[normal] tracking-[1.04px]">Groups</h1>
 
-                {/* Search Bar */}
-                <div className="relative">
-                    <div className="flex w-80 items-center gap-2 rounded-md border-[0.5px] border-solid border-[#F8FCFF]/24 bg-[#F8FCFF]/02 px-3 py-2 transition-all duration-150 ease-in-out hover:border-[#F8FCFF]/48 focus-within:border-[#26C9C9] focus-within:bg-[#F8FCFF]/08">
-                        <SearchIcon className="h-4 w-4 text-[#F8FCFF]/60" />
-                        <input
-                            ref={searchInputRef}
-                            type="text"
-                            placeholder="Search group names, descriptions..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="flex-1 bg-transparent text-[#F8FCFF] placeholder-[#F8FCFF]/40 font-[Geist] text-sm font-light outline-none"
-                        />
-                        {searchTerm && (
-                            <button
-                                onClick={clearSearch}
-                                className="flex h-4 w-4 items-center justify-center rounded-full bg-[#F8FCFF]/20 text-[#F8FCFF]/60 hover:bg-[#F8FCFF]/30 hover:text-[#F8FCFF]/80 transition-colors"
-                            >
-                                ×
-                            </button>
-                        )}
-                    </div>
 
-                    {/* Search results count badge */}
-                    {searchTerm && (
-                        <div className="absolute -top-2 -right-2">
-                            <div className="rounded-full bg-[#26C9C9] px-2 py-1">
-                                <span className="text-[#0A1A1F] font-[Geist] text-xs font-medium">
-                                    {filteredGroups.filter(group => group.id !== 0).length}
-                                </span>
-                            </div>
-                        </div>
-                    )}
+            <div className="flex justify-between items-end self-stretch mt-[52px]">
+
+                <div className="flex items-end gap-2.5 self-stretch">
+                    <h1 className="text-[#F8FCFF] font-[Figtree] text-[26px] not-italic font-medium leading-[normal] tracking-[1.04px]">Groups</h1>
+
+                    {/* Search Bar */}
+
+                    <TextInput
+                        ref={searchInputRef}
+                        placeholder="Group name"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        width={256}
+                        leadingIcon={<SearchIcon className="h-4 w-4 text-[#F8FCFF]/60" />}
+                        trailingIcon={
+                            searchTerm ? (
+                                <IconButton icon={<CloseCircleFilledIcon />} onClick={clearSearch} size='sm' status='neutral' className='opacity-50 hover:opacity-100'/>
+                            ) : null
+                        }
+                    />
+
+
+
+
+
+
                 </div>
+
+                <PrimaryButton
+                    size='md'
+                    variant='inverted'
+                    label='Create group'
+                    leadingIcon={<AddToGroupIcon />}
+                    onClick={() => open(
+                        <Modal onClose={() => closeTop()}>
+                            <CreateGroupModal
+                                isOpen={true}
+                                onClose={() => closeTop()}
+                                onCreate={handleCreateGroup}
+                                addresses={addresses}
+                            />
+                        </Modal>
+                    )}
+                />
             </div>
 
             {/* Filter and List Section */}

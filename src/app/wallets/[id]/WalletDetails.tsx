@@ -633,10 +633,12 @@ export default function WalletDetails({
     }, [activeTab, setAnimationDirection, onTabStateChange, calculateHighestCountSubtitle]);
 
     const handleBackToWallets = useCallback(() => {
+        dispatchNavHover(false, '/wallets');
         router.push('/wallets');
     }, [router]);
 
     const handleViewAllProposals = useCallback(() => {
+        dispatchNavHover(false, '/transactions/proposals');
         const tabMapping = {
             [ProposalCategory.NEEDS_APPROVAL]: 'needs-approval',
             [ProposalCategory.READY_TO_EXECUTE]: 'ready-to-execute',
@@ -648,10 +650,12 @@ export default function WalletDetails({
     }, [router, wallet.name, activeProposalFilter]);
 
     const handleViewAllAssets = useCallback(() => {
+        dispatchNavHover(false, '/assets');
         router.push(`/assets?wallet=${wallet.name}`);
     }, [router, wallet.name]);
 
     const handleViewAllTransactions = useCallback(() => {
+        dispatchNavHover(false, '/transactions/view-all');
         router.push(`/transactions/view-all?wallet=${wallet.name}`);
     }, [router, wallet.name]);
 
@@ -762,6 +766,11 @@ export default function WalletDetails({
                             size="md"
                             onMouseEnter={() => dispatchNavHover(true, '/transactions/proposals')}
                             onMouseLeave={() => dispatchNavHover(false, '/transactions/proposals')}
+                            onClick={() => {
+                                // Clear hover state before navigation
+                                dispatchNavHover(false, '/transactions/proposals');
+                                handleViewAllProposals();
+                            }}
                         />
                     </div>
                 )}
@@ -799,6 +808,11 @@ export default function WalletDetails({
                                     size="md"
                                     onMouseEnter={() => dispatchNavHover(true, '/assets')}
                                     onMouseLeave={() => dispatchNavHover(false, '/assets')}
+                                    onClick={() => {
+                                        // Clear hover state before navigation
+                                        dispatchNavHover(false, '/assets');
+                                        handleViewAllAssets();
+                                    }}
                                 />
                             </div>
                         )}
@@ -868,6 +882,11 @@ export default function WalletDetails({
                                     size="md"
                                     onMouseEnter={() => dispatchNavHover(true, '/transactions/view-all')}
                                     onMouseLeave={() => dispatchNavHover(false, '/transactions/view-all')}
+                                    onClick={() => {
+                                        // Clear hover state before navigation
+                                        dispatchNavHover(false, '/transactions/view-all');
+                                        handleViewAllTransactions();
+                                    }}
                                 />
                             </div>
                         )}
