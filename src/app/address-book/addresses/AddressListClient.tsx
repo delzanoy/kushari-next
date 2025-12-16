@@ -40,14 +40,14 @@ export default function AddressListClient({ addresses: initialAddresses, groups 
     // Load user data (groups, addresses, and relationships)
     const loadUserData = useCallback(async () => {
         try {
-            const [relationships, groups, addresses] = await Promise.all([
+            const [relationships, demoGroups, demoAddresses] = await Promise.all([
                 getAllAddressGroups(),
                 getUserGroups(),
                 getUserAddresses()
             ]);
             setAddressGroups(relationships);
-            setUserGroups(groups);
-            setUserAddresses(addresses);
+            setUserGroups(demoGroups);
+            setUserAddresses(demoAddresses);
         } catch (error) {
             console.error('Failed to load user data:', error);
         } finally {
@@ -75,15 +75,18 @@ export default function AddressListClient({ addresses: initialAddresses, groups 
     }, [loadUserData]);
 
     // Merge all address data (API + user addresses + demo groups)
+    // IMPORTANT: Pass ALL groups (both API and user) to the merge function
+    const allGroups = useMemo(() => [...groups, ...userGroups], [groups, userGroups]);
+    
     const addresses = useMemo(() => {
         if (loading) return initialAddresses;
-        return mergeAllAddressData(initialAddresses, userAddresses, addressGroups, userGroups);
-    }, [initialAddresses, userAddresses, addressGroups, userGroups, loading]);
+        return mergeAllAddressData(initialAddresses, userAddresses, addressGroups, allGroups);
+    }, [initialAddresses, userAddresses, addressGroups, allGroups, loading]);
 
     // Prepare filter options from addresses' groups (including demo groups)
     const groupFilterOptions = useMemo(() => {
         // Get all unique groups from all addresses
-        const allGroups = addresses.flatMap(address =>
+        const allGroupsFromAddresses = addresses.flatMap(address =>
             address.groups.map(group => ({
                 groupId: group.groupId,
                 groupName: group.groupName
@@ -92,7 +95,7 @@ export default function AddressListClient({ addresses: initialAddresses, groups 
 
         // Remove duplicates and sort by group name
         const uniqueGroups = Array.from(
-            new Map(allGroups.map(group => [group.groupId, group])).values()
+            new Map(allGroupsFromAddresses.map(group => [group.groupId, group])).values()
         ).sort((a, b) => a.groupName.localeCompare(b.groupName));
 
         return uniqueGroups.map(group => ({
@@ -261,7 +264,7 @@ export default function AddressListClient({ addresses: initialAddresses, groups 
                             <AddAddressModal
                                 isOpen={true}
                                 onClose={() => closeTop()}
-                                groups={groups}
+                                groups={allGroups}
                                 onAddressAdded={handleAddressAdded}
                             />
                         </Modal>
