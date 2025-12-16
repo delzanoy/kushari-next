@@ -1,32 +1,28 @@
-// Utility to merge address data with demo group relationships
+// Utility functions for working with addresses and groups
 import { AddressCardProps, AddressGroup } from '@/app/address-book/addresses/types';
 import { GroupCardProps } from '@/app/address-book/groups/types';
 
 /**
- * Merges API address data with user-created group relationships from mock cache
- * @param addresses - Original addresses from API
- * @param addressGroups - Map of addressId -> groupIds from mock cache
- * @param userGroups - User-created groups from mock cache
- * @returns Addresses with updated group information
+ * Merge API addresses with demo group relationships
+ * This adds demo groups to addresses based on the addressGroups mapping
  */
 export function mergeAddressesWithDemoGroups(
-    addresses: AddressCardProps[],
+    apiAddresses: AddressCardProps[],
     addressGroups: Record<number, number[]>,
-    userGroups: GroupCardProps[]
+    demoGroups: GroupCardProps[]
 ): AddressCardProps[] {
-    return addresses.map(address => {
-        // Get the group IDs this address belongs to from mock cache
+    return apiAddresses.map(address => {
+        // Get the group IDs for this address
         const groupIds = addressGroups[address.id] || [];
         
         if (groupIds.length === 0) {
-            // No demo groups for this address, return as is
             return address;
         }
 
-        // Find the actual group objects from userGroups
-        const demoGroupsForAddress: AddressGroup[] = groupIds
+        // Find the demo groups that match these IDs
+        const demoAddressGroups: AddressGroup[] = groupIds
             .map(groupId => {
-                const group = userGroups.find(g => g.id === groupId);
+                const group = demoGroups.find(g => g.id === groupId);
                 if (group) {
                     return {
                         groupId: group.id,
@@ -37,12 +33,72 @@ export function mergeAddressesWithDemoGroups(
             })
             .filter((g): g is AddressGroup => g !== null);
 
-        // Merge with existing groups from API
-        const existingGroups = address.groups || [];
-        const allGroups = [...existingGroups, ...demoGroupsForAddress];
+        // Combine original groups with demo groups
+        const allGroups = [...address.groups, ...demoAddressGroups];
 
+        return {
+            ...address,
+            groups: allGroups
+        };
+    });
+}
+
+/**
+ * Merge API addresses with user-created addresses
+ */
+export function mergeUserAddresses(
+    apiAddresses: AddressCardProps[],
+    userAddresses: AddressCardProps[]
+): AddressCardProps[] {
+    // Mark API addresses with source
+    const apiAddressesWithSource = apiAddresses.map(addr => ({
+        ...addr,
+        source: 'api' as const,
+        demo: false
+    }));
+
+    // Mark user addresses with source
+    const userAddressesWithSource = userAddresses.map(addr => ({
+        ...addr,
+        source: 'user' as const,
+        demo: true
+    }));
+
+    return [...apiAddressesWithSource, ...userAddressesWithSource];
+}
+
+export function mergeAddressesWithAllGroups(
+    addresses: AddressCardProps[],
+    addressGroups: Record<number, number[]>,
+    allGroups: GroupCardProps[] // Both API and user groups
+): AddressCardProps[] {
+    return addresses.map(address => {
+        // Get the group IDs for this address
+        const groupIds = addressGroups[address.id] || [];
+        
+        if (groupIds.length === 0) {
+            return address;
+        }
+
+        // Find the groups that match these IDs
+        const matchedGroups: AddressGroup[] = groupIds
+            .map(groupId => {
+                const group = allGroups.find(g => g.id === groupId);
+                if (group) {
+                    return {
+                        groupId: group.id,
+                        groupName: group.name
+                    };
+                }
+                return null;
+            })
+            .filter((g): g is AddressGroup => g !== null);
+
+        // Combine original groups with matched groups
+        const allGroupsForAddress = [...address.groups, ...matchedGroups];
+        
         // Remove duplicates based on groupId
-        const uniqueGroups = allGroups.filter((group, index, self) =>
+        const uniqueGroups = allGroupsForAddress.filter((group, index, self) =>
             index === self.findIndex(g => g.groupId === group.groupId)
         );
 
@@ -51,4 +107,18 @@ export function mergeAddressesWithDemoGroups(
             groups: uniqueGroups
         };
     });
+}
+
+// Update mergeAllAddressData to use the new function
+export function mergeAllAddressData(
+    apiAddresses: AddressCardProps[],
+    userAddresses: AddressCardProps[],
+    addressGroups: Record<number, number[]>,
+    allGroups: GroupCardProps[] // Pass all groups here
+): AddressCardProps[] {
+    // First merge user addresses with API addresses
+    const allAddresses = mergeUserAddresses(apiAddresses, userAddresses);
+    
+    // Then add group relationships to all addresses
+    return mergeAddressesWithAllGroups(allAddresses, addressGroups, allGroups);
 }

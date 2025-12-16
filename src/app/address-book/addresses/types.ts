@@ -23,4 +23,6 @@ export interface AddressCardProps {
   groups: AddressGroup[];
   selected: boolean;
   trustLevel: AddressTrustLevel;
+  source?: 'api' | 'user'; // ADD THIS
+  demo?: boolean; // ADD THIS
 }
