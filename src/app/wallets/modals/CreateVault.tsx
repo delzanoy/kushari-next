@@ -215,7 +215,7 @@ export default function CreateVault({ onClose, members: propMembers = [] }: Crea
                     </div>
 
                     <IconButton
-                        icon={<CloseIcon />}
+                        icon={showEscTooltip ? <CloseCircleFilledIcon /> : <CloseIcon />}
                         size="sm"
                         status={showEscTooltip ? "danger" : "neutral"}
                         onClick={onClose}

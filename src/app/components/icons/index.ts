@@ -70,3 +70,5 @@ export { MetamaskIcon } from "./MetamaskIcon";
 export { WalletConnectIcon } from "./WalletConnectIcon";
 export { ForbiddenIcon } from "./ForbiddenIcon";
 export { ArrowLeftIcon } from "./ArrowLeftIcon";
+export { AddAddressIcon } from "./AddAddressIcon";
+export { CreateGroupIcon } from "./CreateGroupIcon";

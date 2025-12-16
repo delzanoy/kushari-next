@@ -14,9 +14,11 @@ let persistToSession = true;
 let userCache: {
     groups: GroupCardProps[];
     nextId: number;
+    addressGroups: Record<number, number[]>; // addressId -> groupIds[]
 } = {
     groups: [],
-    nextId: 10000 // Start user IDs from 10000 to avoid conflicts with API IDs
+    nextId: 10000, // Start user IDs from 10000 to avoid conflicts with API IDs
+    addressGroups: {} // Track which addresses belong to which groups
 };
 
 export const delay = (ms = 500) => new Promise(res => setTimeout(res, ms));
@@ -48,6 +50,7 @@ function loadUserDataFromSession() {
                 demo: true
             }));
             userCache.nextId = parsed.nextId || 10000;
+            userCache.addressGroups = parsed.addressGroups || {};
 
             // Check TTL if set
             if (parsed.expiresAt && typeof parsed.expiresAt === 'number') {
@@ -72,7 +75,8 @@ function saveUserDataToSession() {
     try {
         const obj: any = {
             groups: userCache.groups,
-            nextId: userCache.nextId
+            nextId: userCache.nextId,
+            addressGroups: userCache.addressGroups
         };
 
         if (TTL_MS && TTL_MS > 0) {
@@ -101,6 +105,7 @@ function scheduleReset(customMs?: number) {
 function clearUserData() {
     userCache.groups = [];
     userCache.nextId = 10000;
+    userCache.addressGroups = {};
 
     if (resetTimer) {
         clearTimeout(resetTimer);
@@ -157,6 +162,7 @@ export async function createGroup(payload: {
     name: string;
     count: number;
     lastModifiedBy?: string;
+    addressIds?: number[]; // NEW: Array of address IDs to add to this group
 }): Promise<GroupCardProps> {
     await delay(600);
 
@@ -173,6 +179,19 @@ export async function createGroup(payload: {
     };
 
     userCache.groups.push(newGroup);
+
+    // NEW: Add address-group relationships
+    if (payload.addressIds && payload.addressIds.length > 0) {
+        payload.addressIds.forEach(addressId => {
+            if (!userCache.addressGroups[addressId]) {
+                userCache.addressGroups[addressId] = [];
+            }
+            if (!userCache.addressGroups[addressId].includes(id)) {
+                userCache.addressGroups[addressId].push(id);
+            }
+        });
+    }
+
     saveUserDataToSession();
     if (TTL_MS && TTL_MS > 0) scheduleReset(TTL_MS);
 
@@ -215,7 +234,99 @@ export async function deleteGroup(groupId: number): Promise<boolean> {
     const initialLength = userCache.groups.length;
     userCache.groups = userCache.groups.filter(g => g.id !== groupId);
 
+    // NEW: Remove group from all address relationships
+    Object.keys(userCache.addressGroups).forEach(addressIdStr => {
+        const addressId = parseInt(addressIdStr);
+        userCache.addressGroups[addressId] = userCache.addressGroups[addressId].filter(
+            gId => gId !== groupId
+        );
+        // Clean up empty arrays
+        if (userCache.addressGroups[addressId].length === 0) {
+            delete userCache.addressGroups[addressId];
+        }
+    });
+
     if (userCache.groups.length < initialLength) {
+        saveUserDataToSession();
+        return true;
+    }
+
+    return false;
+}
+
+// ADDRESS-GROUP RELATIONSHIPS API
+
+/**
+ * Get all group IDs for a specific address
+ */
+export async function getAddressGroups(addressId: number): Promise<number[]> {
+    await delay(50);
+    return userCache.addressGroups[addressId] || [];
+}
+
+/**
+ * Get all address-group relationships
+ */
+export async function getAllAddressGroups(): Promise<Record<number, number[]>> {
+    await delay(50);
+    return { ...userCache.addressGroups };
+}
+
+/**
+ * Add an address to a group
+ */
+export async function addAddressToGroup(addressId: number, groupId: number): Promise<boolean> {
+    await delay(200);
+
+    if (!userCache.addressGroups[addressId]) {
+        userCache.addressGroups[addressId] = [];
+    }
+
+    if (!userCache.addressGroups[addressId].includes(groupId)) {
+        userCache.addressGroups[addressId].push(groupId);
+        
+        // Update group count
+        const group = userCache.groups.find(g => g.id === groupId);
+        if (group) {
+            group.count += 1;
+            group.lastModified = new Date();
+        }
+
+        saveUserDataToSession();
+        return true;
+    }
+
+    return false;
+}
+
+/**
+ * Remove an address from a group
+ */
+export async function removeAddressFromGroup(addressId: number, groupId: number): Promise<boolean> {
+    await delay(200);
+
+    if (!userCache.addressGroups[addressId]) {
+        return false;
+    }
+
+    const initialLength = userCache.addressGroups[addressId].length;
+    userCache.addressGroups[addressId] = userCache.addressGroups[addressId].filter(
+        gId => gId !== groupId
+    );
+
+    if (userCache.addressGroups[addressId].length < initialLength) {
+        // Update group count
+        const group = userCache.groups.find(g => g.id === groupId);
+        if (group && group.count > 0) {
+            group.count -= 1;
+            group.lastModified = new Date();
+        }
+
+        // Clean up empty arrays
+        if (userCache.addressGroups[addressId].length === 0) {
+            delete userCache.addressGroups[addressId];
+        }
+
         saveUserDataToSession();
         return true;
     }
@@ -228,6 +339,7 @@ export function _getStats() {
     return {
         user: {
             groups: userCache.groups.length,
+            addressGroups: Object.keys(userCache.addressGroups).length
         }
     };
 }
