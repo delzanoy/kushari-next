@@ -3,6 +3,8 @@ import { Figtree, Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "@cryptofonts/cryptofont/cryptofont.css";
 import DataPreloader from "../app/components/DataPreloader";
+import ResponsiveLayout from '@/app/components/ResponsiveLayout';
+import MobileView from '@/app/components/MobileView';
 
 import SideNav from "./components/SideNav";
 import WalletDataPreloader from "./components/WalletDataPreloader";
@@ -39,7 +41,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased h-[100vh] relative`}
       >
-        <ModalHost>
+
+ <ResponsiveLayout
+   mobileLayout={<MobileView />}
+   desktopLayout={<ModalHost>
           <DataPreloader />
           <WalletDataPreloader />
           <div className="flex min-h-screen bg-[#0E1011]">
@@ -52,7 +57,9 @@ export default function RootLayout({
               Product, design & development by <span className="font-bold">Delanoy Kunil</span>
             </span>
           </div>
-        </ModalHost>
+        </ModalHost>}
+ />
+        
       </body>
     </html>
   );

@@ -7,3 +7,17 @@ export default function Home() {
     </div>
   );
 }
+
+// import ResponsiveLayout from '@/app/components/ResponsiveLayout';
+// import WalletsPage from "./wallets/page";
+// import MobileView from '@/app/components/MobileView';
+
+// export default function Home() {
+//   return (
+//     // <ResponsiveLayout
+//     //   mobileLayout={<MobileView />}
+//     //   desktopLayout={<WalletsPage />}
+//     // />
+//     <MobileView />
+//   );
+// }

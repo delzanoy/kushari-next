@@ -7,7 +7,7 @@ import SideNav from './SideNav';
 import MobileView from './MobileView'; // You'll create this
 
 interface ResponsiveLayoutProps {
-  children: ReactNode;
+  children?: ReactNode; // Make children optional
   mobileLayout?: ReactNode;
   desktopLayout?: ReactNode;
 }
@@ -40,15 +40,15 @@ export default function ResponsiveLayout({
   return (
     <div className="flex min-h-screen bg-[#0E1011]">
       {/* Desktop: Show SideNav */}
-      {isDesktop && <SideNav />}
+      {/* {isDesktop && <SideNav />} */}
       
       {/* Mobile: Show MobileNav (you can create this component) */}
       {isMobile && <MobileView />}
       
       {/* Main content area */}
-      <main className={`flex-1 pb-[256px] h-[100vh] overflow-auto ${isMobile ? 'pt-16' : ''}`}>
+      {/* <main className={`flex-1 pb-[256px] h-[100vh] overflow-auto ${isMobile ? 'pt-16' : ''}`}>
         {children}
-      </main>
+      </main> */}
 
       {/* Credit footer - adjust position for mobile */}
       <div className={`group/credit absolute ${isMobile ? 'left-[16px]' : 'right-[16px]'} bottom-[16px] opacity-50 hover:opacity-100 cursor-pointer transition-opacity duration-200`}>
