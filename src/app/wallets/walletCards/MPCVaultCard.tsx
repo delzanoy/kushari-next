@@ -5,6 +5,7 @@ import IconButton from "@/app/components/buttons/IconButton";
 import useModal from "@/app/hooks/useModal";
 import { Modal } from "@/app/components/modal/Modal";
 import MakeDeposit from "../modals/MakeDeposit";
+import FeatureUnderDevelopment from "@/app/components/FeatureUnderDevlopment/FeatureUnderDevelopment";
 
 interface Wallet {
     wallet: WalletSummary;
@@ -21,7 +22,7 @@ export default function MPCVaultCard({ wallet, onClick }: Wallet) {
 
     const handleSendClick = (e: React.MouseEvent) => {
         e.stopPropagation();
-        console.log("Send clicked for wallet:", wallet.name);
+        openSendTokensModal();
     };
 
     // Function to open the MakeDeposit modal
@@ -38,6 +39,18 @@ export default function MPCVaultCard({ wallet, onClick }: Wallet) {
             </Modal>
         );
     };
+
+    const openSendTokensModal = () => {
+        open(
+            <Modal onRequestClose={() => {
+                closeTop(); // Close the modal when onRequestClose is called
+                return true; // Allow the modal to close
+            }}>
+                <FeatureUnderDevelopment onClose={closeTop}/>
+            </Modal>
+        );
+    };
+
 
     const render24hPercentage = (percentage: number) => {
         if (percentage < 0) {

@@ -6,6 +6,7 @@ import IconButton from "@/app/components/buttons/IconButton";
 import useModal from "@/app/hooks/useModal";
 import { Modal } from "@/app/components/modal/Modal";
 import MakeDeposit from "../modals/MakeDeposit";
+import FeatureUnderDevelopment from "@/app/components/FeatureUnderDevlopment/FeatureUnderDevelopment";
 
 interface Wallet {
     wallet: WalletSummary;
@@ -22,8 +23,19 @@ export default function GnosisSafeCard({ wallet, onClick }: Wallet) {
 
     const handleSendClick = (e: React.MouseEvent) => {
         e.stopPropagation();
-        console.log("Send clicked for wallet:", wallet.name);
-        // You could open a Send modal here if you have one
+        openSendTokensModal
+    };
+
+
+    const openSendTokensModal = () => {
+        open(
+            <Modal onRequestClose={() => {
+                closeTop(); // Close the modal when onRequestClose is called
+                return true; // Allow the modal to close
+            }}>
+                <FeatureUnderDevelopment onClose={closeTop} />
+            </Modal>
+        );
     };
 
     // Function to open the MakeDeposit modal
@@ -33,7 +45,7 @@ export default function GnosisSafeCard({ wallet, onClick }: Wallet) {
                 closeTop();
                 return true;
             }}>
-                <MakeDeposit 
+                <MakeDeposit
                     wallet={wallet}
                     onClose={closeTop}
                 />
@@ -125,7 +137,7 @@ export default function GnosisSafeCard({ wallet, onClick }: Wallet) {
     };
 
     wallet.name = wallet.name.charAt(0).toUpperCase() + wallet.name.slice(1);
-    
+
     return (
         <div className="group flex w-full max-w-[1040px] mx-auto pt-[16px] pr-[16px] pb-[16px] pl-[24px] items-end gap-2.5 shrink-0 rounded-3xl border-[0.8px] border-solid border-[#2E3435] bg-[#121315]
         hover:border-[0.5px] 
@@ -134,7 +146,7 @@ export default function GnosisSafeCard({ wallet, onClick }: Wallet) {
         hover:bg-[#1C2325] 
         hover:shadow-[0_34px_10px_0_rgba(38,201,200,0.00),0_22px_9px_0_rgba(38,201,200,0.01),0_12px_7px_0_rgba(38,201,200,0.05),0_5px_5px_0_rgba(38,201,200,0.09),0_1px_3px_0_rgba(38,201,200,0.10)]
         transition-all duration-150 ease-in-out hover:scale-101 cursor-pointer active:scale-98"
-        onClick={onClick}>
+            onClick={onClick}>
             <div className="flex w-[676px] items-center gap-7 shrink-0">
                 <div className="flex w-[312px] items-center gap-1.5 shrink-0">
                     <div className="w-[18px] h-[18px] shrink-0 relative  flex items-center justify-center">
@@ -155,18 +167,18 @@ export default function GnosisSafeCard({ wallet, onClick }: Wallet) {
                 </div>
             </div>
             <div className="h-6 flex justify-end items-center gap-6 flex-[1_0_0] opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
-                <IconButton 
-                    icon={<QRCodeIcon />} 
-                    size="md" 
-                    status="brand" 
-                    className="transition-all duration-200 scale-0 group-hover:scale-100" 
+                <IconButton
+                    icon={<QRCodeIcon />}
+                    size="md"
+                    status="brand"
+                    className="transition-all duration-200 scale-0 group-hover:scale-100"
                     onClick={handleQRCodeClick}
                 />
-                <IconButton 
-                    icon={<SendIcon />} 
-                    size="md" 
-                    status="brand" 
-                    className="transition-all duration-200 scale-0 group-hover:scale-100" 
+                <IconButton
+                    icon={<SendIcon />}
+                    size="md"
+                    status="brand"
+                    className="transition-all duration-200 scale-0 group-hover:scale-100"
                     onClick={handleSendClick}
                 />
             </div>

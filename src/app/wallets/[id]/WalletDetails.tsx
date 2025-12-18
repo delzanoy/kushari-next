@@ -20,6 +20,10 @@ import { useRouter } from 'next/navigation';
 import { useRef } from "react";
 import { Cryptocurrency } from '@/app/assets/types';
 import PolicyContent from './components/PolicyContent';
+import useModal from "@/app/hooks/useModal";
+import { Modal } from "@/app/components/modal/Modal";
+import MakeDeposit from "../modals/MakeDeposit";
+import FeatureUnderDevelopment from "@/app/components/FeatureUnderDevlopment/FeatureUnderDevelopment";
 
 interface TransactionWithDateInfo extends Transaction {
     showDate: boolean;
@@ -212,6 +216,7 @@ const WalletHeader = memo(({
     const [copiedAddress, setCopiedAddress] = useState(false);
     const copyTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const displayName = useMemo(() => capitalizeFirstLetter(wallet.name), [wallet.name]);
+    const { open, closeTop } = useModal();
 
     const dropdownOptions = useMemo(() =>
         wallets
@@ -266,6 +271,20 @@ const WalletHeader = memo(({
         };
     }, []);
 
+    const handleMakeDepositClick = useCallback(() => {
+        open(
+            <Modal onRequestClose={() => {
+                closeTop();
+                return true;
+            }}>
+                <MakeDeposit 
+                    wallet={wallet}  // No conversion needed!
+                    onClose={closeTop}
+                />
+            </Modal>
+        );
+    }, [wallet, open, closeTop]);
+
     return (
         <div className="flex flex-col items-start gap-16 self-stretch">
             <div className="flex flex-col items-start gap-3 self-stretch">
@@ -308,9 +327,17 @@ const WalletHeader = memo(({
                             variant={totalBalance === 0 ? "brand" : "neutral"}
                             size="md"
                             leadingIcon={<QRCodeIcon />}
+                            onClick={() => handleMakeDepositClick()}
                         />
                         {totalBalance > 0 && (
-                            <PrimaryButton label="Send tokens" variant="neutral" size="md" leadingIcon={<SendIcon />} />
+                            <PrimaryButton label="Send tokens" variant="neutral" size="md" leadingIcon={<SendIcon />} onClick={() => open(
+                                        <Modal onRequestClose={() => {
+                                            closeTop(); // Close the modal when onRequestClose is called
+                                            return true; // Allow the modal to close
+                                        }}>
+                                            <FeatureUnderDevelopment onClose={closeTop}/>
+                                        </Modal>
+                                    )}/>
                         )}
                     </div>
                 </div>
@@ -381,6 +408,7 @@ export default function WalletDetails({
     onTabStateChange
 }: WalletDetailsProps) {
     const router = useRouter();
+    const { open, closeTop } = useModal(); // Get closeTop from useModal
 
     const tabOrder = useMemo(() => getTabOrder(wallet.type), [wallet.type]);
     type TabType = typeof tabOrder[number];

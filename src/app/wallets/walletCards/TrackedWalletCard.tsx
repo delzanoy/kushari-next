@@ -6,6 +6,7 @@ import IconButton from "@/app/components/buttons/IconButton";
 import useModal from "@/app/hooks/useModal";
 import { Modal } from "@/app/components/modal/Modal";
 import MakeDeposit from "../modals/MakeDeposit";
+import FeatureUnderDevelopment from "@/app/components/FeatureUnderDevlopment/FeatureUnderDevelopment";
 
 interface Wallet {
     wallet: WalletSummary;
@@ -22,14 +23,24 @@ export default function TrackedWalletCard({ wallet, onClick }: Wallet) {
 
     const handleUnlinkClick = (e: React.MouseEvent) => {
         e.stopPropagation();
-        console.log("Unlink clicked for wallet:", wallet.name);
-        // You could open an Unlink confirmation modal here
+        openSendTokensModal();
     };
 
     const handleExternalLinkClick = (e: React.MouseEvent) => {
         e.stopPropagation();
-        console.log("External link clicked for wallet:", wallet.name);
-        // You could open the wallet in a block explorer
+        openSendTokensModal();
+    };
+
+
+    const openSendTokensModal = () => {
+        open(
+            <Modal onRequestClose={() => {
+                closeTop(); // Close the modal when onRequestClose is called
+                return true; // Allow the modal to close
+            }}>
+                <FeatureUnderDevelopment onClose={closeTop} />
+            </Modal>
+        );
     };
 
     // Function to open the MakeDeposit modal
@@ -39,7 +50,7 @@ export default function TrackedWalletCard({ wallet, onClick }: Wallet) {
                 closeTop();
                 return true;
             }}>
-                <MakeDeposit 
+                <MakeDeposit
                     wallet={wallet}
                     onClose={closeTop}
                 />
@@ -140,7 +151,7 @@ export default function TrackedWalletCard({ wallet, onClick }: Wallet) {
         hover:bg-[#1C2325] 
         hover:shadow-[0_34px_10px_0_rgba(38,201,200,0.00),0_22px_9px_0_rgba(38,201,200,0.01),0_12px_7px_0_rgba(38,201,200,0.05),0_5px_5px_0_rgba(38,201,200,0.09),0_1px_3px_0_rgba(38,201,200,0.10)]
         transition-all duration-150 ease-in-out hover:scale-101 cursor-pointer active:scale-98"
-        onClick={onClick}
+            onClick={onClick}
         >
             <div className="flex w-[676px] items-center gap-7 shrink-0">
                 <div className="flex w-[312px] items-center gap-1.5 shrink-0">
@@ -163,25 +174,25 @@ export default function TrackedWalletCard({ wallet, onClick }: Wallet) {
                 </div>
             </div>
             <div className="h-6 flex justify-end items-center gap-6 flex-[1_0_0] opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-in-out">
-                <IconButton 
-                    icon={<QRCodeIcon />} 
-                    size="md" 
-                    status="brand" 
-                    className="transition-all duration-200 scale-0 group-hover:scale-100" 
-                    onClick={handleQRCodeClick} 
-                />
-                <IconButton 
-                    icon={<UnlinkIcon />} 
-                    size="md" 
-                    status="danger" 
-                    className="transition-all duration-200 scale-0 group-hover:scale-100" 
+                <IconButton
+                    icon={<UnlinkIcon />}
+                    size="md"
+                    status="danger"
+                    className="transition-all duration-200 scale-0 group-hover:scale-100"
                     onClick={handleUnlinkClick}
                 />
-                <IconButton 
-                    icon={<ExternalLinkIcon />} 
-                    size="md" 
-                    status="neutral" 
-                    className="transition-all duration-200 scale-0 group-hover:scale-100" 
+                <IconButton
+                    icon={<QRCodeIcon />}
+                    size="md"
+                    status="brand"
+                    className="transition-all duration-200 scale-0 group-hover:scale-100"
+                    onClick={handleQRCodeClick}
+                />
+                <IconButton
+                    icon={<ExternalLinkIcon />}
+                    size="md"
+                    status="neutral"
+                    className="transition-all duration-200 scale-0 group-hover:scale-100"
                     onClick={handleExternalLinkClick}
                 />
             </div>

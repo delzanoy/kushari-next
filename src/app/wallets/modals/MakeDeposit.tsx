@@ -1,19 +1,19 @@
 "use client";
 import { useState, useEffect, useRef, useCallback } from "react";
 import IconButton from "../../components/buttons/IconButton";
-import { VaultIcon, GnosisSafeIcon, TrackedWalletIcon, CloseIcon, EthereumIcon, BSCIcon, PolygonIcon, GnosisIcon, OPTIMISMIcon, SOLIcon } from "../../components/icons";
-import { WalletSummary } from "../type";
+import { VaultIcon, GnosisSafeIcon, TrackedWalletIcon, CloseIcon, CloseCircleFilledIcon, EthereumIcon, BSCIcon, PolygonIcon, GnosisIcon, OPTIMISMIcon, SOLIcon } from "../../components/icons";
+import { WalletSummary, Wallet } from "../type";
 import { useModalContext } from "@/app/components/modal/Modal";
 import { QRCodeSVG } from 'qrcode.react';
 import Tooltip from "@/app/components/TooltipComponent";
 import TertiaryButton from "@/app/components/buttons/TertiaryButton";
 
-interface Wallet {
-    wallet: WalletSummary;
+interface MakeDepositProps {
+    wallet: WalletSummary | Wallet; // Accept both types!
     onClose?: () => void;
 }
 
-export default function MakeDeposit({ wallet, onClose }: Wallet) {
+export default function MakeDeposit({ wallet, onClose }: MakeDepositProps) {
     const [copiedAddress, setCopiedAddress] = useState(false);
     const copyTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const [showEscTooltip, setShowEscTooltip] = useState(false);
@@ -154,13 +154,13 @@ export default function MakeDeposit({ wallet, onClose }: Wallet) {
                     </div>
 
                     <IconButton
-                        icon={<CloseIcon />}
-                        size="sm"
-                        status={showEscTooltip ? "danger" : "neutral"}
-                        onClick={onClose}  // Direct call to onClose like FeatureUnderDevelopment
-                        tooltipTitle="Esc again to confirm"
-                        showTooltip={showEscTooltip}
-                    />
+                                                icon={showEscTooltip ? <CloseCircleFilledIcon /> : <CloseIcon />}
+                                                size="sm"
+                                                status={showEscTooltip ? "danger" : "neutral"}
+                                                onClick={onClose}
+                                                tooltipTitle="Esc again to confirm"
+                                                showTooltip={showEscTooltip}
+                                            />
                 </div>
                 <div className="flex py-[0] px-[12px] flex-col items-start gap-2.5 self-stretch">
                     <span className="text-[#F8FCFF] font-[Figtree] text-[26px] not-italic font-medium leading-[normal] tracking-[1.04px]">
