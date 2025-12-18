@@ -34,9 +34,9 @@ const BlobShine = () => {
     
     // Subtle floating animation
     const floatAnimation = () => {
-      const time = Date.now() * 0.001;
-      const x = Math.sin(time * 0.3) * 5; // Very subtle
-      const y = Math.cos(time * 0.2) * 8;
+      const time = Date.now() * 0.1;
+      const x = Math.sin(time * 3) * 15; // Very subtle
+      const y = Math.cos(time * 2) * 18;
       setFloatOffset({ x, y });
       requestAnimationFrame(floatAnimation);
     };
@@ -117,8 +117,8 @@ const Arc = ({
     // Very subtle drift animation
     const driftAnimation = () => {
       const time = Date.now() * 0.001 + delay;
-      const x = Math.sin(time * 0.2) * 3; // Very subtle movement
-      const y = Math.cos(time * 0.15) * 4;
+      const x = Math.sin(time * 2) * 3; // Very subtle movement
+      const y = Math.cos(time * 5) * 4;
       setDriftOffset({ x, y });
       requestAnimationFrame(driftAnimation);
     };
@@ -263,8 +263,8 @@ function Frame() {
     <div className="absolute h-[800px] left-[-200px] top-[-300px] w-[1300px]">
       <BlobShine />
       <Arc
-        left="50px"
-        top="-100px"
+        left="200px"
+        top="600px"
         color="white"
         dataName="arc-white-left"
         delay={0.2}
@@ -272,8 +272,8 @@ function Frame() {
         verticalOffset={120}
       />
       <Arc
-        left="400px"
-        top="-150px"
+        left="40px"
+        top="450px"
         color="#C5E7FF"
         dataName="arc-pink-top"
         delay={0.4}
@@ -282,7 +282,35 @@ function Frame() {
       />
       <Arc
         left="-150px"
+        top="500px"
+        color="#E5F25A"
+        dataName="arc-yellow-bottom"
+        delay={0.6}
+        rotation={-15}
+        verticalOffset={100}
+      />
+
+      <Arc
+        left="200px"
         top="200px"
+        color="white"
+        dataName="arc-white-left"
+        delay={0.2}
+        rotation={-5}
+        verticalOffset={120}
+      />
+      <Arc
+        left="40px"
+        top="850px"
+        color="#C5E7FF"
+        dataName="arc-pink-top"
+        delay={0.4}
+        rotation={10}
+        verticalOffset={150}
+      />
+      <Arc
+        left="-150px"
+        top="300px"
         color="#E5F25A"
         dataName="arc-yellow-bottom"
         delay={0.6}
