@@ -114,12 +114,27 @@ export default function SideNav() {
     }, []);
 
     // Helper function to check if a nav item is active
-    const isNavItemActive = (itemHref: string, currentPathname: string) => {
-        if (itemHref === '/wallets') {
-            return currentPathname.startsWith('/wallets');
-        }
-        return currentPathname === itemHref || (currentPathname === '/' && itemHref === '/wallets');
-    };
+    const isNavItemActive = (itemHref: string) => {
+    if (itemHref === '/wallets') {
+        return pathname.startsWith('/wallets');
+    }
+    if (itemHref === '/assets') {
+        return pathname.startsWith('/assets');
+    }
+    if (itemHref === '/transactions/view-all') {
+        return pathname === '/transactions/view-all' || pathname === '/transactions';
+    }
+    if (itemHref === '/transactions/proposals') {
+        return pathname.startsWith('/transactions/proposals');
+    }
+    if (itemHref === '/address-book/addresses') {
+        return pathname === '/address-book/addresses' || pathname === '/address-book';
+    }
+    if (itemHref === '/address-book/groups') {
+        return pathname.startsWith('/address-book/groups');
+    }
+    return pathname === itemHref;
+};
 
     return (
         <nav
@@ -134,24 +149,24 @@ export default function SideNav() {
                     <div className="relative w-6 h-6">
                         <SpaceIcon className="w-6 h-6 text-[#D7DCF3] opacity-100 group-hover/sidebar:opacity-0 absolute left-0 top-0" />
                         <IconButton className="opacity-0 group-hover/sidebar:opacity-100 absolute left-0 top-0" icon={<ExpandIcon />} size="md" status="neutral" onClick={() => open(
-                                                                                        <Modal onRequestClose={() => {
-                                                                                            closeTop(); // Close the modal when onRequestClose is called
-                                                                                            return true; // Allow the modal to close
-                                                                                        }}>
-                                                                                            <FeatureUnderDevelopment onClose={closeTop}/>
-                                                                                        </Modal>
-                                                                                    )}/>
+                            <Modal onRequestClose={() => {
+                                closeTop(); // Close the modal when onRequestClose is called
+                                return true; // Allow the modal to close
+                            }}>
+                                <FeatureUnderDevelopment onClose={closeTop} />
+                            </Modal>
+                        )} />
                     </div>
                     <span className="text-[#D7DCF3] font-[Figtree] text-sm not-italic font-semibold leading-[normal] tracking-[0.112px]">Acme Co.</span>
                 </div>
                 <IconButton className="opacity-0 group-hover/sidebar:opacity-100" icon={<SettingsIcon />} size="md" status="neutral" onClick={() => open(
-                                                                                <Modal onRequestClose={() => {
-                                                                                    closeTop(); // Close the modal when onRequestClose is called
-                                                                                    return true; // Allow the modal to close
-                                                                                }}>
-                                                                                    <FeatureUnderDevelopment onClose={closeTop}/>
-                                                                                </Modal>
-                                                                            )}/>
+                    <Modal onRequestClose={() => {
+                        closeTop(); // Close the modal when onRequestClose is called
+                        return true; // Allow the modal to close
+                    }}>
+                        <FeatureUnderDevelopment onClose={closeTop} />
+                    </Modal>
+                )} />
             </div>
 
             <div className="flex py-[0] px-[20px] flex-col items-start gap-10 flex-[1_0_0] self-stretch">
@@ -159,9 +174,9 @@ export default function SideNav() {
                 {navSections.map((section, index) => (
                     <SideNavSection key={index} title={section.title} pill={section.pill}>
                         {section.items && section.items.map((item) => {
-                            const isActive = isNavItemActive(item.href, pathname);
+                            const isActive = isNavItemActive(item.href);
                             const isExternallyHovered = externalHoverTarget === item.href;
-                            
+
                             return (
                                 <Link href={item.href} key={item.label} className="w-full">
                                     <SideNavItem
@@ -188,13 +203,13 @@ export default function SideNav() {
                         </div>
                     </div>
                     <IconButton size="sm" icon={<MenuIcon />} className="opacity-0 group-hover/sidebar:opacity-100" status="neutral" onClick={() => open(
-                                                                                    <Modal onRequestClose={() => {
-                                                                                        closeTop(); // Close the modal when onRequestClose is called
-                                                                                        return true; // Allow the modal to close
-                                                                                    }}>
-                                                                                        <FeatureUnderDevelopment onClose={closeTop}/>
-                                                                                    </Modal>
-                                                                                )}/>
+                        <Modal onRequestClose={() => {
+                            closeTop(); // Close the modal when onRequestClose is called
+                            return true; // Allow the modal to close
+                        }}>
+                            <FeatureUnderDevelopment onClose={closeTop} />
+                        </Modal>
+                    )} />
                 </div>
             </div>
         </nav>

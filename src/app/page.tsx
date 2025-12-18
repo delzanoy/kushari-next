@@ -1,23 +1,19 @@
-import WalletsPage from "./wallets/page"
+"use client";
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function Home() {
+  const router = useRouter();
+
+  useEffect(() => {
+    // Redirect from root to /wallets
+    router.replace('/wallets');
+  }, [router]);
+
+  // Show nothing or a loading state while redirecting
   return (
-    <div className="h-[100vh]">
-      <WalletsPage />
+    <div className="h-[100vh] bg-[#0E1011] flex items-center justify-center">
+      <div className="text-white">Loading...</div>
     </div>
   );
 }
-
-// import ResponsiveLayout from '@/app/components/ResponsiveLayout';
-// import WalletsPage from "./wallets/page";
-// import MobileView from '@/app/components/MobileView';
-
-// export default function Home() {
-//   return (
-//     // <ResponsiveLayout
-//     //   mobileLayout={<MobileView />}
-//     //   desktopLayout={<WalletsPage />}
-//     // />
-//     <MobileView />
-//   );
-// }
