@@ -13,7 +13,8 @@ import {
     PolygonIcon,
     GnosisIcon,
     EthereumIcon,
-    ArrowLeftIcon
+    ArrowLeftIcon,
+    UserAvatarIcon
 } from "../../components/icons";
 import IconButton from "@/app/components/buttons/IconButton";
 import useModal from "@/app/hooks/useModal";
@@ -90,6 +91,7 @@ export default function ConnectSafe({ onClose, members: propMembers = [], onSafe
             value: member.email,
             label: member.name,
             metadata: member.email,
+            icon: <UserAvatarIcon member={member.name} size={16}/>
         }));
     }, [propMembers]);
 

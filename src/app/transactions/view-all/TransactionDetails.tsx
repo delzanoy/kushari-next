@@ -1,8 +1,13 @@
 import { ExternalLinkIcon, StatusDotIcon } from "@/app/components/icons";
 import TertiaryButton from "@/app/components/buttons/TertiaryButton";
 import { TransactionDetailsProps } from "./types";
+import { Modal } from "@/app/components/modal/Modal";
+import FeatureUnderDevelopment from "@/app/components/FeatureUnderDevlopment/FeatureUnderDevelopment";
+import useModal from "@/app/hooks/useModal";
+import IconButton from "@/app/components/buttons/IconButton";
 
 export default function TransactionDetails({ transaction, addresses }: TransactionDetailsProps) {
+    const { open, closeTop } = useModal();
 
     const showApprovalSteps = (transaction.walletType === 1 || transaction.walletType === 2) &&
         transaction.outgoing && !transaction.incoming;
@@ -100,7 +105,14 @@ export default function TransactionDetails({ transaction, addresses }: Transacti
                         tooltipTitle="Copy hash"
                     />
                     <div className="flex h-[24.5px] items-center gap-2.5">
-                        <ExternalLinkIcon className="h-4 text-[#FFFFFF]" />
+                        <IconButton className="hidden opacity-0 group-hover:opacity-100 transition-all duration-200 scale-0 group-hover:scale-100" icon={<ExternalLinkIcon className="text-[#EDEEEE]" />} size="sm" status="neutral" tooltipTitle="Coin Market Cap" onClick={() => open(
+                            <Modal onRequestClose={() => {
+                                closeTop(); // Close the modal when onRequestClose is called
+                                return true; // Allow the modal to close
+                            }}>
+                                <FeatureUnderDevelopment onClose={closeTop} />
+                            </Modal>
+                        )} />
                     </div>
                 </div>
             </div>

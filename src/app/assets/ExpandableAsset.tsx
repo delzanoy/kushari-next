@@ -6,6 +6,9 @@ import AssetBreakdown from "./AssetBreakdown";
 import { ArrowUpIcon, ArrowDownIcon, ExpandIcon, BSCIcon, EthereumIcon, GnosisIcon, OPTIMISMIcon, PolygonIcon, SOLIcon, CollapseIcon,GnosisSafeIcon, VaultIcon, TrackedWalletIcon, ExternalLinkIcon } from "@/app/components/icons";
 import { formatDollars, formatCents, formatCurrency, formatSmallNumber } from "./../components/helpers";
 import IconButton from "../components/buttons/IconButton";
+import { Modal } from "@/app/components/modal/Modal";
+import FeatureUnderDevelopment from "@/app/components/FeatureUnderDevlopment/FeatureUnderDevelopment";
+import useModal from "@/app/hooks/useModal";
 
 interface ExpandableAssetProps {
     asset: Asset;
@@ -13,7 +16,7 @@ interface ExpandableAssetProps {
 
 export default function ExpandableAsset({ asset }: ExpandableAssetProps) {
     const [expanded, setExpanded] = useState(false);
-
+    const { open, closeTop } = useModal();
 
     const renderWalletIcon = (walletType: number) => {
         switch (walletType) {
@@ -151,7 +154,14 @@ export default function ExpandableAsset({ asset }: ExpandableAssetProps) {
                             </div>
                         }
                         {/* <span className="text-[#E7E8E9] font-[Geist] text-[13px] not-italic font-thin leading-[100%] tracking-[1.56px] line-clamp-1">24 Hrs</span> */}
-                        <IconButton className="hidden opacity-0 group-hover:opacity-100 transition-all duration-200 scale-0 group-hover:scale-100" icon={<ExternalLinkIcon className="text-[#EDEEEE]" />} size="sm" status="neutral" tooltipTitle="Coin Market Cap" />
+                        <IconButton className="hidden opacity-0 group-hover:opacity-100 transition-all duration-200 scale-0 group-hover:scale-100" icon={<ExternalLinkIcon className="text-[#EDEEEE]" />} size="sm" status="neutral" tooltipTitle="Coin Market Cap" onClick={() => open(
+                                                                <Modal onRequestClose={() => {
+                                                                    closeTop(); // Close the modal when onRequestClose is called
+                                                                    return true; // Allow the modal to close
+                                                                }}>
+                                                                    <FeatureUnderDevelopment onClose={closeTop}/>
+                                                                </Modal>
+                                                            )}/>
                     </div>
                 </div>
                 <div className="flex w-[336px] items-start gap-4 shrink-0">

@@ -73,3 +73,4 @@ export { ArrowLeftIcon } from "./ArrowLeftIcon";
 export { AddAddressIcon } from "./AddAddressIcon";
 export { CreateGroupIcon } from "./CreateGroupIcon";
 export { ShareIcon } from "./ShareIcon";
+export { UserAvatarIcon } from "./UserAvatarIcon";

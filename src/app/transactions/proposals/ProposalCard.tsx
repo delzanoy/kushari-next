@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Proposal } from "./types";
 import InlineDropdown from "@/app/components/InlineDropdown";
-import { StatusDotIcon, ReadyDotIcon, StatusSquarecle, ExecutingIcon, VaultIcon, GroupIcon, HashIcon, AddressIcon, GnosisSafeIcon, TrackedWalletIcon } from "@/app/components/icons";
+import { StatusDotIcon, ReadyDotIcon, StatusSquarecle, ExecutingIcon, VaultIcon, GroupIcon, HashIcon, AddressIcon, GnosisSafeIcon, TrackedWalletIcon, UserAvatarIcon } from "@/app/components/icons";
 import { ArrowHeadRight } from "@/app/components/icons";
 import TertiaryButton from "@/app/components/buttons/TertiaryButton";
 import { AddressCardProps } from "@/app/address-book/addresses/types";
@@ -224,7 +224,7 @@ export default function ProposalCard({
         cursor-pointer
         `}>
             <div className="flex pt-[4px] pr-[8px] pb-[16px] pl-[8px] justify-end items-end gap-4 self-stretch">
-                <div className="flex w-[152px] flex-col justify-end items-start gap-1.5">
+                <div className="flex w-[152px] flex-col justify-end items-start gap-2">
                     <div className="flex w-[152px] h-[13px] items-center">
                         <span className={`text-[#F8FCFF] font-[Geist] text-[10px] not-italic font-normal leading-[normal] transition-opacity duration-200 ${proposal.showDate ? 'block' : 'hidden'} group-hover:hidden`}>
                             {displayDate}
@@ -235,7 +235,9 @@ export default function ProposalCard({
                         </span>
                     </div>
                     <div className="flex h-[18px] items-start gap-2 self-stretch">
-                        <div className="flex w-6 h-[18px] justify-center items-center">De</div>
+                        <div className="flex w-6 h-[18px] justify-center items-center">
+                            <UserAvatarIcon member={proposal.initiator} size={32} />
+                        </div>
                         <span className="line-clamp-1 overflow-hidden text-[#F8FCFF] text-ellipsis font-[Geist] text-sm not-italic font-light leading-[normal] tracking-[0.7px]">{proposal.initiator}</span>
                     </div>
                 </div>

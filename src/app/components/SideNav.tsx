@@ -3,6 +3,11 @@ import React, { useState, useEffect } from "react";
 import SideNavItem from "./SideNavItem";
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import Image from "next/image";
+import IconButton from "./buttons/IconButton";
+import { Modal } from "@/app/components/modal/Modal";
+import FeatureUnderDevelopment from "@/app/components/FeatureUnderDevlopment/FeatureUnderDevelopment";
+import useModal from "@/app/hooks/useModal";
 
 import { WalletIcon, CoinIcon, ListIcon, CheckIcon, AddressIcon, GroupIcon, SettingsIcon, SpaceIcon, ExpandIcon } from "@/app/components/icons";
 
@@ -37,9 +42,6 @@ function MenuIcon({ className = "" }: { className?: string }) {
     );
 }
 
-import Image from "next/image";
-import IconButton from "./buttons/IconButton";
-
 function FrameAvatar() {
     return (
         <div className="overflow-clip relative rounded-full w-[33px] h-[33px] z-10 ">
@@ -61,6 +63,7 @@ function FrameAvatar() {
 export default function SideNav() {
     const pathname = usePathname();
     const [externalHoverTarget, setExternalHoverTarget] = useState<string | null>(null);
+    const { open, closeTop } = useModal();
 
     const navSections = [
         {
@@ -130,11 +133,25 @@ export default function SideNav() {
                 <div className="flex items-center gap-2 flex-[1_0_0]">
                     <div className="relative w-6 h-6">
                         <SpaceIcon className="w-6 h-6 text-[#D7DCF3] opacity-100 group-hover/sidebar:opacity-0 absolute left-0 top-0" />
-                        <IconButton className="opacity-0 group-hover/sidebar:opacity-100 absolute left-0 top-0" icon={<ExpandIcon />} size="md" status="neutral" />
+                        <IconButton className="opacity-0 group-hover/sidebar:opacity-100 absolute left-0 top-0" icon={<ExpandIcon />} size="md" status="neutral" onClick={() => open(
+                                                                                        <Modal onRequestClose={() => {
+                                                                                            closeTop(); // Close the modal when onRequestClose is called
+                                                                                            return true; // Allow the modal to close
+                                                                                        }}>
+                                                                                            <FeatureUnderDevelopment onClose={closeTop}/>
+                                                                                        </Modal>
+                                                                                    )}/>
                     </div>
                     <span className="text-[#D7DCF3] font-[Figtree] text-sm not-italic font-semibold leading-[normal] tracking-[0.112px]">Acme Co.</span>
                 </div>
-                <IconButton className="opacity-0 group-hover/sidebar:opacity-100" icon={<SettingsIcon />} size="md" status="neutral" />
+                <IconButton className="opacity-0 group-hover/sidebar:opacity-100" icon={<SettingsIcon />} size="md" status="neutral" onClick={() => open(
+                                                                                <Modal onRequestClose={() => {
+                                                                                    closeTop(); // Close the modal when onRequestClose is called
+                                                                                    return true; // Allow the modal to close
+                                                                                }}>
+                                                                                    <FeatureUnderDevelopment onClose={closeTop}/>
+                                                                                </Modal>
+                                                                            )}/>
             </div>
 
             <div className="flex py-[0] px-[20px] flex-col items-start gap-10 flex-[1_0_0] self-stretch">
@@ -170,7 +187,14 @@ export default function SideNav() {
                             <span className="text-[#F8FCFF] font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.8px] opacity-70">Admin</span>
                         </div>
                     </div>
-                    <IconButton size="sm" icon={<MenuIcon />} className="opacity-0 group-hover/sidebar:opacity-100" status="neutral" />
+                    <IconButton size="sm" icon={<MenuIcon />} className="opacity-0 group-hover/sidebar:opacity-100" status="neutral" onClick={() => open(
+                                                                                    <Modal onRequestClose={() => {
+                                                                                        closeTop(); // Close the modal when onRequestClose is called
+                                                                                        return true; // Allow the modal to close
+                                                                                    }}>
+                                                                                        <FeatureUnderDevelopment onClose={closeTop}/>
+                                                                                    </Modal>
+                                                                                )}/>
                 </div>
             </div>
         </nav>
