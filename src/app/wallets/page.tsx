@@ -7,10 +7,8 @@ import WalletDataPreloader from "../components/WalletDataPreloader"
 
 export default async function WalletsPage() {
 
-  const [wallets, cryptocurrencies] = await Promise.all([
-    getWallets(),
-    getCryptocurrencies()
-  ])
+  const wallets = await getWallets();
+  const cryptocurrencies = await getCryptocurrencies();
 
   function enrichWalletsWith24hChange(
     wallets: WalletSummary[],
