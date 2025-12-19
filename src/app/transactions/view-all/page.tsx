@@ -53,7 +53,7 @@ interface PageProps {
 
 export default async function TransactionsViewAllPage({ searchParams }: PageProps) {
   const transactions = await getTransactions();
-  const addresses = await getTransactions();
+  const addresses = await getAddresses();
 
   const typedTransactions = transactions as TransactionObject;
 
