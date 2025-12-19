@@ -23,7 +23,7 @@ export default function GnosisSafeCard({ wallet, onClick }: Wallet) {
 
     const handleSendClick = (e: React.MouseEvent) => {
         e.stopPropagation();
-        openSendTokensModal
+        openSendTokensModal();
     };
 
 

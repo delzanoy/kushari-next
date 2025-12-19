@@ -17,13 +17,6 @@ interface UserAvatarProps {
 }
 
 export default function UserAvatar({ member, index, onRemove }: UserAvatarProps) {
-    // Normalize roles to always be an array
-    const roles = typeof member.role === 'string'
-        ? [member.role]
-        : Array.isArray(member.role)
-            ? member.role
-            : [];
-
     const getAvatarImage = () => {
         if (member.name === "Delanoy Kunil") {
             return "/avatar/pink.png";

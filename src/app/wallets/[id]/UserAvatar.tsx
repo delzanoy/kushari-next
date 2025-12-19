@@ -1,18 +1,22 @@
 import Image from "next/image";
 
-export interface Member {
+
+interface Member {
     id: number;
     name: string;
     email: string;
-    colour: string;
+    colour?: string;
+    role?: string | string[]; // Updated to accept both string and array
 }
+
 
 interface UserAvatarProps {
     member: Member;
-    index: number;
+    index: number; // Make index required
 }
 
 export default function UserAvatar({ member, index }: UserAvatarProps) {
+
     const getAvatarImage = () => {
         if (member.name === "Delanoy Kunil") {
             return "/avatar/pink.png";
@@ -23,8 +27,6 @@ export default function UserAvatar({ member, index }: UserAvatarProps) {
         
         return `/avatar/${colors[colorIndex]}.png`;
     };
-
-    console.log("Rendering UserAvatar for member:", member);
 
     const getInitials = () => {
         if (!member.name) return 'U';

@@ -8,11 +8,17 @@ export interface BlockchainInfo {
 }
 
 export interface Member {
-  id: number;
-  role?: string | string[];
-  email?: string;
-  name?: string;
+    id: number;
+    name: string;
+    email: string;
+    colour: string;
 }
+
+export interface WalletMember {
+    memberId: number;
+    role?: string | string[];
+}
+
 
 export interface AssetBalance {
   uniqueId: string;
@@ -65,7 +71,7 @@ export interface BaseWallet {
 export interface MPCVaultWallet extends BaseWallet {
   type: 1;
   blockchain: BlockchainInfo[] | string;
-  members: Member[];
+  members: WalletMember[];
   threshold: number;
   transactionLimit?: number;
   blockedAssets?: BlockedAsset[];
@@ -79,7 +85,7 @@ export interface GnosisSafeWallet extends BaseWallet {
   type: 2;
   blockchain: BlockchainInfo[] | string;
   threshold: number;
-  members: Member[];
+  members: WalletMember[];
   transactionLimit?: number;
   blockedAssets?: BlockedAsset[];
   blockedNetworks?: string;
