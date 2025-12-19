@@ -1,6 +1,4 @@
 // types.ts
-import { AddressCardProps } from "./../../address-book/addresses/types";
-
 export enum ProposalCategory {
   NEEDS_APPROVAL = "NEEDS_APPROVAL",
   READY_TO_EXECUTE = "READY_TO_EXECUTE",

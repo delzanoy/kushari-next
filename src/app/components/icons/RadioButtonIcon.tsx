@@ -1,13 +1,13 @@
 // RadioButtonIcons.tsx
 import React from 'react';
 
-interface IconProps {
+// Define proper SVG props interface
+interface SVGIconProps extends React.SVGProps<SVGSVGElement> {
   className?: string;
-  [key: string]: any;
 }
 
 // Empty state (unchecked)
-export function RadioEmptyIcon({ className = "", ...props }: IconProps) {
+export function RadioEmptyIcon({ className = "", ...props }: SVGIconProps) {
   return (
     <svg 
       xmlns="http://www.w3.org/2000/svg" 
@@ -22,7 +22,7 @@ export function RadioEmptyIcon({ className = "", ...props }: IconProps) {
 }
 
 // Hover state
-export function RadioHoverIcon({ className = "", ...props }: IconProps) {
+export function RadioHoverIcon({ className = "", ...props }: SVGIconProps) {
   return (
     <svg 
       xmlns="http://www.w3.org/2000/svg" 
@@ -91,7 +91,7 @@ export function RadioHoverIcon({ className = "", ...props }: IconProps) {
 }
 
 // Filled/Checked state
-export function RadioFilledIcon({ className = "", ...props }: IconProps) {
+export function RadioFilledIcon({ className = "", ...props }: SVGIconProps) {
   return (
     <svg 
       xmlns="http://www.w3.org/2000/svg" 

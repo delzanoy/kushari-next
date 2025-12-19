@@ -5,9 +5,11 @@ import { Modal } from "@/app/components/modal/Modal";
 import FeatureUnderDevelopment from "@/app/components/FeatureUnderDevlopment/FeatureUnderDevelopment";
 import useModal from "@/app/hooks/useModal";
 import IconButton from "@/app/components/buttons/IconButton";
+import { useState, useCallback } from "react";
 
-export default function TransactionDetails({ transaction, addresses }: TransactionDetailsProps) {
+export default function TransactionDetails({ transaction }: TransactionDetailsProps) {
     const { open, closeTop } = useModal();
+    const [copied, setCopied] = useState(false);
 
     const showApprovalSteps = (transaction.walletType === 1 || transaction.walletType === 2) &&
         transaction.outgoing && !transaction.incoming;
@@ -26,6 +28,43 @@ export default function TransactionDetails({ transaction, addresses }: Transacti
     // Get initiator and executer names from transaction
     const initiator = transaction.initiator || 'Unknown';
     const executer = transaction.executer || 'Unknown';
+
+    // Handle copy hash functionality - returns void, not Promise<void>
+    const handleCopyHash = useCallback((e: React.MouseEvent) => {
+        e.stopPropagation(); // Prevent event from bubbling up to parent elements
+
+        // Create an async function and call it immediately
+        (async () => {
+            try {
+                await navigator.clipboard.writeText(transaction.id);
+                setCopied(true);
+
+                // Reset the "Copied!" state after 2 seconds
+                setTimeout(() => {
+                    setCopied(false);
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy hash:', err);
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = transaction.id;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+
+                setCopied(true);
+                setTimeout(() => {
+                    setCopied(false);
+                }, 2000);
+            }
+        })();
+    }, [transaction.id]);
+
+    // Handle click on the transaction hash container to prevent card interaction
+    const handleHashContainerClick = useCallback((e: React.MouseEvent) => {
+        e.stopPropagation();
+    }, []);
 
     return (
         <div className="flex flex-col items-start w-full max-w-[1040px]">
@@ -95,24 +134,39 @@ export default function TransactionDetails({ transaction, addresses }: Transacti
                 </div>
 
                 {/* Transaction Hash */}
-                <div className="flex pt-px items-center">
+                <div className="flex pt-px items-center" onClick={handleHashContainerClick}>
                     <div className="flex pt-0.5 justify-center items-center gap-2.5">
                         <span className="text-[#F8FCFF] font-[Geist] text-[10px] not-italic font-normal leading-[normal] opacity-50">Transaction hash</span>
                     </div>
                     <TertiaryButton
                         label={transaction.id}
-                        // labelOnHover="Copy hash" 
-                        tooltipTitle="Copy hash"
+                        tooltipTitle={copied ? "Copied!" : "Copy hash"}
+                        onClick={() => {
+                            // Create a synthetic event to pass if needed
+                            const syntheticEvent = { stopPropagation: () => { } } as React.MouseEvent;
+                            handleCopyHash(syntheticEvent);
+                        }}
+                        status={copied ? "brand" : "neutral"}
                     />
                     <div className="flex h-[24.5px] items-center gap-2.5">
-                        <IconButton className="hidden opacity-0 group-hover:opacity-100 transition-all duration-200 scale-0 group-hover:scale-100" icon={<ExternalLinkIcon className="text-[#EDEEEE]" />} size="sm" status="neutral" tooltipTitle="Coin Market Cap" onClick={() => open(
-                            <Modal onRequestClose={() => {
-                                closeTop(); // Close the modal when onRequestClose is called
-                                return true; // Allow the modal to close
-                            }}>
-                                <FeatureUnderDevelopment onClose={closeTop} />
-                            </Modal>
-                        )} />
+                        <IconButton
+                            className="hidden opacity-0 group-hover:opacity-100 transition-all duration-200 scale-0 group-hover:scale-100"
+                            icon={<ExternalLinkIcon className="text-[#EDEEEE]" />}
+                            size="sm"
+                            status="neutral"
+                            tooltipTitle="Coin Market Cap"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                open(
+                                    <Modal onRequestClose={() => {
+                                        closeTop(); // Close the modal when onRequestClose is called
+                                        return true; // Allow the modal to close
+                                    }}>
+                                        <FeatureUnderDevelopment onClose={closeTop} />
+                                    </Modal>
+                                );
+                            }}
+                        />
                     </div>
                 </div>
             </div>

@@ -5,4 +5,4 @@ interface Wallet {
     onClose?: () => void;
 }
 
-export default function MakeDeposit({ wallet, onClose }: Wallet) {}
+export default function MakeDeposit({  }: Wallet) {}

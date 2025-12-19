@@ -34,6 +34,8 @@
 //     uniqueClassifications: string[];
 //     initialSearchQuery?: string;
 //     initialPage?: number;
+//     initialWalletFilter?: string; // ADD THIS LINE
+//     initialTab?: ProposalCategory; // ADD THIS LINE
 //     onSearchChange?: (query: string) => void;
 // }
 
@@ -156,9 +158,14 @@
 //     addresses,
 //     uniqueClassifications,
 //     initialSearchQuery = '',
-//     initialPage = 1
+//     initialPage = 1,
+//     initialWalletFilter,
+//     initialTab
 // }: ProposalListProps) {
-//     const [activeTab, setActiveTab] = useState<ProposalCategory>(ProposalCategory.NEEDS_APPROVAL);
+//     const [activeTab, setActiveTab] = useState<ProposalCategory>(
+//         initialTab || ProposalCategory.NEEDS_APPROVAL
+//     );
+
 //     const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
 //     const [filterCriteria, setFilterCriteria] = useState<FilterCriterion[]>([]);
 //     const [currentPage, setCurrentPage] = useState(initialPage);
@@ -172,6 +179,12 @@
 //     useEffect(() => {
 //         setCurrentPage(initialPage);
 //     }, [initialPage]);
+
+//     useEffect(() => {
+//         if (initialTab && initialTab !== activeTab) {
+//             setActiveTab(initialTab);
+//         }
+//     }, [initialTab]);
 
 //     // Search function for proposals (status removed)
 //     const searchProposals = useCallback((proposal: Proposal, query: string): boolean => {
@@ -418,6 +431,26 @@
 //         }));
 //     }, [proposals]);
 
+//     useEffect(() => {
+//         if (initialWalletFilter && walletOptions.length > 0) {
+//             // Find the wallet that matches the wallet name from URL
+//             const matchingWallet = walletOptions.find(
+//                 option => option.displayProps.fullName.toLowerCase() === initialWalletFilter.toLowerCase()
+//             );
+
+//             if (matchingWallet) {
+//                 // Check if this filter isn't already applied
+//                 const existingWalletFilter = filterCriteria.find(c => c.field === 'wallet');
+//                 const isAlreadyFiltered = existingWalletFilter?.value.includes(matchingWallet.value);
+
+//                 if (!isAlreadyFiltered) {
+//                     // Apply the wallet filter using the existing updateFieldCriteria function
+//                     updateFieldCriteria('wallet', [matchingWallet.value]);
+//                 }
+//             }
+//         }
+//     }, [initialWalletFilter, walletOptions]);
+
 //     // Get network options
 //     const networkOptions = useMemo((): FilterDropdownOption[] =>
 //         Array.from(new Set(proposals.map(proposal => proposal.blockchain)))
@@ -601,8 +634,20 @@
 //             [ProposalCategory.DISCARDED]: filteredAllProposals.filter(p =>
 //                 p.category === ProposalCategory.DISCARDED
 //             ).length,
+
+//             // NEW: Special count for NavTab that only includes FAILED_REJECTED
+//             navTabDiscardedCount: filteredAllProposals.filter(p =>
+//                 p.status === ProposalStatus.FAILED_REJECTED
+//             ).length,
 //         };
 //     }, [filteredAllProposals]);
+
+//     const {
+//         [ProposalCategory.NEEDS_APPROVAL]: needsApprovalCount,
+//         [ProposalCategory.READY_TO_EXECUTE]: readyToExecuteCount,
+//         [ProposalCategory.DISCARDED]: discardedCount,
+//         navTabDiscardedCount
+//     } = categoryCounts;
 
 //     // Pagination calculations
 //     const totalPages = Math.ceil(filteredProposals.length / ITEMS_PER_PAGE);
@@ -824,7 +869,7 @@
 //                             />
 //                             <NavTab
 //                                 title="Discarded"
-//                                 titleCount={categoryCounts[ProposalCategory.DISCARDED]}
+//                                 titleCount={navTabDiscardedCount}
 //                                 titleColor="red"
 //                                 subtitles={[]}
 //                                 isActive={activeTab === ProposalCategory.DISCARDED}
@@ -881,11 +926,23 @@
 //                     </div>
 
 //                     <div className="flex flex-col gap-4">
-//                         <ProposalList
-//                             proposals={paginatedProposals}
-//                             addresses={addresses}
-//                             uniqueClassifications={uniqueClassifications}
-//                         />
+//                         <div className="flex flex-col">
+//                             <div className="group/group flex w-full max-w-[1040px] mx-auto flex pt-[10px] pr-[16px] pb-[10px] pl-[8px] items-center gap-4 self-stretch bg-[#18191B]">
+//                                 <span className="w-[154px] text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px]">Initiated</span>
+//                                 <span className="w-[160px] text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px]">Wallet & Network</span>
+//                                 <span className="w-[160px] text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px]">To</span>
+//                                 <span className="w-[160px] text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px]">Tokens</span>
+//                                 <span className="w-[160px] text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px]">Classification</span>
+//                                 <span className="w-[150px] text-[#F8FCFF] opacity-82 font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px]">Status</span>
+//                             </div>
+
+
+//                             <ProposalList
+//                                 proposals={paginatedProposals}
+//                                 addresses={addresses}
+//                                 uniqueClassifications={uniqueClassifications}
+//                             />
+//                         </div>
 //                         <div className="flex gap-2 items-center justify-end flex-grow">
 //                             {totalPages > 1 && (
 //                                 <PageSelector
@@ -931,6 +988,13 @@
 //         </div>
 //     );
 // }
+
+
+
+
+
+
+
 
 
 // ProposalListClient.tsx
@@ -1119,7 +1183,7 @@ export default function ProposalListClient({
         if (initialTab && initialTab !== activeTab) {
             setActiveTab(initialTab);
         }
-    }, [initialTab]);
+    }, [initialTab, activeTab]); // Added activeTab to dependencies
 
     // Search function for proposals (status removed)
     const searchProposals = useCallback((proposal: Proposal, query: string): boolean => {
@@ -1128,7 +1192,7 @@ export default function ProposalListClient({
         const searchTerm = query.toLowerCase().trim();
 
         // Helper function to safely check if a value contains the search term
-        const checkValue = (value: any): boolean => {
+        const checkValue = (value: unknown): boolean => {
             if (!value) return false;
             if (typeof value === 'string') {
                 return value.toLowerCase().includes(searchTerm);
@@ -1220,7 +1284,7 @@ export default function ProposalListClient({
     const proposalsWithDateInfo = useMemo(() => {
         const result: Array<Proposal & { showDate: boolean; isFirstOfDate: boolean }> = [];
 
-        Object.entries(proposalsByDate).forEach(([dateKey, proposals]) => {
+        Object.values(proposalsByDate).forEach((proposals) => {
             proposals.forEach((proposal, index) => {
                 result.push({
                     ...proposal,
@@ -1252,7 +1316,7 @@ export default function ProposalListClient({
     }, [filterCriteria]);
 
     // Helper function to get proposal values for filtering (status removed)
-    const getProposalValue = (proposal: Proposal, field: string): any => {
+    const getProposalValue = (proposal: Proposal, field: string): string | string[] => {
         switch (field) {
             case 'wallet':
                 return proposal.wallet?.toString() || '';
@@ -1261,7 +1325,7 @@ export default function ProposalListClient({
             case 'address':
                 // Handle address search for filtering
                 if (Array.isArray(proposal.recipients)) {
-                    return proposal.recipients
+                    const addresses = proposal.recipients
                         .map(r => {
                             if (r.addressId) {
                                 return r.addressId.toString();
@@ -1269,6 +1333,7 @@ export default function ProposalListClient({
                             return r.toAddress || '';
                         })
                         .filter((addr): addr is string => Boolean(addr));
+                    return addresses;
                 } else if (typeof proposal.recipients === 'string') {
                     // Handle case where recipients is a raw address string
                     return proposal.recipients;
@@ -1283,23 +1348,23 @@ export default function ProposalListClient({
             case 'classification':
                 return proposal.classification || '';
             default:
-                return (proposal as any)[field] || '';
+                return '';
         }
     };
 
     // Get selected values for a specific field from filter criteria
-    const getSelectedValuesForField = (fieldKey: string): any[] => {
+    const getSelectedValuesForField = (fieldKey: string): string[] => {
         const criterion = filterCriteria.find(c => c.field === fieldKey);
         if (!criterion) return [];
 
         if (Array.isArray(criterion.value)) {
-            return criterion.value;
+            return criterion.value.map(v => String(v));
         }
-        return [criterion.value];
+        return [String(criterion.value)];
     };
 
     // Update filter criteria for a specific field
-    const updateFieldCriteria = (fieldKey: string, newValues: any[]) => {
+    const updateFieldCriteria = (fieldKey: string, newValues: string[]) => {
         setFilterCriteria(prev => {
             const existingCriterionIndex = prev.findIndex(c => c.field === fieldKey);
 
@@ -1384,7 +1449,7 @@ export default function ProposalListClient({
                 }
             }
         }
-    }, [initialWalletFilter, walletOptions]);
+    }, [initialWalletFilter, walletOptions, filterCriteria]);
 
     // Get network options
     const networkOptions = useMemo((): FilterDropdownOption[] =>
@@ -1577,12 +1642,7 @@ export default function ProposalListClient({
         };
     }, [filteredAllProposals]);
 
-    const {
-        [ProposalCategory.NEEDS_APPROVAL]: needsApprovalCount,
-        [ProposalCategory.READY_TO_EXECUTE]: readyToExecuteCount,
-        [ProposalCategory.DISCARDED]: discardedCount,
-        navTabDiscardedCount
-    } = categoryCounts;
+    const { navTabDiscardedCount } = categoryCounts;
 
     // Pagination calculations
     const totalPages = Math.ceil(filteredProposals.length / ITEMS_PER_PAGE);
@@ -1664,8 +1724,8 @@ export default function ProposalListClient({
     const activeFilterFields = useMemo(() => {
         return cleanedFilterCriteria.map(criterion => {
             const field = filterFields.find(f => f.key === criterion.field);
-            return field ? { field, criterion } : null;
-        }).filter(Boolean) as { field: FilterField; criterion: FilterCriterion }[];
+            return field ? { field } : null;
+        }).filter(Boolean) as { field: FilterField }[];
     }, [cleanedFilterCriteria, filterFields]);
 
     const clearSearch = () => {
@@ -1744,7 +1804,7 @@ export default function ProposalListClient({
                             />
                         </div>
                         <div className="flex gap-4">
-                            {activeFilterFields.map(({ field, criterion }) => (
+                            {activeFilterFields.map(({ field }) => (
                                 <div key={field.key}>
                                     <FilterDropdown
                                         options={getAvailableOptions(field.key)}

@@ -1,19 +1,23 @@
 "use client";
-import { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { ArrowDropDownUpIcon, SearchIcon, CheckBoxFilledIcon, CheckBoxOutlineIcon, ArrowDropDownRightIcon } from '../icons';
+import PrimaryButton from '../buttons/PrimaryButton';
 
 export interface FilterCriterion {
   id: string;
   field: string;
   operator: string;
-  value: any;
+  value: string | string[]; // Changed from any to string or string array
 }
 
-export interface FilterDropdownOption<T = any> {
-  value: T;
+export interface FilterDropdownOption {
+  value: string; // Changed from any to string
   display: React.ReactNode;
-  displayProps: any;
-  id: any;
+  displayProps: {
+    fullName: string;
+    icon?: React.ReactNode;
+  }; // Changed from any to specific type
+  id: string; // Changed from any to string
   searchText?: string;
   groupKey?: string;
 }
@@ -33,7 +37,7 @@ interface ComplexFilterProps {
   onCriteriaChange: (criteria: FilterCriterion[]) => void;
   label?: string;
   buttonIcon?: React.ReactNode;
-  availableValuesByField?: Map<string, Set<any>>;
+  availableValuesByField?: Map<string, Set<string>>; // Changed from any to string
 }
 
 // Extract the options panel into a separate component to avoid conditional hooks
@@ -42,9 +46,9 @@ interface FilterOptionsPanelProps {
   frozenOptions: FilterDropdownOption[];
   criterion: FilterCriterion | undefined;
   searchTerm: string;
-  onOptionSelect: (fieldKey: string, value: any, isMultiSelect: boolean, currentCriterion?: FilterCriterion) => void;
+  onOptionSelect: (fieldKey: string, value: string | string[], isMultiSelect: boolean, currentCriterion?: FilterCriterion) => void; // Changed from any to string | string[]
   onMouseLeave: () => void;
-  availableValues?: Set<any>; // Values that exist in the filtered dataset
+  availableValues?: Set<string>; // Changed from any to string
   hasActiveFilters: boolean;
 }
 
@@ -63,8 +67,13 @@ const FilterOptionsPanel: React.FC<FilterOptionsPanelProps> = ({
     if (typeof node === 'number') return node.toString();
     if (Array.isArray(node)) return node.map(extractTextFromNode).join(' ');
 
-    if (node && typeof node === 'object' && 'props' in node) {
-      return extractTextFromNode((node as any).props?.children);
+    if (node && typeof node === 'object' && React.isValidElement(node)) {
+      const element = node as React.ReactElement;
+      // Type-safe way to access props.children
+      const props = element.props as { children?: React.ReactNode };
+      if (props.children) {
+        return extractTextFromNode(props.children);
+      }
     }
 
     return '';
@@ -318,7 +327,7 @@ const ComplexFilter: React.FC<ComplexFilterProps> = ({
     setFrozenFieldOptions(new Map());
   };
 
-  const addCriterion = (fieldKey: string, value?: any) => {
+  const addCriterion = (fieldKey: string, value?: string | string[]) => { // Changed from any to string | string[]
     const field = fields.find(f => f.key === fieldKey);
     if (!field) return;
 
@@ -339,34 +348,12 @@ const ComplexFilter: React.FC<ComplexFilterProps> = ({
     onCriteriaChange(newCriteria);
   };
 
-  const removeCriterion = (id: string) => {
-    const newCriteria = criteria.filter(criterion => criterion.id !== id);
-    onCriteriaChange(newCriteria);
-  };
-
-  const clearAllFilters = () => {
-    onCriteriaChange([]);
-  };
-
-  const handleOptionSelect = (fieldKey: string, value: any, isMultiSelect: boolean, currentCriterion?: FilterCriterion) => {
+  const handleOptionSelect = (fieldKey: string, value: string | string[], isMultiSelect: boolean, currentCriterion?: FilterCriterion) => { // Changed from any to string | string[]
     if (currentCriterion) {
       updateCriterion(currentCriterion.id, { value });
     } else {
       addCriterion(fieldKey, value);
     }
-  };
-
-  // Helper function to extract text from React nodes for search
-  const extractTextFromNode = (node: React.ReactNode): string => {
-    if (typeof node === 'string') return node;
-    if (typeof node === 'number') return node.toString();
-    if (Array.isArray(node)) return node.map(extractTextFromNode).join(' ');
-
-    if (node && typeof node === 'object' && 'props' in node) {
-      return extractTextFromNode((node as any).props?.children);
-    }
-
-    return '';
   };
 
   // Helper function to check if a criterion has selected values
@@ -384,10 +371,10 @@ const ComplexFilter: React.FC<ComplexFilterProps> = ({
       if (field && field.options) {
         // Create a deep copy of options to freeze them
         const optionsCopy = field.options.map(opt => ({ ...opt }));
-        setFrozenFieldOptions(new Map(frozenFieldOptions.set(hoveredField, optionsCopy)));
+        setFrozenFieldOptions(prev => new Map(prev.set(hoveredField, optionsCopy))); // Fixed useEffect dependency
       }
     }
-  }, [hoveredField, fields]);
+  }, [hoveredField, fields]); // Removed frozenFieldOptions from dependencies
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -421,12 +408,16 @@ const ComplexFilter: React.FC<ComplexFilterProps> = ({
     }
   };
 
+  const clearAllFilters = () => {
+    onCriteriaChange([]);
+  };
+
   return (
     <div className="relative" ref={dropdownRef}>
       {/* Always visible chip button */}
       <button
         onClick={toggleDropdown}
-        className={`flex items-center flex-shrink-0 gap-1 rounded-full hover:bg-[#F8FCFF]/16 border-dashed border-[1px] hover:border-[#F8FCFF]/64 ${criteria.length > 0
+        className={`flex items-center flex-shrink-0 gap-1 rounded-full hover:bg-[#F8FCFF]/16 border-dashed border-[1px] hover:border-[#F8FCFF]/64 cursor-pointer ${criteria.length > 0
           ? "bg-[#26C9C9]/10"
           : "bg-[#F8FCFF]/2"
           } ${getButtonPadding()}`}
@@ -542,13 +533,14 @@ const ComplexFilter: React.FC<ComplexFilterProps> = ({
 
                 {/* Clear All */}
                 {criteria.length > 0 && (
-                  <div className="p-1 pt-2 border-t border-[#2D373B]">
-                    <button
+                  <div className="p-1 border-t border-[#2D373B]">
+                    {/* <button
                       onClick={clearAllFilters}
                       className="w-full text-center text-[#F37272] font-[Geist] text-xs hover:text-[#ff8a8a] py-2 rounded hover:bg-[#2D373B] transition-colors"
                     >
                       Clear All Filters
-                    </button>
+                    </button> */}
+                    <PrimaryButton label='Clear all' variant='neutral' size='md' className="w-full mt-2" onClick={clearAllFilters}/>
                   </div>
                 )}
               </div>

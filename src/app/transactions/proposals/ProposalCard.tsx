@@ -51,7 +51,7 @@ export default function ProposalCard({
         }
     };
 
-    const renderStyle = (status: String) => {
+    const renderStyle = (status: string) => { // Changed from String to string
         switch (status) {
             case "ACTION_REQUIRED":
                 return "bg-[#121819]";
@@ -64,7 +64,7 @@ export default function ProposalCard({
         }
     }
 
-    const renderStatus = (status: String) => {
+    const renderStatus = (status: string) => { // Changed from String to string
         switch (status) {
             case "ACTION_REQUIRED":
                 return <div className="flex w-[152px] h-[18px] pr-[7px] justify-end items-center gap-1">

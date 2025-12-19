@@ -5,6 +5,7 @@ import Tooltip from "../../../components/TooltipComponent";
 import { Wallet, MPCVaultWallet, GnosisSafeWallet } from "../../type";
 import { Cryptocurrency } from '@/app/assets/types';
 import UserAvatar from "../UserAvatar";
+import { Member } from '../../type';
 
 // Import the exact same icon components and helper functions
 import { BSCIcon, EthereumIcon, GnosisIcon, OPTIMISMIcon, PolygonIcon, SOLIcon } from "@/app/components/icons";
@@ -73,7 +74,7 @@ const getBlockchainIcons = (
 interface PolicyContentProps {
     wallet: Wallet;
     cryptocurrencies?: Cryptocurrency[];
-    members?: any[];
+    members?: Member[];
 }
 
 // AssetListDisplay component - exact same as original
@@ -101,6 +102,8 @@ const PolicyContent = memo(({ wallet, cryptocurrencies = [], members = [] }: Pol
     const isMPCVault = wallet.type === 1;
     const isGnosisSafe = wallet.type === 2;
 
+    console.log(members);
+
     // Safe access to wallet-specific properties
     const transactionLimit = (isMPCVault || isGnosisSafe) ? (wallet as MPCVaultWallet | GnosisSafeWallet).transactionLimit : undefined;
     const walletMembers = (isMPCVault || isGnosisSafe) ? (wallet as MPCVaultWallet | GnosisSafeWallet).members : [];
@@ -111,15 +114,19 @@ const PolicyContent = memo(({ wallet, cryptocurrencies = [], members = [] }: Pol
     const allowedAssets = (isMPCVault || isGnosisSafe) ? (wallet as MPCVaultWallet | GnosisSafeWallet).allowedAssets : undefined;
 
     const matchingMembers = useMemo(() => {
-        return walletMembers.map(walletMember => {
-            const fullMember = members.find(m => m.id === walletMember.memberId);
-            return fullMember ? {
-                ...fullMember,
-                // Ensure role is always an array for consistent handling
-                roles: Array.isArray(walletMember.role) ? walletMember.role : [walletMember.role]
-            } : null;
-        }).filter(Boolean);
+        return walletMembers
+            .map(walletMember => {
+                // Find the full member details from the members array
+                const fullMember = members.find(m => m.id === walletMember.id);
+                return fullMember ? {
+                    ...fullMember,
+                    roles: Array.isArray(walletMember.role) ? walletMember.role : [walletMember.role]
+                } : null;
+            })
+            .filter((member): member is Member & { roles: string[] } => member !== null);
     }, [walletMembers, members]);
+
+    console.log("Wallet Members:", walletMembers);
 
     const getAssetDetailsByIds = (assetIds: { assetId: number }[], cryptocurrencies: Cryptocurrency[]): (Cryptocurrency & { assetId: number })[] => {
         if (!assetIds || !cryptocurrencies) return [];
@@ -176,7 +183,7 @@ const PolicyContent = memo(({ wallet, cryptocurrencies = [], members = [] }: Pol
                 <div className="flex gap-6 w-full flex-wrap">
                     {matchingMembers.map((member, index) => (
                         <UserAvatar
-                            key={member.id}
+                            key={member?.id}
                             member={member}
                             index={index}
                         />

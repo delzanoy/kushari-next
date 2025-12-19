@@ -31,6 +31,11 @@ export default function SuccessModal({
     }
   }, []);
 
+  const handleClose = useCallback(() => {
+    clearTimer();
+    onClose?.();
+  }, [onClose, clearTimer]);
+
   // Handle ESC stage changes - more robust version
   useEffect(() => {
     if (!isTopModal) {
@@ -53,12 +58,7 @@ export default function SuccessModal({
       setShowEscTooltip(false);
       setEscPressCount(0);
     }
-  }, [escStage, isTopModal]);
-
-  const handleClose = useCallback(() => {
-    clearTimer();
-    onClose?.();
-  }, [onClose, clearTimer]);
+  }, [escStage, isTopModal, handleClose]);
 
   // Handle ESC key directly as fallback
   useEffect(() => {

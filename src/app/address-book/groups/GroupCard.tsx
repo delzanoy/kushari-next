@@ -42,7 +42,7 @@ const dispatchNavHover = (isHovering: boolean) => {
     }));
 };
 
-export default function GroupCard({ group, onUpdate, onDelete }: GroupProps) {
+export default function GroupCard({ group }: GroupProps) {
     const router = useRouter();
 
     const handleCardClick = () => {

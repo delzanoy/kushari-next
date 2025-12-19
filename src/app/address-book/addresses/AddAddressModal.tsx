@@ -63,7 +63,7 @@ export default function AddAddressModal({ isOpen, onClose, groups = [], onAddres
       ...prev,
       [name]: value,
     }));
-    
+
     if (name === 'walletAddress' && walletAddressError) {
       setWalletAddressError('');
     }
@@ -86,11 +86,11 @@ export default function AddAddressModal({ isOpen, onClose, groups = [], onAddres
   // Validate form
   const validateForm = (): boolean => {
     let isValid = true;
-    
+
     setWalletAddressError('');
     setAddressNameError('');
     setError('');
-    
+
     if (!formData.walletAddress.trim()) {
       setWalletAddressError('Wallet address is required');
       isValid = false;
@@ -98,7 +98,7 @@ export default function AddAddressModal({ isOpen, onClose, groups = [], onAddres
       setWalletAddressError('Please enter a valid wallet address (Ethereum: 0x... or Solana: base58)');
       isValid = false;
     }
-    
+
     if (!formData.addressName.trim()) {
       setAddressNameError('Address name is required');
       isValid = false;
@@ -106,16 +106,16 @@ export default function AddAddressModal({ isOpen, onClose, groups = [], onAddres
       setAddressNameError('Address name must be at least 2 characters');
       isValid = false;
     }
-    
+
     return isValid;
   };
 
   const isValidWalletAddress = (address: string): boolean => {
     const cleanAddress = address.trim();
-    
+
     const ethAddressRegex = /^0x[a-fA-F0-9]{40}$/;
     const solanaAddressRegex = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
-    
+
     if (cleanAddress.startsWith('0x')) {
       return ethAddressRegex.test(cleanAddress) || cleanAddress.length === 42;
     } else {
@@ -125,54 +125,54 @@ export default function AddAddressModal({ isOpen, onClose, groups = [], onAddres
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
-    
+
     setLoading(true);
     setError('');
-    
+
     try {
       // Convert selected group IDs from strings to numbers
       const groupIds = formData.selectedGroups.map(id => parseInt(id, 10));
-      
+
       console.log('Creating address with groups:', {
         walletHash: formData.walletAddress.trim(),
         name: formData.addressName.trim(),
         groupIds: groupIds.length > 0 ? groupIds : undefined,
       });
-      
+
       // Create the address using the mock cache
       const newAddress = await createAddress({
         walletHash: formData.walletAddress.trim(),
         name: formData.addressName.trim(),
         groupIds: groupIds.length > 0 ? groupIds : undefined,
       });
-      
+
       console.log('Address created successfully:', newAddress);
       console.log('Added to groups:', groupIds);
-      
+
       // Reset form
       setFormData({
         walletAddress: '',
         addressName: '',
         selectedGroups: [],
       });
-      
+
       // Close modal
       onClose();
-      
+
       // Dispatch events
       window.dispatchEvent(new CustomEvent('addressesUpdated'));
       window.dispatchEvent(new CustomEvent('userAddressesUpdated'));
       window.dispatchEvent(new CustomEvent('groupsUpdated'));
-      
+
       // Notify parent
       if (onAddressAdded) {
         onAddressAdded();
       }
-      
+
     } catch (err) {
       console.error('Failed to add address:', err);
       setError(err instanceof Error ? err.message : 'Failed to add address. Please try again.');
@@ -252,7 +252,7 @@ export default function AddAddressModal({ isOpen, onClose, groups = [], onAddres
           disabled={loading}
           required
         />
-        
+
         <Dropdown
           label="Groups"
           placeholder="Add to groups (optional)"
@@ -269,78 +269,31 @@ export default function AddAddressModal({ isOpen, onClose, groups = [], onAddres
           allowCreate={false}
           maxHeight="300px"
         />
-        
+
         {/* Display selected groups as chips */}
         {formData.selectedGroups.length > 0 && (
           <div className="flex items-start content-start gap-2 self-stretch flex-wrap">
             {formData.selectedGroups.map((groupId) => {
               const group = allGroups.find(g => g.id.toString() === groupId);
-              
+
               if (group) {
-                const isUserGroup = group.id >= 10000;
-                
                 return (
-
-<div key={group.id} className="relative group flex pt-[2px] pr-[8px] pb-[2px] pl-[8px] items-start gap-1 rounded-[10px] border-[0.5px] border-[0.5px] border-solid border-[#F8FCFF]/24 bg-[#F8FCFF]/6">
-                                                {group.name}
-                                                <IconButton
-                                                    className="opacity-50 group-hover:opacity-100 transition-opacity self-center group-hover:shadow-[0_0_10px_6px_#0E1011] rounded-full"
-                                                    icon={<CloseCircleFilledIcon />}
-                                                    size="sm"
-                                                    status="neutral"
-                                                    onClick={() => removeGroup(groupId)}
-                                                />
-                                            </div>
-
-
-                  // <div
-                  //   key={group.id}
-                  //   className={`inline-flex items-center gap-2 px-3 py-2 rounded-md border ${isUserGroup ? 'bg-[#F8FCFF]/10 border-[#F8FCFF]/20' : 'bg-blue-500/10 border-blue-500/20'}`}
-                  // >
-                  //   <div className="flex flex-col">
-                  //     <span className="text-[#F8FCFF] font-[Geist] text-sm not-italic font-medium leading-[normal]">
-                  //       {group.name}
-                  //     </span>
-                  //     <div className="flex items-center gap-1">
-                  //       <span className="text-[#F8FCFF]/60 font-[Geist] text-xs not-italic font-normal leading-[normal]">
-                  //         {group.count} address{group.count !== 1 ? 'es' : ''}
-                  //       </span>
-                  //       {isUserGroup ? (
-                  //         <span className="text-xs px-1 py-0.5 bg-green-500/20 text-green-400 rounded">
-                  //           User
-                  //         </span>
-                  //       ) : (
-                  //         <span className="text-xs px-1 py-0.5 bg-blue-500/20 text-blue-400 rounded">
-                  //           API
-                  //         </span>
-                  //       )}
-                  //     </div>
-                  //   </div>
-                  //   <button
-                  //     type="button"
-                  //     onClick={() => removeGroup(groupId)}
-                  //     className="ml-2 text-[#F8FCFF]/40 hover:text-[#F8FCFF]"
-                  //     disabled={loading}
-                  //   >
-                  //     <CloseCircleFilledIcon className="h-4 w-4" />
-                  //   </button>
-                  // </div>
+                  <div key={group.id} className="relative group flex pt-[2px] pr-[8px] pb-[2px] pl-[8px] items-start gap-1 rounded-[10px] border-[0.5px] border-[0.5px] border-solid border-[#F8FCFF]/24 bg-[#F8FCFF]/6">
+                    {group.name}
+                    <IconButton
+                      className="opacity-50 group-hover:opacity-100 transition-opacity self-center group-hover:shadow-[0_0_10px_6px_#0E1011] rounded-full"
+                      icon={<CloseCircleFilledIcon />}
+                      size="sm"
+                      status="neutral"
+                      onClick={() => removeGroup(groupId)}
+                    />
+                  </div>
                 );
               }
               return null;
             })}
           </div>
         )}
-        
-        {/* {formData.selectedGroups.length > 0 && (
-          <div className="text-[#F8FCFF]/60 font-[Geist] text-sm not-italic font-normal leading-[normal] mt-1">
-            Will add to {formData.selectedGroups.length} group{formData.selectedGroups.length !== 1 ? 's' : ''}
-            {formData.selectedGroups.some(g => {
-              const groupId = parseInt(g, 10);
-              return groupId >= 10000;
-            }) && " (User group counts will update)"}
-          </div>
-        )} */}
 
         {error && (
           <div className="text-sm text-red-400 bg-red-400/10 px-3 py-2 rounded w-full font-[Geist]">

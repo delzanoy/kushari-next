@@ -74,7 +74,7 @@ export default function AddressCard({ address, onSelect, selected }: AddressCard
         </div>
 
         <div className="flex h-[30px] justify-start items-center gap-2.5 flex-[1_0_0]">
-            {displayGroups.map((group, index) => (
+            {displayGroups.map((group) => (
                 <span
                     key={group.groupId}
                     className="text-[#F8FCFF] text-ellipsis font-[Geist] text-sm not-italic font-extralight leading-[normal] tracking-[0.7px] truncate"

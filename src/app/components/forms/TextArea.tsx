@@ -40,7 +40,6 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
     ) {
         const {
             state,
-            localError,
             inputId,
             handleFocus,
             handleBlur,

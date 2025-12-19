@@ -43,11 +43,6 @@ export interface AssetCardProps {
   onExpand?: (id: string) => void;
 }
 
-
-
-
-
-
 export interface Cryptocurrency {
   id: number;
   name: string;

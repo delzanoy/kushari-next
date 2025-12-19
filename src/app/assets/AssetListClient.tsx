@@ -167,6 +167,20 @@ export default function AssetListClient({ assets, initialWalletFilter }: AssetLi
     }));
   }, [assetsForWalletOptions]);
 
+  // useEffect(() => {
+  //   if (initialWalletFilter && walletOptions.length > 0) {
+  //     // Find the wallet ID that matches the wallet name
+  //     const matchingWallet = walletOptions.find(
+  //       option => option.displayProps.fullName.toLowerCase() === initialWalletFilter.toLowerCase()
+  //     );
+
+  //     if (matchingWallet && !selectedWallets.includes(matchingWallet.value)) {
+  //       setSelectedWallets([matchingWallet.value]);
+  //     }
+  //   }
+  // }, [initialWalletFilter, walletOptions]);
+
+
   useEffect(() => {
     if (initialWalletFilter && walletOptions.length > 0) {
       // Find the wallet ID that matches the wallet name
@@ -174,8 +188,14 @@ export default function AssetListClient({ assets, initialWalletFilter }: AssetLi
         option => option.displayProps.fullName.toLowerCase() === initialWalletFilter.toLowerCase()
       );
 
-      if (matchingWallet && !selectedWallets.includes(matchingWallet.value)) {
-        setSelectedWallets([matchingWallet.value]);
+      if (matchingWallet) {
+        setSelectedWallets(prev => {
+          // Only update if not already included
+          if (!prev.includes(matchingWallet.value)) {
+            return [matchingWallet.value];
+          }
+          return prev;
+        });
       }
     }
   }, [initialWalletFilter, walletOptions]);
@@ -323,7 +343,7 @@ export default function AssetListClient({ assets, initialWalletFilter }: AssetLi
                 setSelectedWallets([]);
                 setSelectedBlockchains([]);
               }}
-              className="flex items-center flex-shrink-0 gap-1 pt-[3px] pr-[8px] pb-[3px] pl-[8px] rounded-full bg-[#F8FCFF]/16 hover:bg-[#F8FCFF]/16 border-solid border-[1px] border-[#F8FCFF]/32 hover:border-[#F8FCFF]/64"
+              className="flex items-center flex-shrink-0 gap-1 pt-[3px] pr-[8px] pb-[3px] pl-[8px] rounded-full bg-[#F8FCFF]/16 hover:bg-[#F8FCFF]/16 border-solid border-[1px] border-[#F8FCFF]/32 hover:border-[#F8FCFF]/64 cursor-pointer transition-all duration-150 ease-in-out"
             // className="group/dropdown flex py-[2px] px-[8px] items-center rounded-md border-[0.5px] gap-[4px] border-dashed hover:border-solid border-[#F8FCFF]/24 bg-[#F8FCFF]/02 group-hover:border-[#F8FCFF] group-hover:bg-[#F8FCFF]/16 hover:cursor-pointer transition-all duration-150 ease-in-out hover:border-[#26C9C9]/64 hover:bg-[#26C9C9]/12"
             >
               <span className="font-[Geist] text-sm">

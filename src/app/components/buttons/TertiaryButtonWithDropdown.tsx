@@ -33,7 +33,7 @@ type TertiaryButtonWithDropdownProps = {
     
     // Dropdown specific props
     dropdownOptions: DropdownOption[];
-    dropdownValue?: any;
+    dropdownValue?: string; // Changed from any to string
     dropdownPlaceholder?: string;
     onDropdownChange: (val: string) => void;
     dropdownDisabled?: boolean;
@@ -44,7 +44,7 @@ type TertiaryButtonWithDropdownProps = {
 };
 
 export default function TertiaryButtonWithDropdown({
-    label,
+    label, // Keeping this prop but not using it directly in button text - used only for tooltip/accessibility
     labelOnHover,
     size = 'md',
     status = "brand",
@@ -166,7 +166,7 @@ export default function TertiaryButtonWithDropdown({
 
     // Find current selected option display value
     const selectedOption = normalizedOptions.find(opt => opt.value === dropdownValue);
-    const displayValue = selectedOption ? selectedOption.label : dropdownPlaceholder;
+    const displayValue = selectedOption ? String(selectedOption.label) : dropdownPlaceholder;
 
     // EXACTLY MATCHING TERTIARYBUTTON STYLING
     const containerSizes = {
@@ -213,6 +213,7 @@ export default function TertiaryButtonWithDropdown({
             <div 
                 className={`group/tertiary-button inline-flex rounded-full items-center hover:cursor-pointer ${containerSizes} ${className} ${statusClasses} ${(disabled || dropdownDisabled) ? 'opacity-50 cursor-not-allowed' : ''}`}
                 onClick={handleButtonClick}
+                aria-label={`${label}: ${displayValue}`} // Using label for accessibility
             >
                 {/* Leading Icon - EXACTLY matches TertiaryButton */}
                 {leadingIcon && (

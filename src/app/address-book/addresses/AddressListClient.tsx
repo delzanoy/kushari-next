@@ -84,30 +84,30 @@ export default function AddressListClient({ addresses: initialAddresses, groups 
     }, [initialAddresses, userAddresses, addressGroups, allGroups, loading]);
 
     // Prepare filter options from addresses' groups (including demo groups)
-    const groupFilterOptions = useMemo(() => {
-        // Get all unique groups from all addresses
-        const allGroupsFromAddresses = addresses.flatMap(address =>
-            address.groups.map(group => ({
-                groupId: group.groupId,
-                groupName: group.groupName
-            }))
-        );
+    // const groupFilterOptions = useMemo(() => {
+    //     // Get all unique groups from all addresses
+    //     const allGroupsFromAddresses = addresses.flatMap(address =>
+    //         address.groups.map(group => ({
+    //             groupId: group.groupId,
+    //             groupName: group.groupName
+    //         }))
+    //     );
 
-        // Remove duplicates and sort by group name
-        const uniqueGroups = Array.from(
-            new Map(allGroupsFromAddresses.map(group => [group.groupId, group])).values()
-        ).sort((a, b) => a.groupName.localeCompare(b.groupName));
+    //     // Remove duplicates and sort by group name
+    //     const uniqueGroups = Array.from(
+    //         new Map(allGroupsFromAddresses.map(group => [group.groupId, group])).values()
+    //     ).sort((a, b) => a.groupName.localeCompare(b.groupName));
 
-        return uniqueGroups.map(group => ({
-            value: group.groupId,
-            display: group.groupName,
-            displayProps: {
-                fullName: group.groupName,
-            },
-            id: group.groupId.toString(),
-            searchText: group.groupName.toLowerCase(),
-        }));
-    }, [addresses]);
+    //     return uniqueGroups.map(group => ({
+    //         value: group.groupId,
+    //         display: group.groupName,
+    //         displayProps: {
+    //             fullName: group.groupName,
+    //         },
+    //         id: group.groupId.toString(),
+    //         searchText: group.groupName.toLowerCase(),
+    //     }));
+    // }, [addresses]);
 
     // Search function for addresses
     const searchAddresses = useCallback((address: AddressCardProps, query: string): boolean => {
@@ -159,23 +159,23 @@ export default function AddressListClient({ addresses: initialAddresses, groups 
         return result;
     }, [addresses, isUngrouped, searchTerm, selectedGroups, searchAddresses]);
 
-    const handleGroupSelectionChange = (selectedIds: number[]) => {
-        setSelectedGroups(selectedIds);
-    };
+    // const handleGroupSelectionChange = (selectedIds: number[]) => {
+    //     setSelectedGroups(selectedIds);
+    // };
 
     const clearSearch = () => {
         setSearchTerm('');
     };
 
-    const clearAllFilters = () => {
-        setSearchTerm('');
-        setSelectedGroups([]);
-        // Clear URL parameters
-        const newSearchParams = new URLSearchParams(searchParams);
-        newSearchParams.delete('ungrouped');
-        newSearchParams.delete('search');
-        router.replace(`/address-book/addresses?${newSearchParams.toString()}`);
-    };
+    // const clearAllFilters = () => {
+    //     setSearchTerm('');
+    //     setSelectedGroups([]);
+    //     // Clear URL parameters
+    //     const newSearchParams = new URLSearchParams(searchParams);
+    //     newSearchParams.delete('ungrouped');
+    //     newSearchParams.delete('search');
+    //     router.replace(`/address-book/addresses?${newSearchParams.toString()}`);
+    // };
 
     const handleUngroupedClear = () => {
         // Clear ungrouped filter from URL

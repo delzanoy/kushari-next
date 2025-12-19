@@ -36,7 +36,8 @@ export default function ProposalList({
         });
 
         const result: ProposalWithDateInfo[] = [];
-        Object.entries(groups).forEach(([dateKey, proposals]) => {
+        // Use Object.values instead of Object.entries since we don't need the dateKey
+        Object.values(groups).forEach((proposals) => {
             proposals.forEach((proposal, index) => {
                 result.push({
                     ...proposal,

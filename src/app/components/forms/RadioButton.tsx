@@ -32,7 +32,7 @@ export const RadioButton: React.FC<RadioButtonProps> = ({
   name,
   checked,
   disabled = false,
-  error = false,
+  // error = false, // Removed unused error prop
   onChange,
   icon,
   size = "md",

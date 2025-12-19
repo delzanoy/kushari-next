@@ -3,7 +3,6 @@ import { useInput } from "../../hooks/useInput";
 import { InputIcon } from "./InputIcon";
 import { BaseInputProps } from "./types";
 import {
-  getInputClasses,
   getHelperTextClasses,
   getBorderColor,
   getBackgroundColor,
@@ -68,15 +67,24 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
       maxHeight = "320px",
       ...inputProps
     },
-    ref
+    forwardedRef
   ) {
     const [isOpen, setIsOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
-    const [isFocused, setIsFocused] = useState(false);
-    const [isTyping, setIsTyping] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
     const triggerInputRef = useRef<HTMLInputElement>(null);
     const triggerContainerRef = useRef<HTMLDivElement>(null);
+
+    // Merge forwarded ref with dropdownRef
+    useEffect(() => {
+      if (forwardedRef) {
+        if (typeof forwardedRef === 'function') {
+          forwardedRef(dropdownRef.current);
+        } else {
+          forwardedRef.current = dropdownRef.current;
+        }
+      }
+    }, [forwardedRef]);
 
     // Helper function to normalize value to array for internal use
     const normalizeValueToArray = (val: string | string[] | undefined): string[] => {
@@ -102,16 +110,13 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
       handleBlur,
       handleMouseEnter,
       handleMouseLeave,
-      handleChange: handleInputChange,
     } = useInput({
       error,
       disabled,
       onFocus: (e) => {
-        setIsFocused(true);
         onFocus?.(e);
       },
       onBlur: (e) => {
-        setIsFocused(false);
         onBlur?.(e);
       },
       onChange: handleSingleChange,
@@ -123,7 +128,6 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
       function handleClickOutside(event: MouseEvent) {
         if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
           setIsOpen(false);
-          setIsTyping(false);
           setSearchQuery("");
 
           // Clear focus properly when clicking outside
@@ -131,8 +135,6 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
             if (document.activeElement === triggerContainerRef.current) {
               triggerContainerRef.current?.blur();
             }
-            // Also ensure focus state is reset
-            setIsFocused(false);
           }, 0);
         }
       }
@@ -229,7 +231,6 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
         // Single select - just set the value
         onChange(optionValue);
         setIsOpen(false);
-        setIsTyping(false);
         setSearchQuery("");
         setTimeout(() => {
           triggerContainerRef.current?.blur();
@@ -251,7 +252,6 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
           // Single select - just set the value
           onChange(searchQuery.trim());
           setIsOpen(false);
-          setIsTyping(false);
           setSearchQuery("");
           setTimeout(() => {
             triggerContainerRef.current?.blur();
@@ -286,18 +286,14 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
 
       if (isOpen) {
         setIsOpen(false);
-        setIsTyping(false);
         setSearchQuery("");
         setTimeout(() => {
           triggerContainerRef.current?.blur();
         }, 0);
       } else {
         setIsOpen(true);
-        if (allowSearch) {
-          setIsTyping(true);
-          // Clear search query when opening
-          setSearchQuery("");
-        }
+        // Clear search query when opening
+        setSearchQuery("");
       }
     };
 
@@ -308,17 +304,13 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
 
       if (isOpen) {
         setIsOpen(false);
-        setIsTyping(false);
         setSearchQuery("");
         setTimeout(() => {
           triggerContainerRef.current?.blur();
         }, 0);
       } else {
         setIsOpen(true);
-        if (allowSearch) {
-          setIsTyping(true);
-          setSearchQuery("");
-        }
+        setSearchQuery("");
       }
     };
 
@@ -326,7 +318,6 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
     const handleTriggerInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const newValue = e.target.value;
       setSearchQuery(newValue);
-      setIsTyping(true);
       onSearchChange?.(newValue);
     };
 
@@ -582,7 +573,7 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
                         onClick={handleCreateNew}
                       >
                         <PlusCircleFilled className="h-4 w-4" />
-                        {createText} "{searchQuery.trim()}"
+                        {createText} &quot;{searchQuery.trim()}&quot;
                       </div>
                     )}
                   </>

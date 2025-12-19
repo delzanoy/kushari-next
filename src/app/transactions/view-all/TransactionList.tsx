@@ -33,7 +33,7 @@ export default function TransactionList({ transactions, addresses, uniqueClassif
     });
 
     const result: typeof transactionsWithCalculations = [];
-    Object.entries(groups).forEach(([dateKey, transactions]) => {
+    Object.entries(groups).forEach(([_, transactions]) => {
       transactions.forEach((transaction, index) => {
         result.push({
           ...transaction,

@@ -11,6 +11,11 @@ interface PlatformInfo {
   isStandalone: boolean; // For PWA check
 }
 
+// Extend the Navigator interface to include the standalone property
+interface NavigatorWithStandalone extends Navigator {
+  standalone?: boolean;
+}
+
 export function usePlatform(): PlatformInfo {
   const [platformInfo, setPlatformInfo] = useState<PlatformInfo>({
     isIOS: false,
@@ -32,9 +37,12 @@ export function usePlatform(): PlatformInfo {
     const isAndroid = /android/.test(userAgent);
     const isMobile = isIOS || isAndroid || /mobile/.test(userAgent);
     
+    // Type cast navigator to our extended interface
+    const nav = navigator as NavigatorWithStandalone;
+    
     // Check if PWA is installed (iOS specific)
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
-      ('standalone' in navigator && (navigator as any).standalone) ||
+      ('standalone' in nav && nav.standalone) ||
       document.referrer.includes('android-app://');
 
     setPlatformInfo({

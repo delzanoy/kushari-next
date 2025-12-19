@@ -22,7 +22,7 @@ export default function CreateGroupModal({ isOpen, onClose, addresses = [], onGr
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [selectedMethodType, setSelectedMethodType] = useState<string>(""); // Empty by default
-    const [searchQuery, setSearchQuery] = useState("");
+    // const [searchQuery, setSearchQuery] = useState("");
 
     const { escStage, isTopModal } = useModalContext();
     const [showEscTooltip, setShowEscTooltip] = useState(false);
@@ -35,13 +35,6 @@ export default function CreateGroupModal({ isOpen, onClose, addresses = [], onGr
         }
     }, [escStage, isTopModal]);
 
-    if (!isOpen) return null;
-
-    const options = [
-        { value: "few", label: "Add few" },
-        { value: "bulk", label: "Add in bulk(csv)" },
-    ];
-
     // Convert addresses to dropdown options
     const addressOptions = useMemo(() => {
         return addresses.map(address => ({
@@ -50,6 +43,13 @@ export default function CreateGroupModal({ isOpen, onClose, addresses = [], onGr
             metadata: address.walletHash,
         }));
     }, [addresses]);
+
+    if (!isOpen) return null;
+
+    const options = [
+        { value: "few", label: "Add few" },
+        { value: "bulk", label: "Add in bulk(csv)" },
+    ];
 
     // Handle name input change
     const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -64,9 +64,9 @@ export default function CreateGroupModal({ isOpen, onClose, addresses = [], onGr
     };
 
     // Handle search in the dropdown
-    const handleSearchChange = (query: string) => {
-        setSearchQuery(query);
-    };
+    // const handleSearchChange = (query: string) => {
+        // setSearchQuery(query);
+    // };
 
     // Remove a specific address
     const removeAddress = (addressId: string) => {
@@ -106,7 +106,7 @@ export default function CreateGroupModal({ isOpen, onClose, addresses = [], onGr
             setName('');
             setSelectedAddresses([]);
             setSelectedMethodType(""); // Reset to empty
-            setSearchQuery("");
+            // setSearchQuery("");
 
             // Close modal
             onClose();
@@ -184,7 +184,7 @@ export default function CreateGroupModal({ isOpen, onClose, addresses = [], onGr
                             options={addressOptions}
                             value={selectedAddresses}
                             onChange={handleAddressesChange}
-                            onSearchChange={handleSearchChange}
+                            // onSearchChange={handleSearchChange}
                             width="full"
                             disabled={loading}
                             allowSearch={true}
@@ -198,7 +198,7 @@ export default function CreateGroupModal({ isOpen, onClose, addresses = [], onGr
                         {/* Selected addresses display as chips */}
                         {selectedAddresses.length > 0 && (
                             <div className="flex items-start content-start gap-2 self-stretch flex-wrap">
-                                {selectedAddresses.map((addressId, index) => {
+                                {selectedAddresses.map((addressId) => {
                                     const address = addresses.find(a => a.id.toString() === addressId);
 
                                     if (address) {

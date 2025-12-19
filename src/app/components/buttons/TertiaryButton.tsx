@@ -64,28 +64,37 @@ export default function TertiaryButton({
         "neutral-danger": "bg-transparent text-[#EDEEEE] border-[#EDEEEE]/60 group-hover/tertiary-button:border-[#EDEEEE] border-[#26C9C9]/60 hover:text-[#EF4444] focus:bg-[#EF4444]/8 focus:ring-[1px] focus:ring-[#EF4444] focus:ring-offset-[2px] focus:ring-offset-black",
     }[status];
 
+    const disabledClasses = "opacity-40 cursor-not-allowed";
+
+    const handleClick = () => {
+        if (!disabled && onClick) {
+            onClick();
+        }
+    };
+
     const button = (
-        <div className={`group/tertiary-button inline-flex rounded-full items-center hover:cursor-pointer ${containerSizes} ${className} ${statusClasses}`} onClick={onClick}>
-        {/* <div className={`group/tertiary-button inline-flex rounded-full items-center hover:cursor-pointer hover:scale-102 active:scale-95 ${containerSizes} ${className} ${statusClasses}`}> */}
+        <div 
+            className={`group/tertiary-button inline-flex rounded-full items-center ${containerSizes} ${className} ${statusClasses} ${disabled ? disabledClasses : 'hover:cursor-pointer'}`}
+            onClick={handleClick}
+        >
             {/* Leading Icon */}
             {leadingIcon && (
-                // <div className={`opacity-100 ${iconSizes}`}>
-                <div className={`opacity-70 group-hover/tertiary-button:opacity-100 ${iconSizes}`}>
+                <div className={`${disabled ? 'opacity-50' : 'opacity-70 group-hover/tertiary-button:opacity-100'} ${iconSizes}`}>
                     {leadingIcon}
                 </div>
             )}
 
             {/* Text with border effect */}
-            <div className={`${labelBorder} flex px-[0] justify-center items-center gap-2.5 transition-all duration-50 ease-in-out`}>
+            <div className={`${labelBorder} ${disabled ? 'border-[#EDEEEE]/30' : ''} flex px-[0] justify-center items-center gap-2.5 transition-all duration-50 ease-in-out`}>
                 <span
-                    className={`truncate font-[Geist] not-italic leading-[normal] tracking-[0.48px] transition-all duration-150 ${textSizes} ${labelOnHover ? "group-hover/tertiary-button:opacity-0" : ""
-                        }`}
+                    className={`truncate font-[Geist] not-italic leading-[normal] tracking-[0.48px] transition-all duration-150 ${textSizes} ${labelOnHover && !disabled ? "group-hover/tertiary-button:opacity-0" : ""
+                        } ${disabled ? 'text-[#EDEEEE]/60' : ''}`}
                 >
                     {label}
                 </span>
-                {labelOnHover && (
+                {labelOnHover && !disabled && (
                     <span
-                        className={`absolute truncate opacity-0 group-hover/tertiary-button:opacity-100 transition-all duration-150 font-[Geist] not-italic leading-[normal] tracking-[0.48px] ${textSizes}`}
+                        className={`absolute truncate opacity-0 group-hover/tertiary-button:opacity-100 transition-all duration-150 font-[Geist] not-italic leading-[normal] tracking-[0.48px] ${textSizes} ${disabled ? 'text-[#EDEEEE]/60' : ''}`}
                     >
                         {labelOnHover}
                     </span>
@@ -94,7 +103,7 @@ export default function TertiaryButton({
 
             {/* Trailing Icon */}
             {trailingIcon && (
-                <div className={`opacity-70 group-hover/tertiary-button:opacity-100 ${iconSizes}`}>
+                <div className={`${disabled ? 'opacity-50' : 'opacity-70 group-hover/tertiary-button:opacity-100'} ${iconSizes}`}>
                     {trailingIcon}
                 </div>
             )}

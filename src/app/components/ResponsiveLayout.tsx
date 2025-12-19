@@ -7,7 +7,7 @@ import SideNav from './SideNav';
 import MobileView from './MobileView'; // You'll create this
 
 interface ResponsiveLayoutProps {
-  children?: ReactNode; // Make children optional
+  children?: ReactNode;
   mobileLayout?: ReactNode;
   desktopLayout?: ReactNode;
 }
@@ -25,7 +25,6 @@ interface ResponsiveLayoutProps {
  * />
  */
 export default function ResponsiveLayout({ 
-  children, 
   mobileLayout, 
   desktopLayout 
 }: ResponsiveLayoutProps) {
@@ -40,7 +39,7 @@ export default function ResponsiveLayout({
   return (
     <div className="flex min-h-screen bg-[#0E1011]">
       {/* Desktop: Show SideNav */}
-      {/* {isDesktop && <SideNav />} */}
+      {isDesktop && <SideNav />}
       
       {/* Mobile: Show MobileNav (you can create this component) */}
       {isMobile && <MobileView />}

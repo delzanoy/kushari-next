@@ -579,7 +579,7 @@ export default function ConnectSafe({ onClose, members: propMembers = [], onSafe
             {/* Right content - Split into fixed header and scrollable content */}
             <div className="flex w-[1040px] flex-col shrink-0 min-h-[600px] max-h-[80vh]">
                 {/* Header - Fixed, not scrollable */}
-                <div className="flex flex-col items-start gap-2.5 self-stretch bg-[#151819] pt-2 pb-4 z-10 flex-shrink-0">
+                <div className="flex flex-col items-start gap-2.5 self-stretch bg-[#151819] pb-4 z-10 flex-shrink-0">
                     <div className="flex justify-between items-start self-stretch">
                         <div className="flex p-2.5 items-center gap-2.5 rounded-[10px] bg-[#F8FCFF]/6">
                             <GnosisSafeIcon className="w-8 h-8 aspect-square" />

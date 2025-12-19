@@ -6,6 +6,7 @@ import MultiLevelFilter, { FilterCriterion, FilterField, FilterDropdownOption } 
 import FilterDropdown from "./../../components/filters/FilterDropdown";
 import IconButton from "./../../components/buttons/IconButton";
 import { useState, useMemo, useRef, useEffect, useCallback } from "react";
+import PageSelector from "@/app/components/PageSelector";
 
 // Import icons
 import {
@@ -79,55 +80,6 @@ const walletGroups = [
 
 const ITEMS_PER_PAGE = 25;
 
-const PageSelector = ({ currentPage, totalPages, onPageChange }: { currentPage: number; totalPages: number; onPageChange: (page: number) => void }) => {
-    const [isOpen, setIsOpen] = useState(false);
-    const dropdownRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        function handleClickOutside(event: MouseEvent) {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-                setIsOpen(false);
-            }
-        }
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
-
-    return (
-        <div className="relative" ref={dropdownRef}>
-            <div
-                className="group/dropdown flex py-[2px] px-[8px] items-center gap-[6px] rounded-md border-[0.5px] border-solid border-[#F8FCFF]/24 bg-[#F8FCFF]/02 hover:border-[#F8FCFF] hover:bg-[#F8FCFF]/16 hover:cursor-pointer transition-all duration-150 ease-in-out"
-                onClick={() => setIsOpen(!isOpen)}
-            >
-                <span className="text-[#F8FCFF] font-[Geist] text-sm not-italic font-light leading-[normal] tracking-[0.7px] group-hover/dropdown:text-[#FFFFFF]">
-                    Pg. {currentPage}
-                </span>
-                <SmallArrowDown className="h-[16px] w-[16px] opacity-80 group-hover/dropdown:text-[#FFFFFF]" />
-            </div>
-
-            {isOpen && (
-                <div className="absolute top-full left-0 mt-1 w-32 rounded-md border border-[#F8FCFF]/24 bg-[#1E2A34] shadow-lg z-50 max-h-60 overflow-y-auto">
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                        <div
-                            key={page}
-                            className={`px-3 py-2 text-sm cursor-pointer transition-colors duration-150 ${page === currentPage
-                                ? 'bg-[#26C9C9]/20 text-[#26C9C9] font-medium'
-                                : 'text-[#F8FCFF] hover:bg-[#26C9C9]/20 hover:text-[#26C9C9]'
-                                }`}
-                            onClick={() => {
-                                onPageChange(page);
-                                setIsOpen(false);
-                            }}
-                        >
-                            Pg. {page}
-                        </div>
-                    ))}
-                </div>
-            )}
-        </div>
-    );
-};
-
 export default function TransactionListClient({
     transactions,
     addresses,
@@ -154,10 +106,13 @@ export default function TransactionListClient({
         const searchTerm = query.toLowerCase().trim();
 
         // Helper function to safely check if a value contains the search term
-        const checkValue = (value: any): boolean => {
+        const checkValue = (value: string | number | undefined | null): boolean => {
             if (!value) return false;
             if (typeof value === 'string') {
                 return value.toLowerCase().includes(searchTerm);
+            }
+            if (typeof value === 'number') {
+                return value.toString().toLowerCase().includes(searchTerm);
             }
             return false;
         };
@@ -226,9 +181,6 @@ export default function TransactionListClient({
 
             // For descending order (newest first)
             return dateB - dateA;
-
-            // For ascending order (oldest first), use:
-            // return dateA - dateB;
         });
     }, [transactions]);
 
@@ -253,6 +205,7 @@ export default function TransactionListClient({
         const result: Array<Transaction & { showDate: boolean; isFirstOfDate: boolean }> = [];
 
         Object.entries(transactionsByDate).forEach(([dateKey, transactions]) => {
+            void dateKey; // Mark as intentionally unused
             transactions.forEach((transaction, index) => {
                 result.push({
                     ...transaction,
@@ -282,7 +235,7 @@ export default function TransactionListClient({
 
 
     // Helper function to get transaction values for filtering
-    const getTransactionValue = (transaction: Transaction, field: string): any => {
+    const getTransactionValue = (transaction: Transaction, field: string): string | string[] => {
         switch (field) {
             case 'type':
                 if (transaction.incoming && transaction.outgoing) return 'interacted';
@@ -318,12 +271,16 @@ export default function TransactionListClient({
             case 'classification':
                 return transaction.classification || '';
             default:
-                return (transaction as any)[field] || '';
+                const val = transaction[field as keyof Transaction];
+                if (Array.isArray(val)) {
+                    return val.map(v => v?.toString() || '');
+                }
+                return val?.toString() || '';
         }
     };
 
     // Get selected values for a specific field from filter criteria
-    const getSelectedValuesForField = (fieldKey: string): any[] => {
+    const getSelectedValuesForField = (fieldKey: string): string[] => {
         const criterion = filterCriteria.find(c => c.field === fieldKey);
         if (!criterion) return [];
 
@@ -334,7 +291,7 @@ export default function TransactionListClient({
     };
 
     // Update filter criteria for a specific field
-    const updateFieldCriteria = (fieldKey: string, newValues: any[]) => {
+    const updateFieldCriteria = (fieldKey: string, newValues: string[]) => {
         setFilterCriteria(prev => {
             const existingCriterionIndex = prev.findIndex(c => c.field === fieldKey);
 
@@ -441,7 +398,6 @@ export default function TransactionListClient({
                 }
             })), [transactions]);
 
-    // Get address options
     // Get address options
     const addressOptions = useMemo((): FilterDropdownOption[] => {
         const addressOptions: FilterDropdownOption[] = [];
@@ -596,24 +552,8 @@ export default function TransactionListClient({
         }
     }, [currentPage, totalPages]);
 
-    // Get available options for a field
-    const getAvailableOptions = (fieldKey: string): FilterDropdownOption[] => {
-        const allOptions = getAllOptions(fieldKey);
-
-        if (cleanedFilterCriteria.length === 0) {
-            return allOptions;
-        }
-
-        const availableValues = getAvailableValuesForField(fieldKey);
-        const filteredOptions = allOptions.filter(option =>
-            availableValues.has(option.value.toString())
-        );
-
-        return filteredOptions;
-    };
-
     // Get all possible options for a field
-    const getAllOptions = (fieldKey: string): FilterDropdownOption[] => {
+    const getAllOptions = useMemo(() => (fieldKey: string): FilterDropdownOption[] => {
         switch (fieldKey) {
             case 'type':
                 return [
@@ -650,10 +590,10 @@ export default function TransactionListClient({
             default:
                 return [];
         }
-    };
+    }, [walletOptions, networkOptions, addressOptions, classificationOptions]);
 
     // Get available values for each field
-    const getAvailableValuesForField = useCallback((fieldKey: string): Set<any> => {
+    const getAvailableValuesForField = useCallback((fieldKey: string): Set<string> => {
         const criteriaExcludingCurrentField = cleanedFilterCriteria.filter(c => c.field !== fieldKey);
 
         let transactionsToCheck = sortedTransactions;
@@ -682,7 +622,7 @@ export default function TransactionListClient({
             });
         }
 
-        const values = new Set<any>();
+        const values = new Set<string>();
 
         transactionsToCheck.forEach(transaction => {
             const value = getTransactionValue(transaction, fieldKey);
@@ -697,16 +637,32 @@ export default function TransactionListClient({
         return values;
     }, [cleanedFilterCriteria, sortedTransactions]);
 
+    // Get available options for a field
+    const getAvailableOptions = useMemo(() => (fieldKey: string): FilterDropdownOption[] => {
+        const allOptions = getAllOptions(fieldKey);
+
+        if (cleanedFilterCriteria.length === 0) {
+            return allOptions;
+        }
+
+        const availableValues = getAvailableValuesForField(fieldKey);
+        const filteredOptions = allOptions.filter(option =>
+            availableValues.has(option.value.toString())
+        );
+
+        return filteredOptions;
+    }, [cleanedFilterCriteria, getAllOptions, getAvailableValuesForField]);
+
     // Create a map of available values for all fields
     const availableValuesByField = useMemo(() => {
-        const map = new Map<string, Set<any>>();
+        const map = new Map<string, Set<string>>();
 
         ['type', 'wallet', 'network', 'address', 'classification'].forEach(fieldKey => {
             map.set(fieldKey, getAvailableValuesForField(fieldKey));
         });
 
         return map;
-    }, [cleanedFilterCriteria, sortedTransactions]);
+    }, [getAvailableValuesForField]);
 
     // Define filter fields
     const filterFields: FilterField[] = useMemo(() => [
@@ -746,7 +702,7 @@ export default function TransactionListClient({
             options: classificationOptions,
             icon: <TrackedWalletIcon className="w-4 h-4" />
         }
-    ], [walletOptions, networkOptions, addressOptions, classificationOptions]);
+    ], [walletOptions, networkOptions, addressOptions, classificationOptions, getAllOptions]);
 
     const hasActiveFilters = cleanedFilterCriteria.length > 0;
 
@@ -754,8 +710,8 @@ export default function TransactionListClient({
     const activeFilterFields = useMemo(() => {
         return cleanedFilterCriteria.map(criterion => {
             const field = filterFields.find(f => f.key === criterion.field);
-            return field ? { field, criterion } : null;
-        }).filter(Boolean) as { field: FilterField; criterion: FilterCriterion }[];
+            return field ? { field } : null;
+        }).filter(Boolean) as { field: FilterField }[];
     }, [cleanedFilterCriteria, filterFields]);
 
     const clearSearch = () => {
@@ -836,7 +792,7 @@ export default function TransactionListClient({
                             />
                         </div>
                         <div className="flex gap-4">
-                            {activeFilterFields.map(({ field, criterion }) => (
+                            {activeFilterFields.map(({ field }) => (
                                 <div key={field.key}>
                                     <FilterDropdown
                                         options={getAvailableOptions(field.key)}

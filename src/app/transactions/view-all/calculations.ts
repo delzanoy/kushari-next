@@ -1,6 +1,20 @@
 import { Transaction, TransactionWithCalculations } from './types';
 import { AddressCardProps } from "./../../address-book/addresses/types";
 
+// Define the Recipient types
+interface RecipientWithAddressId {
+  addressId: number | string;
+  toAddress?: string;
+}
+
+interface RecipientWithToAddress {
+  toAddress: string;
+  addressId?: never;
+}
+
+type RecipientObject = RecipientWithAddressId | RecipientWithToAddress;
+type RecipientsType = string | RecipientObject | RecipientObject[];
+
 export function calculateAllTransactionAmounts(transactions: Transaction[]): TransactionWithCalculations[] {
   return transactions.map(transaction => {
     let incomingUSD = 0;
@@ -30,7 +44,6 @@ export function calculateAllTransactionAmounts(transactions: Transaction[]): Tra
   });
 }
 
-
 export function getUniqueClassifications(transactions: Transaction[]): string[] {
   const classifications = transactions
     .map(transaction => transaction.classification)
@@ -43,7 +56,7 @@ export function getUniqueClassifications(transactions: Transaction[]): string[] 
 // Define the RecipientInput type based on your transaction data structure
 export const determineMultirecipients = (
   multiRecipient: boolean,
-  recipients: any,
+  recipients: RecipientsType,
   addresses: AddressCardProps[]
 ): string => {
   // Multi recipient - array of toAddress objects
@@ -52,7 +65,7 @@ export const determineMultirecipients = (
   }
   
   // Single recipient - object with addressId
-  if (recipients && typeof recipients === "object" && recipients.addressId) {
+  if (recipients && typeof recipients === "object" && "addressId" in recipients && recipients.addressId) {
     const foundAddress = addresses.find(addr => addr.id === recipients.addressId);
     return foundAddress ? foundAddress.name : `Unknown (ID: ${recipients.addressId})`;
   }

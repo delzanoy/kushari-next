@@ -1,24 +1,24 @@
+import { Transaction } from "../../transactions/view-all/types";
+import { Proposal, ProposalCategory, ProposalStatus } from "../../transactions/proposals/types";
+import { WalletInfo } from "@/app/assets/types"
+import { AddressCardProps } from "@/app/address-book/addresses/types";
+import { Cryptocurrency } from '@/app/assets/types';
+import { Wallet, Member } from "../type";
 import TertiaryButton from "@/app/components/buttons/TertiaryButton";
 import PrimaryButton from "@/app/components/buttons/PrimaryButton";
 import { VaultIcon, GnosisSafeIcon, TrackedWalletIcon, EthereumIcon, BSCIcon, PolygonIcon, GnosisIcon, OPTIMISMIcon, SOLIcon, QRCodeIcon, SendIcon, ArrowLeftUpBoxFill } from "@/app/components/icons";
 import Tooltip from "../../components/TooltipComponent";
 import { formatCents, formatDollars } from "@/app/components/helpers";
-import { Wallet, MPCVaultWallet, GnosisSafeWallet, TrackedWallet } from "../type";
-import { Transaction } from "../../transactions/view-all/types";
-import { Proposal, ProposalCategory, ProposalStatus } from "../../transactions/proposals/types";
 import NavTab from "@/app/components/buttons/NavTab";
 import React, { useState, useMemo, useEffect, useCallback, memo } from "react";
 import ProposalList from "@/app/transactions/proposals/ProposalList";
 import TransactionList from "@/app/transactions/view-all/TransactionList";
 import AssetList from "@/app/assets/AssetList";
-import { WalletInfo } from "@/app/assets/types"
-import { AddressCardProps } from "@/app/address-book/addresses/types";
 import { transformApiDataToProposals } from "@/app/transactions/proposals/transformProposals";
 import { QRCodeSVG } from 'qrcode.react';
 import TertiaryButtonWithDropdown from "@/app/components/buttons/TertiaryButtonWithDropdown";
 import { useRouter } from 'next/navigation';
 import { useRef } from "react";
-import { Cryptocurrency } from '@/app/assets/types';
 import PolicyContent from './components/PolicyContent';
 import useModal from "@/app/hooks/useModal";
 import { Modal } from "@/app/components/modal/Modal";
@@ -389,7 +389,7 @@ interface WalletDetailsProps {
     addresses: AddressCardProps[];
     wallets?: Wallet[];
     cryptocurrencies?: Cryptocurrency[];
-    members?: any[];
+    members?: Member[];
     onWalletChange?: (walletId: number) => void;
     activeTab?: string;
     activeProposalFilter?: ProposalCategory | null;

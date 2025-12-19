@@ -39,14 +39,8 @@ export const InputIcon: React.FC<InputIconProps> = ({
   };
 
   const iconColor = getIconColor();
+  const iconClasses = `${iconSizeClass} ${iconColor}`.trim();
   
-  // If it's a valid React element, clone it with our classes
-  const renderedIcon = React.isValidElement(icon)
-    ? React.cloneElement(icon as React.ReactElement<any>, {
-        className: `${iconSizeClass} ${iconColor} ${((icon as any).props?.className ?? "").toString()}`.trim(),
-      } as any)
-    : icon;
-
   // Different container styles for textarea vs input
   const getContainerClasses = () => {
     if (isTextArea) {
@@ -64,7 +58,9 @@ export const InputIcon: React.FC<InputIconProps> = ({
 
   return (
     <div className={containerClasses} aria-hidden="true">
-      {renderedIcon}
+      <div className={iconClasses}>
+        {icon}
+      </div>
     </div>
   );
 };

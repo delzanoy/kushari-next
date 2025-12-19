@@ -3,6 +3,9 @@
 // - Combined with real API data
 import { GroupCardProps } from '@/app/address-book/groups/types';
 import { AddressCardProps } from '@/app/address-book/addresses/types';
+import { AssetBalance, Member } from '@/app/wallets/type';
+import { Transaction } from '@/app/transactions/view-all/types';
+import { Proposal } from '@/app/transactions/proposals/types';
 
 const STORAGE_KEY = 'kushari_cache_v3'; // Updated version for wallets
 const DEFAULT_TTL_MS = 0;
@@ -18,23 +21,26 @@ export interface UserWallet {
     type: 1 | 2 | 3; // 1: Vault, 2: Gnosis Safe, 3: Tracked Wallet
     address: string;
     name: string;
-    chain?: string;
-    blockchain: string | { blockchain: string }[];
-    owners?: string[]; // For Gnosis Safe
+    chain?:  string;
+    blockchain:  string | { blockchain: string }[];
+    owners?:  string[]; // For Gnosis Safe
     approvers?: string[]; // For Vault
     threshold?: number; // For Vault and Gnosis Safe
     createdAt: string;
-    demo: boolean;
+    demo:  boolean;
     // Required properties from WalletSummary - must NOT be optional
     totalBalance: number;
-    balance: any[]; // AssetBalance[] in real app
+    balance: AssetBalance[];
     percent_change_24h: number; // REQUIRED, not optional
     USDBalance: number;
-    memberCount?: number; // This one CAN be optional
+    memberCount?:  number; // This one CAN be optional
+    transactions: Transaction[];
+    proposals:  Proposal[];
+    members?:  Member[];
 }
 
 // User data is stored in sessionStorage
-let userCache: {
+const userCache: {
     groups: GroupCardProps[];
     addresses: AddressCardProps[];
     wallets: UserWallet[]; // Added wallets
@@ -47,7 +53,7 @@ let userCache: {
     addresses: [],
     wallets: [], // Initialize wallets array
     nextId: 10000, // Start group IDs from 10000 to avoid conflicts with API IDs
-    nextAddressId: 20000, // Start address IDs from 20000
+    nextAddressId:  20000, // Start address IDs from 20000
     nextWalletId: 30000, // Start wallet IDs from 30000
     addressGroups: {} // Track which addresses belong to which groups
 };
@@ -61,72 +67,17 @@ function isSessionStorageAvailable() {
         window.sessionStorage.setItem(key, '1');
         window.sessionStorage.removeItem(key);
         return true;
-    } catch (err) {
+    } catch {
         return false;
     }
 }
 
-// function loadUserDataFromSession() {
-//     if (!persistToSession || typeof window === 'undefined') return false;
-//     try {
-//         const raw = window.sessionStorage.getItem(STORAGE_KEY);
-//         if (!raw) return false;
-
-//         const parsed = JSON.parse(raw);
-//         if (parsed && typeof parsed === 'object') {
-//             userCache.groups = (parsed.groups || []).map((group: any) => ({
-//                 ...group,
-//                 lastModified: group.lastModified ? new Date(group.lastModified) : undefined,
-//                 source: 'user' as const,
-//                 demo: true
-//             }));
-//             userCache.addresses = (parsed.addresses || []).map((address: any) => ({
-//                 ...address,
-//                 created: address.created ? new Date(address.created) : new Date(),
-//                 lastInteracted: address.lastInteracted ? new Date(address.lastInteracted) : undefined,
-//                 source: 'user' as const,
-//                 demo: true
-//             }));
-//             userCache.wallets = (parsed.wallets || []).map((wallet: any) => ({
-//                 ...wallet,
-//                 source: 'user' as const,
-//                 demo: true,
-//                 // Ensure required WalletSummary fields always have values
-//                 totalBalance: wallet.totalBalance ?? 0,
-//                 balance: wallet.balance ?? [],
-//                 percent_change_24h: wallet.percent_change_24h ?? 0,
-//                 USDBalance: wallet.USDBalance ?? 0,
-//                 blockchain: wallet.blockchain ?? 'ethereum'
-//             }));
-//             userCache.nextId = parsed.nextId || 10000;
-//             userCache.nextAddressId = parsed.nextAddressId || 20000;
-//             userCache.nextWalletId = parsed.nextWalletId || 30000;
-//             userCache.addressGroups = parsed.addressGroups || {};
-
-//             // Check TTL if set
-//             if (parsed.expiresAt && typeof parsed.expiresAt === 'number') {
-//                 if (Date.now() > parsed.expiresAt) {
-//                     clearUserData();
-//                     return false;
-//                 } else if (TTL_MS > 0) {
-//                     const remaining = parsed.expiresAt - Date.now();
-//                     scheduleReset(remaining);
-//                 }
-//             }
-//             return true;
-//         }
-//     } catch (err) {
-//         console.warn('Failed to load session data:', err);
-//     }
-//     return false;
-// }
-
 function saveUserDataToSession() {
     if (!persistToSession || typeof window === 'undefined') return;
     try {
-        const obj: any = {
+        const obj = {
             groups: userCache.groups,
-            addresses: userCache.addresses,
+            addresses: userCache. addresses,
             wallets: userCache.wallets,
             nextId: userCache.nextId,
             nextAddressId: userCache.nextAddressId,
@@ -135,21 +86,21 @@ function saveUserDataToSession() {
         };
 
         if (TTL_MS && TTL_MS > 0) {
-            obj.expiresAt = Date.now() + TTL_MS;
+            (obj as Record<string, unknown>).expiresAt = Date.now() + TTL_MS;
         }
 
-        window.sessionStorage.setItem(STORAGE_KEY, JSON.stringify(obj));
-    } catch (err) {
-        console.warn('Failed to save session data:', err);
+        window. sessionStorage.setItem(STORAGE_KEY, JSON.stringify(obj));
+    } catch {
+        // Session storage not available
     }
 }
 
-function scheduleReset(customMs?: number) {
+function scheduleReset(customMs?:  number) {
     if (resetTimer) {
         clearTimeout(resetTimer);
         resetTimer = null;
     }
-    const ms = typeof customMs === 'number' ? customMs : (TTL_MS || 0);
+    const ms = typeof customMs === 'number' ?  customMs : (TTL_MS || 0);
     if (ms && ms > 0) {
         resetTimer = setTimeout(() => {
             clearUserData();
@@ -174,24 +125,82 @@ function clearUserData() {
     if (persistToSession && typeof window !== 'undefined') {
         try {
             window.sessionStorage.removeItem(STORAGE_KEY);
-        } catch (err) {
+        } catch {
             // ignore
         }
     }
+}
+
+function loadUserDataFromSession() {
+    if (!persistToSession || typeof window === 'undefined') return false;
+    try {
+        const raw = window.sessionStorage.getItem(STORAGE_KEY);
+        if (!raw) return false;
+
+        const parsed = JSON.parse(raw) as Record<string, unknown>;
+        if (parsed && typeof parsed === 'object') {
+            userCache.groups = ((parsed. groups as GroupCardProps[]) || []).map((group: GroupCardProps) => ({
+                ...group,
+                lastModified: group.lastModified ?  new Date(group.lastModified) : undefined,
+                source: 'user' as const,
+                demo: true
+            }));
+            userCache.addresses = ((parsed.addresses as AddressCardProps[]) || []).map((address: AddressCardProps) => ({
+                ...address,
+                created: address.created ? new Date(address.created) : new Date(),
+                lastInteracted: address.lastInteracted ? new Date(address.lastInteracted) : undefined,
+                source: 'user' as const,
+                demo: true
+            }));
+            userCache.wallets = ((parsed.wallets as UserWallet[]) || []).map((wallet: UserWallet) => ({
+                ...wallet,
+                source: 'user' as const,
+                demo: true,
+                // Ensure required WalletSummary fields always have values
+                totalBalance: wallet. totalBalance ??  0,
+                balance: wallet.balance ?? [],
+                percent_change_24h: wallet.percent_change_24h ?? 0,
+                USDBalance: wallet.USDBalance ?? 0,
+                blockchain: wallet.blockchain ?? 'ethereum',
+                transactions: wallet.transactions ?? [],
+                proposals: wallet.proposals ?? [],
+                members: wallet.members ?? (wallet.type === 3 ? undefined : [])
+            }));
+            userCache.nextId = (parsed.nextId as number) || 10000;
+            userCache.nextAddressId = (parsed.nextAddressId as number) || 20000;
+            userCache.nextWalletId = (parsed.nextWalletId as number) || 30000;
+            userCache.addressGroups = (parsed.addressGroups as Record<number, number[]>) || {};
+
+            // Check TTL if set
+            if ((parsed. expiresAt as number) && typeof parsed.expiresAt === 'number') {
+                if (Date.now() > (parsed.expiresAt as number)) {
+                    clearUserData();
+                    return false;
+                } else if (TTL_MS > 0) {
+                    const remaining = (parsed.expiresAt as number) - Date.now();
+                    scheduleReset(remaining);
+                }
+            }
+            return true;
+        }
+    } catch {
+        // Failed to load session data
+    }
+    return false;
 }
 
 // Initialize - load user data from session if available
 (function init() {
     if (isSessionStorageAvailable()) {
         const loaded = loadUserDataFromSession();
-        if (!loaded) {
+        if (! loaded) {
             saveUserDataToSession();
         }
     }
 })();
 
 export function configureMockCache({ ttlMs = 0, persist = true }: { ttlMs?: number; persist?: boolean }) {
-    TTL_MS = ttlMs ?? 0;
+    TTL_MS = ttlMs ??  0;
     persistToSession = Boolean(persist) && isSessionStorageAvailable();
     if (persistToSession) saveUserDataToSession();
 
@@ -211,7 +220,7 @@ export function configureMockCache({ ttlMs = 0, persist = true }: { ttlMs?: numb
  */
 export async function getUserGroups(): Promise<GroupCardProps[]> {
     await delay(100);
-    return userCache.groups.slice();
+    return userCache.groups. slice();
 }
 
 /**
@@ -219,8 +228,8 @@ export async function getUserGroups(): Promise<GroupCardProps[]> {
  */
 export async function createGroup(payload: {
     name: string;
-    count: number;
-    lastModifiedBy?: string;
+    count:  number;
+    lastModifiedBy?:  string;
     addressIds?: number[]; // Array of address IDs to add to this group
 }): Promise<GroupCardProps> {
     await delay(600);
@@ -240,10 +249,10 @@ export async function createGroup(payload: {
     userCache.groups.push(newGroup);
 
     // Add address-group relationships
-    if (payload.addressIds && payload.addressIds.length > 0) {
+    if (payload.addressIds && payload. addressIds.length > 0) {
         payload.addressIds.forEach(addressId => {
-            if (!userCache.addressGroups[addressId]) {
-                userCache.addressGroups[addressId] = [];
+            if (! userCache.addressGroups[addressId]) {
+                userCache. addressGroups[addressId] = [];
             }
             if (!userCache.addressGroups[addressId].includes(id)) {
                 userCache.addressGroups[addressId].push(id);
@@ -278,7 +287,7 @@ export async function updateGroup(
         lastModified: new Date()
     };
 
-    userCache.groups[groupIndex] = updatedGroup;
+    userCache. groups[groupIndex] = updatedGroup;
     saveUserDataToSession();
 
     return { ...updatedGroup };
@@ -326,14 +335,14 @@ export async function getUserAddresses(): Promise<AddressCardProps[]> {
 /**
  * Create a new address (user-created)
  */
-export async function createAddress(payload: {
+export async function createAddress(payload:  {
     walletHash: string;
     name: string;
     groupIds?: number[]; // Array of group IDs to add this address to (can be API or user groups)
 }): Promise<AddressCardProps> {
     await delay(600);
 
-    const id = userCache.nextAddressId++;
+    const id = userCache. nextAddressId++;
     const now = new Date();
 
     const newAddress: AddressCardProps = {
@@ -349,7 +358,7 @@ export async function createAddress(payload: {
         demo: true, // Add demo flag
     };
 
-    userCache.addresses.push(newAddress);
+    userCache.addresses. push(newAddress);
 
     // Add address-group relationships for ALL groups (both API and user)
     if (payload.groupIds && payload.groupIds.length > 0) {
@@ -408,7 +417,7 @@ export async function deleteAddress(addressId: number): Promise<boolean> {
     await delay(400);
 
     const initialLength = userCache.addresses.length;
-    userCache.addresses = userCache.addresses.filter(a => a.id !== addressId);
+    userCache.addresses = userCache. addresses.filter(a => a. id !== addressId);
 
     // Remove address from all group relationships
     if (userCache.addressGroups[addressId]) {
@@ -468,9 +477,9 @@ export async function addAddressToGroup(addressId: number, groupId: number): Pro
         userCache.addressGroups[addressId].push(groupId);
 
         // Update group count
-        const group = userCache.groups.find(g => g.id === groupId);
+        const group = userCache. groups.find(g => g. id === groupId);
         if (group) {
-            group.count += 1;
+            group. count += 1;
             group.lastModified = new Date();
         }
 
@@ -487,7 +496,7 @@ export async function addAddressToGroup(addressId: number, groupId: number): Pro
 export async function removeAddressFromGroup(addressId: number, groupId: number): Promise<boolean> {
     await delay(200);
 
-    if (!userCache.addressGroups[addressId]) {
+    if (! userCache.addressGroups[addressId]) {
         return false;
     }
 
@@ -523,239 +532,24 @@ export async function removeAddressFromGroup(addressId: number, groupId: number)
  */
 export async function getUserWallets(): Promise<UserWallet[]> {
     await delay(100);
-    return userCache.wallets.slice();
+    return userCache. wallets.slice();
 }
 
 /**
  * Create a new vault (type 1)
  */
-// export async function createVault(payload: {
-//     name: string;
-//     approvers: string[];
-//     threshold: number;
-//     blockchain?: string | { blockchain: string }[];
-// }): Promise<UserWallet> {
-//     await delay(800);
-
-//     const id = userCache.nextWalletId++;
-    
-//     // Generate a mock Ethereum address
-//     const address = '0x' + Array.from({ length: 40 }, () => 
-//         Math.floor(Math.random() * 16).toString(16)
-//     ).join('');
-
-//     const newVault: UserWallet = {
-//         id,
-//         source: 'user',
-//         type: 1, // Vault
-//         address,
-//         name: payload.name,
-//         approvers: payload.approvers,
-//         threshold: payload.threshold,
-//         blockchain: payload.blockchain || 'ethereum',
-//         createdAt: new Date().toISOString(),
-//         demo: true,
-//         // Required WalletSummary properties
-//         totalBalance: 0,
-//         balance: [],
-//         memberCount: payload.approvers.length,
-//         percent_change_24h: 0,
-//         USDBalance: 0
-//     };
-
-//     userCache.wallets.push(newVault);
-//     saveUserDataToSession();
-//     if (TTL_MS && TTL_MS > 0) scheduleReset(TTL_MS);
-
-//     return { ...newVault };
-// }
-
-/**
- * Create a new Gnosis Safe (type 2)
- */
-// export async function createGnosisSafe(payload: {
-//     name: string;
-//     address: string;
-//     chain: string;
-//     owners: string[];
-//     threshold: number;
-// }): Promise<UserWallet> {
-//     await delay(800);
-
-//     const id = userCache.nextWalletId++;
-
-//     const newSafe: UserWallet = {
-//         id,
-//         source: 'user',
-//         type: 2, // Gnosis Safe
-//         address: payload.address,
-//         name: payload.name,
-//         chain: payload.chain,
-//         blockchain: [{ blockchain: payload.chain }],
-//         owners: payload.owners,
-//         threshold: payload.threshold,
-//         createdAt: new Date().toISOString(),
-//         demo: true,
-//         // Required WalletSummary properties
-//         totalBalance: 0,
-//         balance: [],
-//         memberCount: payload.owners.length,
-//         percent_change_24h: 0,
-//         USDBalance: 0
-//     };
-
-//     userCache.wallets.push(newSafe);
-//     saveUserDataToSession();
-//     if (TTL_MS && TTL_MS > 0) scheduleReset(TTL_MS);
-
-//     return { ...newSafe };
-// }
-
-/**
- * Create a new tracked wallet (type 3)
- */
-// export async function createTrackedWallet(payload: {
-//     name: string;
-//     address: string;
-//     type: 'ethereum' | 'binance';
-//     publicKey?: string;
-//     secretKey?: string;
-// }): Promise<UserWallet> {
-//     await delay(800);
-
-//     const id = userCache.nextWalletId++;
-
-//     const newTrackedWallet: UserWallet = {
-//         id,
-//         source: 'user',
-//         type: 3, // Tracked Wallet
-//         address: payload.address,
-//         name: payload.name,
-//         blockchain: payload.type === 'ethereum' ? 'ethereum' : 'binance',
-//         createdAt: new Date().toISOString(),
-//         demo: true,
-//         // Required WalletSummary properties
-//         totalBalance: 0,
-//         balance: [],
-//         memberCount: undefined, // Tracked wallets don't have members
-//         percent_change_24h: 0,
-//         USDBalance: 0
-//     };
-
-//     userCache.wallets.push(newTrackedWallet);
-//     saveUserDataToSession();
-//     if (TTL_MS && TTL_MS > 0) scheduleReset(TTL_MS);
-
-//     return { ...newTrackedWallet };
-// }
-
-/**
- * Update an existing user-created wallet
- */
-export async function updateWallet(
-    walletId: number,
-    updates: Partial<Omit<UserWallet, 'id' | 'source' | 'type'>>
-): Promise<UserWallet | null> {
-    await delay(400);
-
-    const walletIndex = userCache.wallets.findIndex(w => w.id === walletId);
-
-    if (walletIndex === -1) {
-        return null;
-    }
-
-    const updatedWallet = {
-        ...userCache.wallets[walletIndex],
-        ...updates,
-    };
-
-    userCache.wallets[walletIndex] = updatedWallet;
-    saveUserDataToSession();
-
-    return { ...updatedWallet };
-}
-
-/**
- * Delete a user-created wallet
- */
-export async function deleteWallet(walletId: number): Promise<boolean> {
-    await delay(400);
-
-    const initialLength = userCache.wallets.length;
-    userCache.wallets = userCache.wallets.filter(w => w.id !== walletId);
-
-    if (userCache.wallets.length < initialLength) {
-        saveUserDataToSession();
-        return true;
-    }
-
-    return false;
-}
-
-// Debug helpers
-export function _getStats() {
-    return {
-        user: {
-            groups: userCache.groups.length,
-            addresses: userCache.addresses.length,
-            wallets: userCache.wallets.length,
-            addressGroups: Object.keys(userCache.addressGroups).length
-        }
-    };
-}
-
-export function _clearUserDataNow() {
-    clearUserData();
-    saveUserDataToSession();
-}
-
-
-
-// Key updates to mock-cache.ts for wallet details support
-
-// 1. UPDATE UserWallet interface to include ALL required fields:
-
-export interface UserWallet {
-    id: number;
-    source: 'user';
-    type: 1 | 2 | 3; // 1: Vault, 2: Gnosis Safe, 3: Tracked Wallet
-    address: string;
-    name: string;
-    chain?: string;
-    blockchain: string | { blockchain: string }[];
-    owners?: string[]; // For Gnosis Safe
-    approvers?: string[]; // For Vault
-    threshold?: number; // For Vault and Gnosis Safe
-    createdAt: string;
-    demo: boolean;
-    
-    // Required WalletSummary fields
-    totalBalance: number;
-    balance: any[]; // AssetBalance[] in real app
-    percent_change_24h: number;
-    USDBalance: number;
-    memberCount?: number;
-    
-    // CRITICAL: Add these required fields for WalletDetails
-    transactions: any[]; // Transaction[] - empty array for new wallets
-    proposals: any[];    // Proposal[] - empty array for new wallets
-    members?: any[];     // Member[] - for vaults and safes
-}
-
-// 2. UPDATE createVault to include all required fields:
-
 export async function createVault(payload: {
     name: string;
-    approvers: string[];
+    approvers:  string[];
     threshold: number;
-    blockchain?: string | { blockchain: string }[];
+    blockchain?:  string | { blockchain: string }[];
 }): Promise<UserWallet> {
     await delay(800);
 
     const id = userCache.nextWalletId++;
     
     // Generate a mock Ethereum address
-    const address = '0x' + Array.from({ length: 40 }, () => 
+    const address = '0x' + Array. from({ length: 40 }, () => 
         Math.floor(Math.random() * 16).toString(16)
     ).join('');
 
@@ -770,22 +564,20 @@ export async function createVault(payload: {
         blockchain: payload.blockchain || 'ethereum',
         createdAt: new Date().toISOString(),
         demo: true,
-        
         // Required WalletSummary properties
         totalBalance: 0,
         balance: [],
         memberCount: payload.approvers.length,
         percent_change_24h: 0,
         USDBalance: 0,
-        
-        // CRITICAL: Add required fields for WalletDetails
-        transactions: [],  // Empty transactions array
-        proposals: [],     // Empty proposals array
-        members: payload.approvers.map((email, idx) => ({
+        // Required WalletDetails fields
+        transactions: [],
+        proposals: [],
+        members: payload.approvers. map((email, idx) => ({
             memberId: 10000 + idx,
             role: 'approver',
-            email: email,
-            name: email.split('@')[0], // Extract name from email
+            email:  email,
+            name: email. split('@')[0], // Extract name from email
         })),
     };
 
@@ -796,8 +588,9 @@ export async function createVault(payload: {
     return { ...newVault };
 }
 
-// 3. UPDATE createGnosisSafe to include all required fields:
-
+/**
+ * Create a new Gnosis Safe (type 2)
+ */
 export async function createGnosisSafe(payload: {
     name: string;
     address: string;
@@ -821,17 +614,15 @@ export async function createGnosisSafe(payload: {
         threshold: payload.threshold,
         createdAt: new Date().toISOString(),
         demo: true,
-        
         // Required WalletSummary properties
         totalBalance: 0,
         balance: [],
-        memberCount: payload.owners.length,
+        memberCount:  payload.owners.length,
         percent_change_24h: 0,
-        USDBalance: 0,
-        
-        // CRITICAL: Add required fields for WalletDetails
-        transactions: [],  // Empty transactions array
-        proposals: [],     // Empty proposals array
+        USDBalance:  0,
+        // Required WalletDetails fields
+        transactions:  [],
+        proposals: [],
         members: payload.owners.map((email, idx) => ({
             memberId: 20000 + idx,
             role: 'owner',
@@ -847,13 +638,14 @@ export async function createGnosisSafe(payload: {
     return { ...newSafe };
 }
 
-// 4. UPDATE createTrackedWallet to include all required fields:
-
+/**
+ * Create a new tracked wallet (type 3)
+ */
 export async function createTrackedWallet(payload: {
     name: string;
-    address: string;
+    address:  string;
     type: 'ethereum' | 'binance';
-    publicKey?: string;
+    publicKey?:  string;
     secretKey?: string;
 }): Promise<UserWallet> {
     await delay(800);
@@ -862,24 +654,22 @@ export async function createTrackedWallet(payload: {
 
     const newTrackedWallet: UserWallet = {
         id,
-        source: 'user',
-        type: 3, // Tracked Wallet
+        source:  'user',
+        type:  3, // Tracked Wallet
         address: payload.address,
         name: payload.name,
         blockchain: payload.type === 'ethereum' ? 'ethereum' : 'binance',
         createdAt: new Date().toISOString(),
         demo: true,
-        
         // Required WalletSummary properties
         totalBalance: 0,
-        balance: [],
+        balance:  [],
         memberCount: undefined, // Tracked wallets don't have members
         percent_change_24h: 0,
         USDBalance: 0,
-        
-        // CRITICAL: Add required fields for WalletDetails
-        transactions: [],  // Empty transactions array
-        proposals: [],     // Empty proposals array (tracked wallets show transactions tab only)
+        // Required WalletDetails fields
+        transactions: [],
+        proposals: [],
         // No members for tracked wallets
     };
 
@@ -890,38 +680,62 @@ export async function createTrackedWallet(payload: {
     return { ...newTrackedWallet };
 }
 
-// 5. UPDATE loadUserDataFromSession to ensure loaded wallets have required fields:
+/**
+ * Update an existing user-created wallet
+ */
+export async function updateWallet(
+    walletId: number,
+    updates: Partial<Omit<UserWallet, 'id' | 'source' | 'type'>>
+): Promise<UserWallet | null> {
+    await delay(400);
 
-function loadUserDataFromSession() {
-    if (!persistToSession || typeof window === 'undefined') return false;
-    try {
-        const raw = window.sessionStorage.getItem(STORAGE_KEY);
-        if (!raw) return false;
+    const walletIndex = userCache.wallets.findIndex(w => w. id === walletId);
 
-        const parsed = JSON.parse(raw);
-        if (parsed && typeof parsed === 'object') {
-            // ... existing code for groups and addresses ...
-            
-            userCache.wallets = (parsed.wallets || []).map((wallet: any) => ({
-                ...wallet,
-                source: 'user' as const,
-                demo: true,
-                // Ensure required WalletSummary fields
-                totalBalance: wallet.totalBalance ?? 0,
-                balance: wallet.balance ?? [],
-                percent_change_24h: wallet.percent_change_24h ?? 0,
-                USDBalance: wallet.USDBalance ?? 0,
-                blockchain: wallet.blockchain ?? 'ethereum',
-                // CRITICAL: Ensure required WalletDetails fields exist
-                transactions: wallet.transactions ?? [],
-                proposals: wallet.proposals ?? [],
-                members: wallet.members ?? (wallet.type === 3 ? undefined : []),
-            }));
-            
-            // ... rest of existing code ...
-        }
-    } catch (err) {
-        console.warn('Failed to load session data:', err);
+    if (walletIndex === -1) {
+        return null;
     }
+
+    const updatedWallet = {
+        ...userCache.wallets[walletIndex],
+        ... updates,
+    };
+
+    userCache.wallets[walletIndex] = updatedWallet;
+    saveUserDataToSession();
+
+    return { ...updatedWallet };
+}
+
+/**
+ * Delete a user-created wallet
+ */
+export async function deleteWallet(walletId: number): Promise<boolean> {
+    await delay(400);
+
+    const initialLength = userCache.wallets. length;
+    userCache.wallets = userCache.wallets. filter(w => w.id !== walletId);
+
+    if (userCache.wallets.length < initialLength) {
+        saveUserDataToSession();
+        return true;
+    }
+
     return false;
+}
+
+// Debug helpers
+export function _getStats() {
+    return {
+        user: {
+            groups: userCache.groups.length,
+            addresses: userCache.addresses.length,
+            wallets: userCache. wallets.length,
+            addressGroups: Object.keys(userCache.addressGroups).length
+        }
+    };
+}
+
+export function _clearUserDataNow() {
+    clearUserData();
+    saveUserDataToSession();
 }

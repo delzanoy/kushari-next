@@ -94,18 +94,6 @@ export default function NavTab({
     }
   }, [isActive, activeSubtitle, subtitles]);
 
-  // Determine main title opacity
-  const getTitleOpacity = () => {
-    if (!isActive) return 'opacity-50';
-    return hasActiveSubtitle ? 'opacity-50' : 'opacity-100';
-  };
-
-  // Determine subtitle opacity
-  const getSubtitleOpacity = (subtitleName: string) => {
-    if (!isActive) return 'opacity-50';
-    return activeSubtitle === subtitleName ? 'opacity-100' : 'opacity-50';
-  };
-
   const handleSubtitleClick = (e: React.MouseEvent, subtitleName: string) => {
     e.stopPropagation(); // Prevent triggering the main tab click
     onSubtitleClick?.(subtitleName);

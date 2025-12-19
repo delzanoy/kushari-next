@@ -25,8 +25,6 @@ export function formatCents(value: number): string {
 export function formatSmallNumber(num: number): string {
   if (num === 0) return '0';
 
-  const absNum = Math.abs(num);
-
   // Find the first non-zero digit after decimal
   const str = num.toString();
   const decimalPart = str.split('.')[1] || '';

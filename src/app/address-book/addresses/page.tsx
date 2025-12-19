@@ -1,6 +1,5 @@
 import { getAddresses, getGroups } from "@/app/api/server-data";
 import AddressListClient from "./AddressListClient";
-import { AddressCardProps } from "./types";
 
 export default async function AddressesPage() {
   const addresses = await getAddresses();

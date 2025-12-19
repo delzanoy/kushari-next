@@ -25,8 +25,8 @@ export interface Transaction {
   gasFeeUSD?: number;
   gasTokenSymbol?: string;
   toAddress?: string;
-  incomingUSD?: any;
-  outgoingUSD?: any;
+  incomingUSD?: number; // Changed from any to number
+  outgoingUSD?: number; // Changed from any to number
   showDate?: boolean;
   isFirstOfDate?: boolean;
 }
@@ -42,8 +42,8 @@ export interface TransactionObject {
 }
 
 export interface TransactionWithCalculations extends Transaction {
-  incomingUSD: number;
-  outgoingUSD: number;
+  incomingUSD: number; // This is now consistent with the base interface
+  outgoingUSD: number; // This is now consistent with the base interface
 }
 
 import { AddressCardProps } from "./../../address-book/addresses/types"

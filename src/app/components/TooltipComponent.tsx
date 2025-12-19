@@ -107,7 +107,7 @@ interface TooltipProps {
   qrCode?: string;
   position?: 'top' | 'bottom' | 'left' | 'right';
   className?: string;
-  icon?: React.ReactNode;
+  // icon?: React.ReactNode;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }
@@ -119,7 +119,7 @@ const Tooltip: React.FC<TooltipProps> = ({
   qrCode,
   position = 'top',
   className = '',
-  icon,
+  // icon,
   open,
   onOpenChange
 }) => {
