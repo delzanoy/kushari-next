@@ -5,9 +5,9 @@ import "@cryptofonts/cryptofont/cryptofont.css";
 import DataPreloader from "../app/components/DataPreloader";
 import ResponsiveLayout from '@/app/components/ResponsiveLayout';
 import MobileView from '@/app/components/MobileView';
-
 import SideNav from "./components/SideNav";
 import WalletDataPreloader from "./components/WalletDataPreloader";
+import { GoogleAnalytics } from '@next/third-parties/google';
 
 import ModalHost from "./components/modal/ModalHost";
 
@@ -41,7 +41,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${figtreeSans.variable} ${geistMono.variable} antialiased h-[100vh] relative`}
       >
-
+      <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS as string} />
         <ResponsiveLayout
           mobileLayout={<MobileView />}
           desktopLayout={<ModalHost>
