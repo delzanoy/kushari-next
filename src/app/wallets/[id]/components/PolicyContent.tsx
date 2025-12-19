@@ -111,19 +111,26 @@ const PolicyContent = memo(({ wallet, cryptocurrencies = [], members = [] }: Pol
 
     // Safe access to wallet-specific properties
     const transactionLimit = (isMPCVault || isGnosisSafe) ? (wallet as MPCVaultWallet | GnosisSafeWallet).transactionLimit : undefined;
-    const walletMembers = (isMPCVault || isGnosisSafe) ? (wallet as MPCVaultWallet | GnosisSafeWallet).members : [];
+    // const walletMembers = (isMPCVault || isGnosisSafe) ? (wallet as MPCVaultWallet | GnosisSafeWallet).members : [];
     const threshold = (isMPCVault || isGnosisSafe) ? (wallet as MPCVaultWallet | GnosisSafeWallet).threshold : undefined;
     const blockedNetworks = (isMPCVault || isGnosisSafe) ? (wallet as MPCVaultWallet | GnosisSafeWallet).blockedNetworks : undefined;
     const allowedNetworks = (isMPCVault || isGnosisSafe) ? (wallet as MPCVaultWallet | GnosisSafeWallet).allowedNetworks : undefined;
     const blockedAssets = (isMPCVault || isGnosisSafe) ? (wallet as MPCVaultWallet | GnosisSafeWallet).blockedAssets : undefined;
     const allowedAssets = (isMPCVault || isGnosisSafe) ? (wallet as MPCVaultWallet | GnosisSafeWallet).allowedAssets : undefined;
 
+    const walletMembers = useMemo(() => {
+        if (isMPCVault || isGnosisSafe) {
+            return (wallet as MPCVaultWallet | GnosisSafeWallet).members || [];
+        }
+        return [];
+    }, [isMPCVault, isGnosisSafe, wallet]);
+
     const matchingMembers = useMemo(() => {
-    return walletMembers.map(walletMember => {
-        const fullMember = members.find(m => m.id === walletMember.memberId);
-        return fullMember;
-    }).filter((member): member is Member => member !== null);
-}, [walletMembers, members]);
+        return walletMembers.map(walletMember => {
+            const fullMember = members.find(m => m.id === walletMember.memberId);
+            return fullMember;
+        }).filter((member): member is Member => member !== null);
+    }, [walletMembers, members]);
 
     const getAssetDetailsByIds = (assetIds: { assetId: number }[], cryptocurrencies: Cryptocurrency[]): (Cryptocurrency & { assetId: number })[] => {
         if (!assetIds || !cryptocurrencies) return [];

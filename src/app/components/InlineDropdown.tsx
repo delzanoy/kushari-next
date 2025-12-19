@@ -61,7 +61,7 @@ export default function InlineDropdown({
     };
 
     // Sort options alphabetically (case-insensitive)
-    const sortedOptions = [...options].sort((a, b) => 
+    const sortedOptions = [...options].sort((a, b) =>
         a.localeCompare(b, undefined, { sensitivity: 'base' })
     );
 
@@ -72,24 +72,24 @@ export default function InlineDropdown({
 
     // Case-insensitive check for existing option
     const normalizedOptions = options.map(opt => opt.toLowerCase());
-    const showAddNewOption = searchQuery.trim() && 
-                            !normalizedOptions.includes(searchQuery.trim().toLowerCase());
+    const showAddNewOption = searchQuery.trim() &&
+        !normalizedOptions.includes(searchQuery.trim().toLowerCase());
 
     // Function to highlight matching text in options
     const highlightMatch = (text: string, query: string) => {
         if (!query.trim()) return text;
-        
+
         const lowerText = text.toLowerCase();
         const lowerQuery = query.toLowerCase();
         const startIndex = lowerText.indexOf(lowerQuery);
-        
+
         if (startIndex === -1) return text;
-        
+
         const endIndex = startIndex + query.length;
         const beforeMatch = text.substring(0, startIndex);
         const match = text.substring(startIndex, endIndex);
         const afterMatch = text.substring(endIndex);
-        
+
         return (
             <>
                 {beforeMatch}
@@ -103,7 +103,7 @@ export default function InlineDropdown({
         <div className="relative" ref={dropdownRef}>
             <div className="flex w-40 h-[18px] items-center">
                 {value ? (
-                    <div 
+                    <div
                         className={`group/dropdown flex py-[2px] pl-[8px] pr-[8px] group-hover:pr-[6px] items-center rounded-md border-[0.5px] border-solid border-[#F8FCFF]/24 bg-[#F8FCFF]/02 hover:border-[#F8FCFF] hover:bg-[#F8FCFF]/16 hover:cursor-pointer gap-[2px] hover:gap-[6px] transition-all duration-150 ease-in-out ${open ? "bg-[#F8FCFF]/16" : ""} ${disabled ? "opacity-50 cursor-not-allowed hover:border-[#F8FCFF]/24 hover:bg-[#F8FCFF]/02" : ""}`}
                         onClick={() => !disabled && setOpen(!open)}
                     >
@@ -118,7 +118,7 @@ export default function InlineDropdown({
                         )}
                     </div>
                 ) : (
-                    <div 
+                    <div
                         className={`group/dropdown flex py-[2px] px-[8px] items-center rounded-md border-[0.5px] gap-[4px] border-dashed hover:border-solid border-[#F8FCFF]/24 bg-[#F8FCFF]/02 group-hover:border-[#F8FCFF] group-hover:bg-[#F8FCFF]/16 transition-all duration-150 ease-in-out hover:border-[#26C9C9]/64 hover:bg-[#26C9C9]/12 ${disabled ? "opacity-50 cursor-not-allowed hover:border-[#F8FCFF]/24 hover:bg-[#F8FCFF]/02" : "hover:cursor-pointer"}`}
                         onClick={() => !disabled && setOpen(!open)}
                     >
@@ -129,10 +129,10 @@ export default function InlineDropdown({
                     </div>
                 )}
             </div>
-            
+
             {/* Dropdown Menu with TextInput Search */}
             {open && (
-                <div 
+                <div
                     className="absolute top-full left-0 mt-1 rounded-[14px] bg-[#0E1011] border-[1px] border-solid border-[#F8FCFF]/16 max-h-80 overflow-y-auto z-10"
                     style={{ width: '228px', minWidth: '228px' }}
                 >
@@ -163,16 +163,15 @@ export default function InlineDropdown({
                                 {filteredOptions.map((option) => (
                                     <div
                                         key={option}
-                                        className={`group/option flex flex-row justify-between items-center pt-[8px] pr-[12px] pb-[8px] pl-[16px] flex-col gap-2.5 rounded-[10px] hover:cursor-pointer ${
-                                            option === value 
-                                                ? 'bg-[#1C2325]' 
+                                        className={`group/option flex flex-row justify-between items-center pt-[8px] pr-[12px] pb-[8px] pl-[16px] flex-col gap-2.5 rounded-[10px] hover:cursor-pointer ${option === value
+                                                ? 'bg-[#1C2325]'
                                                 : 'hover:bg-[#F8FCFF]/8'
-                                        }`}
+                                            }`}
                                         onClick={() => handleOptionClick(option)}
                                     >
                                         <span className={
-                                            option === value 
-                                                ? 'text-[#A6FCFC] font-medium' 
+                                            option === value
+                                                ? 'text-[#A6FCFC] font-medium'
                                                 : 'text-[#F8FCFF]'
                                         }>
                                             {highlightMatch(option, searchQuery)}
@@ -188,7 +187,7 @@ export default function InlineDropdown({
                                         onClick={handleAddNewCategory}
                                     >
                                         <PlusCircleFilled className="h-4 w-4" />
-                                        Create classification "{searchQuery.trim()}"
+                                        {`Create classification "${searchQuery.trim()}"`}
                                     </div>
                                 )}
                             </>

@@ -58,7 +58,7 @@ export default function SuccessModal({
       setShowEscTooltip(false);
       setEscPressCount(0);
     }
-  }, [escStage, isTopModal, handleClose]);
+  }, [escStage, isTopModal, handleClose, showEscTooltip, escPressCount]); // Added missing dependencies
 
   // Handle ESC key directly as fallback
   useEffect(() => {

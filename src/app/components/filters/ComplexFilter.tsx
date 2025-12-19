@@ -203,7 +203,7 @@ const FilterOptionsPanel: React.FC<FilterOptionsPanelProps> = ({
                 return (
                   <div
                     key={option.id}
-                    className={`group/option flex pt-[8px] pr-[4px] pb-[8px] pl-[8px] flex-col items-start gap-2.5 rounded-[10px] ${isClickable ? 'hover:bg-[#F8FCFF]/8 cursor-pointer' : 'cursor-not-allowed'} ${!matchesSearch ? 'opacity-50' : ''} ${!isAvailable ? 'opacity-70' : ''}`}
+                    className={`group/option flex pt-[8px] pr-[4px] pb-[8px] pl-[8px] flex-col items-start gap-2.5 rounded-[10px] ${isClickable ? 'hover:bg-[#F8FCFF]/8 cursor-pointer' : 'cursor-not-allowed'} ${!matchesSearch ? 'opacity-50' : ''} ${!isAvailable ? 'opacity-40' : ''}`}
                     onClick={() => handleOptionClick(option, isAvailable)}
                   >
                     <div className="flex h-[22px] py-[2px] px-[4px] items-center gap-2 w-full">
@@ -226,7 +226,7 @@ const FilterOptionsPanel: React.FC<FilterOptionsPanelProps> = ({
                             {isSelected ? (
                               <CheckBoxFilledIcon className="h-4 w-4" />
                             ) : (
-                              <CheckBoxOutlineIcon className={`h-4 w-4 ${!isAvailable ? 'opacity-70' : ''}`} />
+                              <CheckBoxOutlineIcon className={`h-4 w-4 ${!isAvailable ? 'opacity-0' : ''}`} />
                             )}
                           </div>
                         </div>
@@ -250,7 +250,7 @@ const FilterOptionsPanel: React.FC<FilterOptionsPanelProps> = ({
             return (
               <div
                 key={option.id}
-                className={`group/option flex pt-[8px] pr-[4px] pb-[8px] pl-[8px] flex-col items-start gap-2.5 rounded-[10px] ${isClickable ? 'hover:bg-[#F8FCFF]/8 cursor-pointer' : 'cursor-not-allowed'} ${!matchesSearch ? 'opacity-50' : ''} ${!isAvailable ? 'opacity-70' : ''}`}
+                className={`group/option flex pt-[8px] pr-[4px] pb-[8px] pl-[8px] flex-col items-start gap-2.5 rounded-[10px] ${isClickable ? 'hover:bg-[#F8FCFF]/8 cursor-pointer' : 'cursor-not-allowed'} ${!matchesSearch ? 'opacity-50' : ''} ${!isAvailable ? 'opacity-40' : ''}`}
                 onClick={() => handleOptionClick(option, isAvailable)}
               >
                 <div className="flex h-[22px] py-[2px] px-[4px] items-center gap-2 w-full">
@@ -273,7 +273,7 @@ const FilterOptionsPanel: React.FC<FilterOptionsPanelProps> = ({
                         {isSelected ? (
                           <CheckBoxFilledIcon className="h-4 w-4" />
                         ) : (
-                          <CheckBoxOutlineIcon className={`h-4 w-4 ${!isAvailable ? 'opacity-70' : ''}`} />
+                          <CheckBoxOutlineIcon className={`h-4 w-4 ${!isAvailable ? 'opacity-0' : ''}`} />
                         )}
                       </div>
                     </div>
@@ -374,7 +374,7 @@ const ComplexFilter: React.FC<ComplexFilterProps> = ({
         setFrozenFieldOptions(prev => new Map(prev.set(hoveredField, optionsCopy))); // Fixed useEffect dependency
       }
     }
-  }, [hoveredField, fields]); // Removed frozenFieldOptions from dependencies
+  }, [hoveredField, fields, frozenFieldOptions]); // Removed frozenFieldOptions from dependencies
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

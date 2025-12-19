@@ -24,8 +24,7 @@ import {
     GnosisIcon,
     OPTIMISMIcon,
     PolygonIcon,
-    SOLIcon,
-    SmallArrowDown
+    SOLIcon
 } from "./../../components/icons";
 
 interface TransactionListProps {

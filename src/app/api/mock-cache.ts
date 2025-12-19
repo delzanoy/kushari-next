@@ -538,18 +538,77 @@ export async function getUserWallets(): Promise<UserWallet[]> {
 /**
  * Create a new vault (type 1)
  */
+// export async function createVault(payload: {
+//     name: string;
+//     approvers:  string[];
+//     threshold: number;
+//     blockchain?:  string | { blockchain: string }[];
+// }): Promise<UserWallet> {
+//     await delay(800);
+
+//     const id = userCache.nextWalletId++;
+    
+//     // Generate a mock Ethereum address
+//     const address = '0x' + Array. from({ length: 40 }, () => 
+//         Math.floor(Math.random() * 16).toString(16)
+//     ).join('');
+
+//     const newVault: UserWallet = {
+//         id,
+//         source: 'user',
+//         type: 1, // Vault
+//         address,
+//         name: payload.name,
+//         approvers: payload.approvers,
+//         threshold: payload.threshold,
+//         blockchain: payload.blockchain || 'ethereum',
+//         createdAt: new Date().toISOString(),
+//         demo: true,
+//         // Required WalletSummary properties
+//         totalBalance: 0,
+//         balance: [],
+//         memberCount: payload.approvers.length,
+//         percent_change_24h: 0,
+//         USDBalance: 0,
+//         // Required WalletDetails fields
+//         transactions: [],
+//         proposals: [],
+//         members: payload.approvers. map((email, idx) => ({
+//             memberId: 10000 + idx,
+//             role: 'approver',
+//             email:  email,
+//             name: email. split('@')[0], // Extract name from email
+//         })),
+//     };
+
+//     userCache.wallets.push(newVault);
+//     saveUserDataToSession();
+//     if (TTL_MS && TTL_MS > 0) scheduleReset(TTL_MS);
+
+//     return { ...newVault };
+// }
+
+function getRandomColor(): string {
+    const colors = [
+        '#FF6B6B', '#4ECDC4', '#FFD166', '#06D6A0', '#118AB2', 
+        '#EF476F', '#1B9AAA', '#9D4EDD', '#F15BB5', '#00BBF9'
+    ];
+    return colors[Math.floor(Math.random() * colors.length)];
+}
+
+
 export async function createVault(payload: {
     name: string;
-    approvers:  string[];
+    approvers: string[];
     threshold: number;
-    blockchain?:  string | { blockchain: string }[];
+    blockchain?: string | { blockchain: string }[];
 }): Promise<UserWallet> {
     await delay(800);
 
     const id = userCache.nextWalletId++;
     
     // Generate a mock Ethereum address
-    const address = '0x' + Array. from({ length: 40 }, () => 
+    const address = '0x' + Array.from({ length: 40 }, () => 
         Math.floor(Math.random() * 16).toString(16)
     ).join('');
 
@@ -573,11 +632,14 @@ export async function createVault(payload: {
         // Required WalletDetails fields
         transactions: [],
         proposals: [],
-        members: payload.approvers. map((email, idx) => ({
-            memberId: 10000 + idx,
+        members: payload.approvers.map((email, idx) => ({
+            // Match the Member interface - use 'id' instead of 'memberId'
+            id: 10000 + idx,
+            // Add a default colour
+            colour: getRandomColor(),
             role: 'approver',
-            email:  email,
-            name: email. split('@')[0], // Extract name from email
+            email: email,
+            name: email.split('@')[0], // Extract name from email
         })),
     };
 
@@ -591,6 +653,53 @@ export async function createVault(payload: {
 /**
  * Create a new Gnosis Safe (type 2)
  */
+// export async function createGnosisSafe(payload: {
+//     name: string;
+//     address: string;
+//     chain: string;
+//     owners: string[];
+//     threshold: number;
+// }): Promise<UserWallet> {
+//     await delay(800);
+
+//     const id = userCache.nextWalletId++;
+
+//     const newSafe: UserWallet = {
+//         id,
+//         source: 'user',
+//         type: 2, // Gnosis Safe
+//         address: payload.address,
+//         name: payload.name,
+//         chain: payload.chain,
+//         blockchain: [{ blockchain: payload.chain }],
+//         owners: payload.owners,
+//         threshold: payload.threshold,
+//         createdAt: new Date().toISOString(),
+//         demo: true,
+//         // Required WalletSummary properties
+//         totalBalance: 0,
+//         balance: [],
+//         memberCount:  payload.owners.length,
+//         percent_change_24h: 0,
+//         USDBalance:  0,
+//         // Required WalletDetails fields
+//         transactions:  [],
+//         proposals: [],
+//         members: payload.owners.map((email, idx) => ({
+//             memberId: 20000 + idx,
+//             role: 'owner',
+//             email: email,
+//             name: email.split('@')[0], // Extract name from email
+//         })),
+//     };
+
+//     userCache.wallets.push(newSafe);
+//     saveUserDataToSession();
+//     if (TTL_MS && TTL_MS > 0) scheduleReset(TTL_MS);
+
+//     return { ...newSafe };
+// }
+
 export async function createGnosisSafe(payload: {
     name: string;
     address: string;
@@ -617,14 +726,17 @@ export async function createGnosisSafe(payload: {
         // Required WalletSummary properties
         totalBalance: 0,
         balance: [],
-        memberCount:  payload.owners.length,
+        memberCount: payload.owners.length,
         percent_change_24h: 0,
-        USDBalance:  0,
+        USDBalance: 0,
         // Required WalletDetails fields
-        transactions:  [],
+        transactions: [],
         proposals: [],
         members: payload.owners.map((email, idx) => ({
-            memberId: 20000 + idx,
+            // Match the Member interface - use 'id' instead of 'memberId'
+            id: 20000 + idx,
+            // Add a default colour
+            colour: getRandomColor(),
             role: 'owner',
             email: email,
             name: email.split('@')[0], // Extract name from email

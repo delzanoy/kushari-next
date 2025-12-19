@@ -1,8 +1,6 @@
 "use client";
 import React, { useEffect, useRef } from "react";
 import { ExecutingIcon, MailFilledIcon } from "../icons";
-import useModal from "../../hooks/useModal";
-
 
 export default function SendingModal({ message = "Sending..." }: { message?: string }) {
   const ref = useRef<HTMLDivElement | null>(null);

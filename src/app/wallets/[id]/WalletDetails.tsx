@@ -277,7 +277,7 @@ const WalletHeader = memo(({
                 closeTop();
                 return true;
             }}>
-                <MakeDeposit 
+                <MakeDeposit
                     wallet={wallet}  // No conversion needed!
                     onClose={closeTop}
                 />
@@ -331,13 +331,13 @@ const WalletHeader = memo(({
                         />
                         {totalBalance > 0 && (
                             <PrimaryButton label="Send tokens" variant="neutral" size="md" leadingIcon={<SendIcon />} onClick={() => open(
-                                        <Modal onRequestClose={() => {
-                                            closeTop(); // Close the modal when onRequestClose is called
-                                            return true; // Allow the modal to close
-                                        }}>
-                                            <FeatureUnderDevelopment onClose={closeTop}/>
-                                        </Modal>
-                                    )}/>
+                                <Modal onRequestClose={() => {
+                                    closeTop(); // Close the modal when onRequestClose is called
+                                    return true; // Allow the modal to close
+                                }}>
+                                    <FeatureUnderDevelopment onClose={closeTop} />
+                                </Modal>
+                            )} />
                         )}
                     </div>
                 </div>
@@ -408,7 +408,6 @@ export default function WalletDetails({
     onTabStateChange
 }: WalletDetailsProps) {
     const router = useRouter();
-    const { open, closeTop } = useModal(); // Get closeTop from useModal
 
     const tabOrder = useMemo(() => getTabOrder(wallet.type), [wallet.type]);
     type TabType = typeof tabOrder[number];
@@ -595,6 +594,32 @@ export default function WalletDetails({
     }, [activeTab, activeProposalFilter, transformedProposals, calculateHighestCountSubtitle, onTabStateChange]);
 
     // FIX: Direct tab change handlers that work with parent-controlled state
+    // const handleTabChange = useCallback((newTab: TabType) => {
+    //     const currentIndex = TAB_ORDER.indexOf(activeTab);
+    //     const newIndex = TAB_ORDER.indexOf(newTab);
+    //     setAnimationDirection(currentIndex, newIndex);
+
+    //     if (onTabStateChange) {
+    //         // Parent controls state - notify parent of change
+    //         if (newTab === 'proposals' && transformedProposals.length > 0) {
+    //             // When switching to proposals, initialize with highest count subtab
+    //             const highestSubtitle = calculateHighestCountSubtitle();
+    //             onTabStateChange(newTab, highestSubtitle);
+    //         } else {
+    //             onTabStateChange(newTab, null);
+    //         }
+    //     } else {
+    //         // Internal state - update directly
+    //         setInternalActiveTab(newTab);
+    //         if (newTab === 'proposals' && transformedProposals.length > 0) {
+    //             const highestSubtitle = calculateHighestCountSubtitle();
+    //             setInternalActiveProposalFilter(highestSubtitle);
+    //         } else {
+    //             setInternalActiveProposalFilter(null);
+    //         }
+    //     }
+    // }, [activeTab, activeProposalFilter, setAnimationDirection, onTabStateChange, transformedProposals, calculateHighestCountSubtitle]);
+
     const handleTabChange = useCallback((newTab: TabType) => {
         const currentIndex = TAB_ORDER.indexOf(activeTab);
         const newIndex = TAB_ORDER.indexOf(newTab);
@@ -619,7 +644,7 @@ export default function WalletDetails({
                 setInternalActiveProposalFilter(null);
             }
         }
-    }, [activeTab, activeProposalFilter, setAnimationDirection, onTabStateChange, transformedProposals, calculateHighestCountSubtitle]);
+    }, [activeTab, setAnimationDirection, onTabStateChange, transformedProposals, calculateHighestCountSubtitle]);
 
     const handleProposalFilterChange = useCallback((subtitleName: string) => {
         const category = getCategoryFromHumanReadable(subtitleName);

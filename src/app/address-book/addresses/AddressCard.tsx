@@ -67,7 +67,7 @@ export default function AddressCard({ address, onSelect, selected }: AddressCard
             <span className="truncate flex-1 overflow-hidden text-[#F8FCFF] text-ellipsis font-[Geist] text-sm not-italic font-extralight leading-[normal] tracking-[0.7px] font-mono">
                 {address.walletHash}
             </span>
-            <IconButton icon={<QRCodeIcon />} status="neutral" size="sm" className="scale-0 group-hover/address:scale-100 mt-1.5" tooltipTitle={address.name} qrCode={address.walletHash} />
+            <IconButton icon={<QRCodeIcon />} status="neutral" size="sm" className="scale-0 group-hover/address:scale-100" tooltipTitle={address.name} qrCode={address.walletHash} />
         </div>
         <div className={`${trustLevel === "trusted" ? "opacity-100" : "opacity-50"} w-[154px]`}>
             <span className="overflow-hidden text-[#F8FCFF] text-ellipsis font-[Geist] text-sm not-italic font-extralight leading-[normal] tracking-[0.7px]">{interactionStatus}</span>

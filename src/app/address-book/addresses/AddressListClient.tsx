@@ -23,7 +23,7 @@ export default function AddressListClient({ addresses: initialAddresses, groups 
     const initialSearch = searchParams.get('search') || '';
     const isUngrouped = searchParams.get('ungrouped') === 'true';
     const [searchTerm, setSearchTerm] = useState(initialSearch);
-    const [selectedGroups, setSelectedGroups] = useState<number[]>([]);
+    // const [selectedGroups, setSelectedGroups] = useState<number[]>([]);
     const [isCommandPressed, setIsCommandPressed] = useState(false);
     const [selectedAddressIds, setSelectedAddressIds] = useState<number[]>([]);
     const { open, closeTop } = useModal();
@@ -148,16 +148,16 @@ export default function AddressListClient({ addresses: initialAddresses, groups 
         }
 
         // Apply group selection filter
-        if (selectedGroups.length > 0) {
-            result = result.filter(address =>
-                address.groups.some(group =>
-                    selectedGroups.includes(group.groupId)
-                )
-            );
-        }
+        // if (selectedGroups.length > 0) {
+        //     result = result.filter(address =>
+        //         address.groups.some(group =>
+        //             selectedGroups.includes(group.groupId)
+        //         )
+        //     );
+        // }
 
         return result;
-    }, [addresses, isUngrouped, searchTerm, selectedGroups, searchAddresses]);
+    }, [addresses, isUngrouped, searchTerm, searchAddresses]);
 
     // const handleGroupSelectionChange = (selectedIds: number[]) => {
     //     setSelectedGroups(selectedIds);
@@ -227,7 +227,8 @@ export default function AddressListClient({ addresses: initialAddresses, groups 
         };
     }, [searchTerm]);
 
-    const hasActiveFilters = searchTerm.trim() !== '' || selectedGroups.length > 0 || isUngrouped;
+    // const hasActiveFilters = searchTerm.trim() !== '' || selectedGroups.length > 0 || isUngrouped;
+    const hasActiveFilters = searchTerm.trim() !== '' || isUngrouped;
     const showingCount = filteredAddresses.length;
     const totalCount = addresses.length;
 

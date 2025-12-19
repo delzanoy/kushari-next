@@ -37,15 +37,15 @@ const focusableSelector =
 
 export const Modal: React.FC<ModalProps> = (props) => {
   const {
-    title,
-    subtitle,
-    icon,
-    showCloseButton = true,
-    width = 568,
+    // title,
+    // subtitle,
+    // icon,
+    // showCloseButton = true,
+    // width = 568,
     onClose,
     onRequestClose,
     hasUnsavedChanges = false,
-    footer,
+    // footer,
     children,
     internalZIndex = 1000,
     internalIsTop = true,
@@ -60,7 +60,7 @@ export const Modal: React.FC<ModalProps> = (props) => {
 
   const isUnderlying = !internalIsTop;
 
-  const widthStr = typeof width === "number" ? `${width}px` : width;
+  // const widthStr = typeof width === "number" ? `${width}px` : width;
 
   const titleId = `modal-title-${internalZIndex}-${internalStackIndex}`;
   const descId = `modal-desc-${internalZIndex}-${internalStackIndex}`;

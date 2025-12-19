@@ -65,7 +65,7 @@ const Dropdown = forwardRef<HTMLDivElement, DropdownProps>(
       emptyText = "No options available",
       multiple = false,
       maxHeight = "320px",
-      ...inputProps
+      // ...inputProps
     },
     forwardedRef
   ) {

@@ -39,7 +39,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased h-[100vh] relative`}
+        className={`${geistSans.variable} ${figtreeSans.variable} ${geistMono.variable} antialiased h-[100vh] relative`}
       >
 
         <ResponsiveLayout
@@ -53,7 +53,7 @@ export default function RootLayout({
               <main className="flex-1 pb-[256px] h-[100vh] overflow-auto">{children}</main>
             </div>
             <div className="group/credit absolute right-[16px] bottom-[16px] opacity-50 hover:opacity-100 cursor-pointer transition-opacity duration-200">
-              <span className="line-clamp-1 overflow-hidden text-[#F8FCFF] text-ellipsis font-[Geist] text-sm not-italic font-light leading-[normal] tracking-[0.7px]">
+              <span className="line-clamp-1 overflow-hidden text-[#F8FCFF] text-ellipsis font-[figtreeSans] text-sm not-italic font-light leading-[normal] tracking-[0.7px]">
                 Product, design & development by <span className="font-bold">Delanoy Kunil</span>
               </span>
             </div>

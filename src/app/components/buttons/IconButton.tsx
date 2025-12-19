@@ -70,19 +70,33 @@ export default function IconButton({
   );
 
   // Wrap with tooltip only if tooltipTitle is passed
-  if (tooltipTitle && showTooltip) {
-    return (
-      <Tooltip
-        title={tooltipTitle}
-        qrCode={qrCode}
-        subtitle={tooltipSubtitle}
-        position={tooltipPosition}
-        open={showTooltip}
-      >
-        {button}
-      </Tooltip>
-    );
-  }
+  // if (tooltipTitle && showTooltip) {
+  //   return (
+  //     <Tooltip
+  //       title={tooltipTitle}
+  //       qrCode={qrCode}
+  //       subtitle={tooltipSubtitle}
+  //       position={tooltipPosition}
+  //       open={showTooltip}
+  //     >
+  //       {button}
+  //     </Tooltip>
+  //   );
+  // }
+
+  if (tooltipTitle) {
+  return (
+    <Tooltip
+      title={tooltipTitle}
+      qrCode={qrCode}
+      subtitle={tooltipSubtitle}
+      position={tooltipPosition}
+      {...(showTooltip && { open: showTooltip })} // Only control externally when showTooltip is true
+    >
+      {button}
+    </Tooltip>
+  );
+}
 
   return button;
 }
