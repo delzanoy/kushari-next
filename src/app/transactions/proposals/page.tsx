@@ -9,10 +9,8 @@ interface PageProps {
 
 
 export default async function TransactionsProposalsPage({ searchParams }: PageProps) {
-  const [proposals, addresses] = await Promise.all([
-    getProposals(),
-    getAddresses()
-  ])
+  const addresses = await getAddresses();
+  const proposals = await getProposals();
 
   const typedProposals = proposals as Proposal[];
 

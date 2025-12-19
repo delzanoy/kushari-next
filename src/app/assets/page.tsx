@@ -6,9 +6,7 @@ interface PageProps {
 }
 
 export default async function AssetsPage({ searchParams }: PageProps) {
-  const [assets] = await Promise.all([
-    getAssets()
-  ])
+  const [assets] = await getAssets();
 
   const initialWalletFilter = searchParams.wallet as string | undefined;
 

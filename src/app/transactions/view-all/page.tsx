@@ -52,10 +52,8 @@ interface PageProps {
 }
 
 export default async function TransactionsViewAllPage({ searchParams }: PageProps) {
-  const [transactions, addresses] = await Promise.all([
-    getTransactions(),
-    getAddresses()
-  ])
+  const transactions = await getTransactions();
+  const addresses = await getTransactions();
 
   const typedTransactions = transactions as TransactionObject;
 

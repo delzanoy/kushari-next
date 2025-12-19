@@ -7,7 +7,6 @@ import TertiaryButton from "@/app/components/buttons/TertiaryButton";
 import { AddressCardProps } from "@/app/address-book/addresses/types";
 import { format } from "date-fns";
 import { determineMultirecipients } from "../view-all/calculations";
-import { Recipient} from "./types"
 import { formatDollars, formatCents } from "./../../components/helpers";
 import {
     BSCIcon,
@@ -22,7 +21,7 @@ interface ProposalListProps {
     proposal: Proposal;
     addresses: AddressCardProps[];
     uniqueClassifications: string[];
-    onSearchChange?: (query: string) => void;
+    onSearchChange?: (query: string) => void; // Add this
 }
 
 export default function ProposalCard({
@@ -32,41 +31,6 @@ export default function ProposalCard({
 }: ProposalListProps) {
 
     const [selected, setSelected] = useState<string | undefined>(uniqueClassifications[0]);
-
-    // Helper function to convert Proposal.recipients to RecipientsType
-    const convertRecipientsToRecipientsType = (recipients: Recipient | Recipient[]): RecipientsType => {
-        if (Array.isArray(recipients)) {
-            // For array recipients, convert each to RecipientWithAddressId or RecipientWithToAddress
-            return recipients.map(recipient => {
-                if (recipient.addressId !== undefined) {
-                    return {
-                        addressId: recipient.addressId,
-                        toName: recipient.toName
-                    };
-                } else {
-                    // Ensure toAddress is defined
-                    return {
-                        toAddress: recipient.toAddress || '',
-                        toName: recipient.toName
-                    };
-                }
-            });
-        } else {
-            // For single recipient
-            if (recipients.addressId !== undefined) {
-                return {
-                    addressId: recipients.addressId,
-                    toName: recipients.toName
-                };
-            } else {
-                // Ensure toAddress is defined
-                return {
-                    toAddress: recipients.toAddress || '',
-                    toName: recipients.toName
-                };
-            }
-        }
-    };
 
     const getBlockchainIcon = (blockchainName: string) => {
         switch (blockchainName) {
@@ -87,7 +51,7 @@ export default function ProposalCard({
         }
     };
 
-    const renderStyle = (status: string) => {
+    const renderStyle = (status: string) => { // Changed from String to string
         switch (status) {
             case "ACTION_REQUIRED":
                 return "bg-[#121819]";
@@ -100,7 +64,7 @@ export default function ProposalCard({
         }
     }
 
-    const renderStatus = (status: string) => {
+    const renderStatus = (status: string) => { // Changed from String to string
         switch (status) {
             case "ACTION_REQUIRED":
                 return <div className="flex w-[152px] h-[18px] pr-[7px] justify-end items-center gap-1">
@@ -141,6 +105,7 @@ export default function ProposalCard({
                 return <div className="flex w-[152px] h-[18px] pr-[7px] justify-end items-center gap-1">
                     <div className="flex w-[152px] pl-[3px] justify-start items-center gap-[30px] shrink-0 self-stretch">
                         <div className="flex pt-[3px] pr-[10px] pb-[3px] pl-[4px] justify-end items-center gap-1 rounded-[10px] border-[0.5px] border-solid border-[#ED090D] bg-[#3A2526]">
+                            {/* <StatusSquarecle className="w-4.5 h-4.5 fill-[#ED090D]" /> */}
                             <div className="relative h-[18px] w-[18px]">
                                 <StatusDotIcon className="absolute left-0 top-0 h-[18px] w-[18px] text-[#ED090D]" />
                                 <StatusDotIcon className="absolute left-0 top-0 h-[18px] w-[18px] text-[#ED090D] animate-ping" />
@@ -175,6 +140,7 @@ export default function ProposalCard({
                 return <div className="flex w-[152px] h-[18px] pr-[7px] justify-end items-center gap-1">
                     <div className="flex w-[152px] pl-[3px] justify-start items-center gap-[30px] shrink-0 self-stretch">
                         <div className="flex pt-[3px] pr-[10px] pb-[3px] pl-[4px] justify-end items-center gap-1 rounded-[10px] border-[0.5px] border-solid border-[#ED090D] bg-[#3A2526]">
+                            {/* <StatusSquarecle className="w-4.5 h-4.5 fill-[#ED090D]" /> */}
                             <div className="relative h-[18px] w-[18px]">
                                 <StatusDotIcon className="absolute left-0 top-0 h-[18px] w-[18px] text-[#ED090D]" />
                                 <StatusDotIcon className="absolute left-0 top-0 h-[18px] w-[18px] text-[#ED090D] animate-ping" />
@@ -218,7 +184,7 @@ export default function ProposalCard({
     const outTokenSymbol = proposal.outTokenSymbol || '';
     const outTokens = proposal.outTokens?.toLocaleString() || '0';
 
-    // Date formatting functions
+    // Date formatting functions - ensure they're consistent
     const formatDisplayDate = (timestamp: string | number | Date) => {
         try {
             const date = new Date(timestamp);
@@ -239,9 +205,7 @@ export default function ProposalCard({
         }
     };
 
-    // Convert recipients to the proper type before passing to determineMultirecipients
-    const convertedRecipients = convertRecipientsToRecipientsType(proposal.recipients);
-    const recipeints = determineMultirecipients(proposal.multiRecipient, convertedRecipients, addresses);
+    const recipeints = determineMultirecipients(proposal.multiRecipient, proposal.recipients, addresses);
 
     // Determine what to display
     const displayDate = proposal.showDate ? formatDisplayDate(proposal.timestamp) : '';
@@ -265,6 +229,7 @@ export default function ProposalCard({
                         <span className={`text-[#F8FCFF] font-[Geist] text-[10px] not-italic font-normal leading-[normal] transition-opacity duration-200 ${proposal.showDate ? 'block' : 'hidden'} group-hover:hidden`}>
                             {displayDate}
                         </span>
+                        {/* Hover date (shown on hover for all proposals) */}
                         <span className={`text-[#F8FCFF] font-[Geist] text-[10px] not-italic font-normal leading-[normal] hidden group-hover:block`}>
                             {hoverDate}
                         </span>
