@@ -74,3 +74,8 @@ export { AddAddressIcon } from "./AddAddressIcon";
 export { CreateGroupIcon } from "./CreateGroupIcon";
 export { ShareIcon } from "./ShareIcon";
 export { UserAvatarIcon } from "./UserAvatarIcon";
+export { ProfileIcon } from "./ProfileIcon";
+export { LifebouyIcon } from "./LifebouyIcon";
+export { GlobeWebIcon } from "./GlobeWebIcon";
+export { LogoutBoxIcon } from "./LogoutBoxIcon";
+export { MagicIcon } from "./MagicIcon";

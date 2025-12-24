@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import SideNavItem from "./SideNavItem";
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -8,8 +8,25 @@ import IconButton from "./buttons/IconButton";
 import { Modal } from "@/app/components/modal/Modal";
 import FeatureUnderDevelopment from "@/app/components/FeatureUnderDevlopment/FeatureUnderDevelopment";
 import useModal from "@/app/hooks/useModal";
+import ProfileMenu, { ProfileMenuItem } from "./ProfileMenu";
 
-import { WalletIcon, CoinIcon, ListIcon, CheckIcon, AddressIcon, GroupIcon, SettingsIcon, SpaceIcon, ExpandIcon } from "@/app/components/icons";
+import {
+    WalletIcon,
+    CoinIcon,
+    ListIcon,
+    CheckIcon,
+    AddressIcon,
+    GroupIcon,
+    SettingsIcon,
+    SpaceIcon,
+    ExpandIcon,
+    ProfileIcon,
+    LifebouyIcon,
+    ExternalLinkIcon,
+    GlobeWebIcon,
+    MagicIcon,
+    LogoutBoxIcon,
+} from "@/app/components/icons";
 
 function SideNavSection({ title, children, pill }: { title: string; children?: React.ReactNode; pill?: React.ReactNode }) {
     return (
@@ -63,6 +80,8 @@ function FrameAvatar() {
 export default function SideNav() {
     const pathname = usePathname();
     const [externalHoverTarget, setExternalHoverTarget] = useState<string | null>(null);
+    const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+    const menuButtonRef = useRef<HTMLButtonElement | null>(null);
     const { open, closeTop } = useModal();
 
     const navSections = [
@@ -100,6 +119,37 @@ export default function SideNav() {
         },
     ];
 
+    const profileMenuItems: ProfileMenuItem[] = [
+        {
+            label: "Profile",
+            action: () => handleProfileMenuAction("profile"),
+            icon: <ProfileIcon className="w-4 h-4" />
+        },
+        {
+            label: "Help & support",
+            action: () => handleProfileMenuAction("help"),
+            icon: <LifebouyIcon className="w-4 h-4" />
+        },
+        {
+            label: "Website",
+            action: () => handleProfileMenuAction("website"),
+            icon: <GlobeWebIcon className="w-4 h-4" />,
+            trailingIcon: <ExternalLinkIcon className="w-4 h-4" />
+        },
+        {
+            label: "Delanoy's portfolio",
+            action: () => handleProfileMenuAction("portfolio"),
+            icon: <MagicIcon className="w-4 h-4" />,
+            trailingIcon: <ExternalLinkIcon className="w-4 h-4" />
+        },
+        {
+            label: "Logout",
+            action: () => handleProfileMenuAction("logout"),
+            icon: <LogoutBoxIcon className="w-4 h-4" />,
+            isDestructive: true
+        },
+    ];
+
     // Listen for group card hover events
     useEffect(() => {
         const handleGroupCardHover = (event: CustomEvent) => {
@@ -113,28 +163,83 @@ export default function SideNav() {
         };
     }, []);
 
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (isProfileMenuOpen) {
+                setIsProfileMenuOpen(false);
+            }
+        }
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [isProfileMenuOpen]);
+
     // Helper function to check if a nav item is active
     const isNavItemActive = (itemHref: string) => {
-    if (itemHref === '/wallets') {
-        return pathname.startsWith('/wallets');
-    }
-    if (itemHref === '/assets') {
-        return pathname.startsWith('/assets');
-    }
-    if (itemHref === '/transactions/view-all') {
-        return pathname === '/transactions/view-all' || pathname === '/transactions';
-    }
-    if (itemHref === '/transactions/proposals') {
-        return pathname.startsWith('/transactions/proposals');
-    }
-    if (itemHref === '/address-book/addresses') {
-        return pathname === '/address-book/addresses' || pathname === '/address-book';
-    }
-    if (itemHref === '/address-book/groups') {
-        return pathname.startsWith('/address-book/groups');
-    }
-    return pathname === itemHref;
-};
+        if (itemHref === '/wallets') {
+            return pathname.startsWith('/wallets');
+        }
+        if (itemHref === '/assets') {
+            return pathname.startsWith('/assets');
+        }
+        if (itemHref === '/transactions/view-all') {
+            return pathname === '/transactions/view-all' || pathname === '/transactions';
+        }
+        if (itemHref === '/transactions/proposals') {
+            return pathname.startsWith('/transactions/proposals');
+        }
+        if (itemHref === '/address-book/addresses') {
+            return pathname === '/address-book/addresses' || pathname === '/address-book';
+        }
+        if (itemHref === '/address-book/groups') {
+            return pathname.startsWith('/address-book/groups');
+        }
+        return pathname === itemHref;
+    };
+
+    const handleProfileMenuAction = (action: string) => {
+        setIsProfileMenuOpen(false);
+
+        const showFeatureModal = () => {
+            open(
+                <Modal onRequestClose={() => {
+                    closeTop();
+                    return true;
+                }}>
+                    <FeatureUnderDevelopment onClose={closeTop} />
+                </Modal>
+            );
+        };
+
+        const openExternalLink = (url: string) => {
+            try {
+                window.open(url, "_blank", "noopener,noreferrer");
+            } catch (error) {
+                console.error("Failed to open external link:", error);
+            }
+        };
+
+        switch (action) {
+            case "profile":
+            case "help":
+            case "logout":
+                showFeatureModal();
+                break;
+            case "website":
+                openExternalLink("https://www.figma.com/proto/Nfz1oTeKS553bZuNAIi3zN/Kushari-2.0?page-id=5%3A35478&node-id=516-5964&viewport=309%2C-657%2C0.11&t=XQe9OJ9u9TGap2y9-1&scaling=scale-down-width&content-scaling=fixed");
+                break;
+            case "portfolio":
+                openExternalLink("https://delanoy.fyi/");
+                break;
+            default:
+                break;
+        }
+    };
+
+    const toggleProfileMenu = () => {
+        setIsProfileMenuOpen(!isProfileMenuOpen);
+    };
 
     return (
         <nav
@@ -148,25 +253,37 @@ export default function SideNav() {
                 <div className="flex items-center gap-2 flex-[1_0_0]">
                     <div className="relative w-6 h-6">
                         <SpaceIcon className="w-6 h-6 text-[#D7DCF3] opacity-100 group-hover/sidebar:opacity-0 absolute left-0 top-0" />
-                        <IconButton className="opacity-0 group-hover/sidebar:opacity-100 absolute left-0 top-0" icon={<ExpandIcon />} size="md" status="neutral" onClick={() => open(
-                            <Modal onRequestClose={() => {
-                                closeTop(); // Close the modal when onRequestClose is called
-                                return true; // Allow the modal to close
-                            }}>
-                                <FeatureUnderDevelopment onClose={closeTop} />
-                            </Modal>
-                        )} />
+                        <IconButton 
+                            className="opacity-0 group-hover/sidebar:opacity-100 absolute left-0 top-0" 
+                            icon={<ExpandIcon />} 
+                            size="md" 
+                            status="neutral" 
+                            onClick={() => open(
+                                <Modal onRequestClose={() => {
+                                    closeTop();
+                                    return true;
+                                }}>
+                                    <FeatureUnderDevelopment onClose={closeTop} />
+                                </Modal>
+                            )} 
+                        />
                     </div>
                     <span className="text-[#D7DCF3] font-[Figtree] text-sm not-italic font-semibold leading-[normal] tracking-[0.112px]">Acme Co.</span>
                 </div>
-                <IconButton className="opacity-0 group-hover/sidebar:opacity-100" icon={<SettingsIcon />} size="md" status="neutral" onClick={() => open(
-                    <Modal onRequestClose={() => {
-                        closeTop(); // Close the modal when onRequestClose is called
-                        return true; // Allow the modal to close
-                    }}>
-                        <FeatureUnderDevelopment onClose={closeTop} />
-                    </Modal>
-                )} />
+                <IconButton 
+                    className="opacity-0 group-hover/sidebar:opacity-100" 
+                    icon={<SettingsIcon />} 
+                    size="md" 
+                    status="neutral" 
+                    onClick={() => open(
+                        <Modal onRequestClose={() => {
+                            closeTop();
+                            return true;
+                        }}>
+                            <FeatureUnderDevelopment onClose={closeTop} />
+                        </Modal>
+                    )} 
+                />
             </div>
 
             <div className="flex py-[0] px-[20px] flex-col items-start gap-10 flex-[1_0_0] self-stretch">
@@ -193,7 +310,7 @@ export default function SideNav() {
 
             </div>
 
-            <div className="flex p-4 flex-col items-start gap-2.5 self-stretch">
+            <div className="flex p-4 flex-col items-start gap-2.5 self-stretch relative">
                 <div className="flex pt-[4px] pr-[16px] pb-[4px] pl-[4px] items-center self-stretch rounded-full border-[0.6px] border-transparent group-hover/sidebar:border-[0.6px] hover:bg-[#26C9C9]/5 group-hover/sidebar:border-[rgba(255,255,255,0.2)] cursor-pointer hover:shadow-[0_0_50px_4px_#26C9C9]/20">
                     <div className="relative flex justify-center items-center gap-2.5 flex-[1_0_0] rounded-full">
                         <FrameAvatar />
@@ -202,15 +319,23 @@ export default function SideNav() {
                             <span className="text-[#F8FCFF] font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.8px] opacity-70">Admin</span>
                         </div>
                     </div>
-                    <IconButton size="sm" icon={<MenuIcon />} className="opacity-0 group-hover/sidebar:opacity-100" status="neutral" onClick={() => open(
-                        <Modal onRequestClose={() => {
-                            closeTop(); // Close the modal when onRequestClose is called
-                            return true; // Allow the modal to close
-                        }}>
-                            <FeatureUnderDevelopment onClose={closeTop} />
-                        </Modal>
-                    )} />
+                    <IconButton
+                        ref={menuButtonRef}
+                        size="sm"
+                        icon={<MenuIcon />}
+                        className="opacity-0 group-hover/sidebar:opacity-100"
+                        status="neutral"
+                        onClick={toggleProfileMenu}
+                    />
                 </div>
+
+                {/* Profile Menu - now opens upward */}
+                <ProfileMenu
+                    isOpen={isProfileMenuOpen}
+                    onClose={() => setIsProfileMenuOpen(false)}
+                    items={profileMenuItems}
+                    anchorRef={menuButtonRef}
+                />
             </div>
         </nav>
     );

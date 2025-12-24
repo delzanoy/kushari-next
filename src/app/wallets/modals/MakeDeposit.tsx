@@ -60,9 +60,9 @@ export default function MakeDeposit({ wallet, onClose }: MakeDepositProps) {
             '3xl': 'w-7 h-7',
             '4xl': 'w-8 h-8',
         };
-    
+
         const iconSizeClass = sizeClasses[size];
-    
+
         const iconMap: Record<string, React.ReactElement> = {
             "BSC": <BSCIcon className={`${iconSizeClass} shrink-0 inline-flex items-center`} />,
             "Ethereum": <EthereumIcon className={`${iconSizeClass} shrink-0 inline-flex items-center`} />,
@@ -71,7 +71,7 @@ export default function MakeDeposit({ wallet, onClose }: MakeDepositProps) {
             "Polygon": <PolygonIcon className={`${iconSizeClass} shrink-0 inline-flex items-center`} />,
             "Solana": <SOLIcon className={`${iconSizeClass} shrink-0 inline-flex items-center`} />,
         };
-    
+
         return iconMap[blockchainName] || null;
     };
 
@@ -154,13 +154,13 @@ export default function MakeDeposit({ wallet, onClose }: MakeDepositProps) {
                     </div>
 
                     <IconButton
-                                                icon={showEscTooltip ? <CloseCircleFilledIcon /> : <CloseIcon />}
-                                                size="sm"
-                                                status={showEscTooltip ? "danger" : "neutral"}
-                                                onClick={onClose}
-                                                tooltipTitle="Esc again to confirm"
-                                                showTooltip={showEscTooltip}
-                                            />
+                        icon={showEscTooltip ? <CloseCircleFilledIcon /> : <CloseIcon />}
+                        size="sm"
+                        status={showEscTooltip ? "danger" : "neutral"}
+                        onClick={onClose}
+                        tooltipTitle={showEscTooltip ? "Esc again to confirm" : "Esc to exit"}
+                        showTooltip={showEscTooltip}
+                    />
                 </div>
                 <div className="flex py-[0] px-[12px] flex-col items-start gap-2.5 self-stretch">
                     <span className="text-[#F8FCFF] font-[Figtree] text-[26px] not-italic font-medium leading-[normal] tracking-[1.04px]">
@@ -192,10 +192,10 @@ export default function MakeDeposit({ wallet, onClose }: MakeDepositProps) {
                 <div className="inline-flex items-center -space-x-1">
                     {getBlockchainIcons(wallet.blockchain)}
                 </div>
-                <TertiaryButton 
-                    size="sm" 
-                    label={wallet.address} 
-                    status={copiedAddress ? "brand" : "neutral"} 
+                <TertiaryButton
+                    size="sm"
+                    label={wallet.address}
+                    status={copiedAddress ? "brand" : "neutral"}
                     tooltipTitle={copiedAddress ? "Address copied" : "Copy address"}
                     onClick={handleCopyAddress}
                 />

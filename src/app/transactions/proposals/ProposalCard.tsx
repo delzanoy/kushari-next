@@ -16,12 +16,15 @@ import {
     PolygonIcon,
     SOLIcon
 } from "./../../components/icons";
+import FeatureUnderDevelopment from "@/app/components/FeatureUnderDevlopment/FeatureUnderDevelopment";
+import { Modal } from "@/app/components/modal/Modal";
+import useModal from "@/app/hooks/useModal";
 
 interface ProposalListProps {
     proposal: Proposal;
     addresses: AddressCardProps[];
     uniqueClassifications: string[];
-    onSearchChange?: (query: string) => void; // Add this
+    onSearchChange?: (query: string) => void;
 }
 
 export default function ProposalCard({
@@ -29,7 +32,7 @@ export default function ProposalCard({
     addresses,
     uniqueClassifications
 }: ProposalListProps) {
-
+    const { open, closeTop } = useModal();
     const [selected, setSelected] = useState<string | undefined>(uniqueClassifications[0]);
 
     const getBlockchainIcon = (blockchainName: string) => {
@@ -51,7 +54,7 @@ export default function ProposalCard({
         }
     };
 
-    const renderStyle = (status: string) => { // Changed from String to string
+    const renderStyle = (status: string) => {
         switch (status) {
             case "ACTION_REQUIRED":
                 return "bg-[#121819]";
@@ -64,7 +67,7 @@ export default function ProposalCard({
         }
     }
 
-    const renderStatus = (status: string) => { // Changed from String to string
+    const renderStatus = (status: string) => {
         switch (status) {
             case "ACTION_REQUIRED":
                 return <div className="flex w-[152px] h-[18px] pr-[7px] justify-end items-center gap-1">
@@ -105,7 +108,6 @@ export default function ProposalCard({
                 return <div className="flex w-[152px] h-[18px] pr-[7px] justify-end items-center gap-1">
                     <div className="flex w-[152px] pl-[3px] justify-start items-center gap-[30px] shrink-0 self-stretch">
                         <div className="flex pt-[3px] pr-[10px] pb-[3px] pl-[4px] justify-end items-center gap-1 rounded-[10px] border-[0.5px] border-solid border-[#ED090D] bg-[#3A2526]">
-                            {/* <StatusSquarecle className="w-4.5 h-4.5 fill-[#ED090D]" /> */}
                             <div className="relative h-[18px] w-[18px]">
                                 <StatusDotIcon className="absolute left-0 top-0 h-[18px] w-[18px] text-[#ED090D]" />
                                 <StatusDotIcon className="absolute left-0 top-0 h-[18px] w-[18px] text-[#ED090D] animate-ping" />
@@ -140,7 +142,6 @@ export default function ProposalCard({
                 return <div className="flex w-[152px] h-[18px] pr-[7px] justify-end items-center gap-1">
                     <div className="flex w-[152px] pl-[3px] justify-start items-center gap-[30px] shrink-0 self-stretch">
                         <div className="flex pt-[3px] pr-[10px] pb-[3px] pl-[4px] justify-end items-center gap-1 rounded-[10px] border-[0.5px] border-solid border-[#ED090D] bg-[#3A2526]">
-                            {/* <StatusSquarecle className="w-4.5 h-4.5 fill-[#ED090D]" /> */}
                             <div className="relative h-[18px] w-[18px]">
                                 <StatusDotIcon className="absolute left-0 top-0 h-[18px] w-[18px] text-[#ED090D]" />
                                 <StatusDotIcon className="absolute left-0 top-0 h-[18px] w-[18px] text-[#ED090D] animate-ping" />
@@ -184,7 +185,6 @@ export default function ProposalCard({
     const outTokenSymbol = proposal.outTokenSymbol || '';
     const outTokens = proposal.outTokens?.toLocaleString() || '0';
 
-    // Date formatting functions - ensure they're consistent
     const formatDisplayDate = (timestamp: string | number | Date) => {
         try {
             const date = new Date(timestamp);
@@ -207,9 +207,23 @@ export default function ProposalCard({
 
     const recipeints = determineMultirecipients(proposal.multiRecipient, proposal.recipients, addresses);
 
-    // Determine what to display
     const displayDate = proposal.showDate ? formatDisplayDate(proposal.timestamp) : '';
     const hoverDate = formatHoverDate(proposal.timestamp);
+
+    const handleCardClick = () => {
+        open(
+            <Modal onRequestClose={() => {
+                closeTop();
+                return true;
+            }}>
+                <FeatureUnderDevelopment onClose={closeTop} />
+            </Modal>
+        );
+    };
+
+    const handleInlineDropdownClick = (e: React.MouseEvent) => {
+        e.stopPropagation(); // Prevent click from bubbling to parent
+    };
 
     return (
         <div className={`group flex flex-col w-full max-w-[1040px] mx-auto py-[8px] px-[0] items-center gap-5
@@ -222,14 +236,14 @@ export default function ProposalCard({
         hover:shadow-[0_34px_10px_0_rgba(38,201,200,0.00),0_22px_9px_0_rgba(38,201,200,0.01),0_12px_7px_0_rgba(38,201,200,0.05),0_5px_5px_0_rgba(38,201,200,0.09),0_1px_3px_0_rgba(38,201,200,0.10)]
         group-hover:z-10
         cursor-pointer
-        `}>
+        `}
+            onClick={handleCardClick}>
             <div className="flex pt-[4px] pr-[8px] pb-[16px] pl-[8px] justify-end items-end gap-4 self-stretch">
                 <div className="flex w-[152px] flex-col justify-end items-start gap-2">
                     <div className="flex w-[152px] h-[13px] items-center">
                         <span className={`text-[#F8FCFF] font-[Geist] text-[10px] not-italic font-normal leading-[normal] transition-opacity duration-200 ${proposal.showDate ? 'block' : 'hidden'} group-hover:hidden`}>
                             {displayDate}
                         </span>
-                        {/* Hover date (shown on hover for all proposals) */}
                         <span className={`text-[#F8FCFF] font-[Geist] text-[10px] not-italic font-normal leading-[normal] hidden group-hover:block`}>
                             {hoverDate}
                         </span>
@@ -268,8 +282,14 @@ export default function ProposalCard({
                     </div>
                 </div>
 
-                <div className="flex w-40 items-center gap-4">
-                    <InlineDropdown options={uniqueClassifications} placeholder="Classify" value={selected} onChange={setSelected} />
+                {/* Add onClick handler to stop propagation */}
+                <div className="flex w-40 items-center gap-4" onClick={handleInlineDropdownClick}>
+                    <InlineDropdown 
+                        options={uniqueClassifications} 
+                        placeholder="Classify" 
+                        value={selected} 
+                        onChange={setSelected} 
+                    />
                 </div>
 
                 {renderStatus(proposal.status)}

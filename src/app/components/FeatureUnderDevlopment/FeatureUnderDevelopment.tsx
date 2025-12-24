@@ -161,7 +161,7 @@ export default function FeatureUnderDevelopment({ onClose }: FeatureUnderDevelop
                         size="sm"
                         status={showEscTooltip ? "danger" : "neutral"}
                         onClick={onClose}
-                        tooltipTitle="Esc again to confirm"
+                        tooltipTitle={showEscTooltip ? "Esc again to confirm" : "Esc to exit"}
                         showTooltip={showEscTooltip}
                     />
                 </div>

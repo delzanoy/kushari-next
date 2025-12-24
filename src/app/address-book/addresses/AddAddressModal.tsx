@@ -214,7 +214,7 @@ export default function AddAddressModal({ isOpen, onClose, groups = [], onAddres
             size="sm"
             status={showEscTooltip ? "danger" : "neutral"}
             onClick={handleClose}
-            tooltipTitle="Esc again to confirm"
+            tooltipTitle={showEscTooltip ? "Esc again to confirm" : "Esc to exit"}
             showTooltip={showEscTooltip}
           />
         </div>
