@@ -137,6 +137,17 @@ export default function SideNav() {
             trailingIcon: <ExternalLinkIcon className="w-4 h-4" />
         },
         {
+            label: "Case study",
+            action: () => handleProfileMenuAction("case-study"),
+            // icon: <GlobeWebIcon className="w-4 h-4" />,
+            trailingIcon: <div className="flex py-[6px] px-[10px] justify-center items-center gap-2.5 rounded-full bg-[#052e21]">
+                <span className="text-[#069668] font-[Figtree] text-xs not-italic font-semibold leading-[normal]">
+                    Coming soon
+                </span>
+            </div>,
+            disabled: true
+        },
+        {
             label: "Delanoy's portfolio",
             action: () => handleProfileMenuAction("portfolio"),
             icon: <MagicIcon className="w-4 h-4" />,
@@ -146,7 +157,7 @@ export default function SideNav() {
             label: "Logout",
             action: () => handleProfileMenuAction("logout"),
             icon: <LogoutBoxIcon className="w-4 h-4" />,
-            isDestructive: true
+            // isDestructive: true
         },
     ];
 
@@ -162,18 +173,6 @@ export default function SideNav() {
             window.removeEventListener('groupCardHover', handleGroupCardHover as EventListener);
         };
     }, []);
-
-    // Close dropdown when clicking outside
-    useEffect(() => {
-        function handleClickOutside(event: MouseEvent) {
-            if (isProfileMenuOpen) {
-                setIsProfileMenuOpen(false);
-            }
-        }
-
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, [isProfileMenuOpen]);
 
     // Helper function to check if a nav item is active
     const isNavItemActive = (itemHref: string) => {
@@ -222,12 +221,19 @@ export default function SideNav() {
 
         switch (action) {
             case "profile":
+                showFeatureModal();
+                break;
             case "help":
+                showFeatureModal();
+                break;
             case "logout":
                 showFeatureModal();
                 break;
             case "website":
                 openExternalLink("https://www.figma.com/proto/Nfz1oTeKS553bZuNAIi3zN/Kushari-2.0?page-id=5%3A35478&node-id=516-5964&viewport=309%2C-657%2C0.11&t=XQe9OJ9u9TGap2y9-1&scaling=scale-down-width&content-scaling=fixed");
+                break;
+            case "case-study":
+                showFeatureModal();
                 break;
             case "portfolio":
                 openExternalLink("https://delanoy.fyi/");
@@ -253,11 +259,11 @@ export default function SideNav() {
                 <div className="flex items-center gap-2 flex-[1_0_0]">
                     <div className="relative w-6 h-6">
                         <SpaceIcon className="w-6 h-6 text-[#D7DCF3] opacity-100 group-hover/sidebar:opacity-0 absolute left-0 top-0" />
-                        <IconButton 
-                            className="opacity-0 group-hover/sidebar:opacity-100 absolute left-0 top-0" 
-                            icon={<ExpandIcon />} 
-                            size="md" 
-                            status="neutral" 
+                        <IconButton
+                            className="opacity-0 group-hover/sidebar:opacity-100 absolute left-0 top-0"
+                            icon={<ExpandIcon />}
+                            size="md"
+                            status="neutral"
                             onClick={() => open(
                                 <Modal onRequestClose={() => {
                                     closeTop();
@@ -265,16 +271,16 @@ export default function SideNav() {
                                 }}>
                                     <FeatureUnderDevelopment onClose={closeTop} />
                                 </Modal>
-                            )} 
+                            )}
                         />
                     </div>
                     <span className="text-[#D7DCF3] font-[Figtree] text-sm not-italic font-semibold leading-[normal] tracking-[0.112px]">Acme Co.</span>
                 </div>
-                <IconButton 
-                    className="opacity-0 group-hover/sidebar:opacity-100" 
-                    icon={<SettingsIcon />} 
-                    size="md" 
-                    status="neutral" 
+                <IconButton
+                    className="opacity-0 group-hover/sidebar:opacity-100"
+                    icon={<SettingsIcon />}
+                    size="md"
+                    status="neutral"
                     onClick={() => open(
                         <Modal onRequestClose={() => {
                             closeTop();
@@ -282,7 +288,7 @@ export default function SideNav() {
                         }}>
                             <FeatureUnderDevelopment onClose={closeTop} />
                         </Modal>
-                    )} 
+                    )}
                 />
             </div>
 
