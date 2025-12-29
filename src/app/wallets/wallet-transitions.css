@@ -1,0 +1,103 @@
+/**
+ * View Transitions CSS
+ * Defines animations for wallet card → details transitions
+ * 
+ * Usage: Import this in your global CSS or layout
+ */
+
+/* Enable view transitions globally */
+@view-transition {
+  navigation: auto;
+}
+
+/* Smooth transitions for all view transitions */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 500000ms;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Wallet Icon Transition */
+::view-transition-old(wallet-icon),
+::view-transition-new(wallet-icon) {
+  animation-duration: 500000ms;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  /* Keep the icon visible during transition */
+  mix-blend-mode: normal;
+}
+
+/* Wallet Name Transition */
+::view-transition-old(wallet-name),
+::view-transition-new(wallet-name) {
+  animation-duration: 500000ms;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Balance Transition */
+::view-transition-old(wallet-balance),
+::view-transition-new(wallet-balance) {
+  animation-duration: 500000ms;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Blockchain Icons Transition */
+::view-transition-old(wallet-blockchain),
+::view-transition-new(wallet-blockchain) {
+  animation-duration: 500000ms;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Card Background Transition - Fade out smoothly */
+::view-transition-old(wallet-card) {
+  animation: fadeOut 500000ms cubic-bezier(0.4, 0, 1, 1);
+}
+
+::view-transition-new(wallet-card) {
+  animation: fadeIn 500000ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Scale and fade for percentage change indicators */
+::view-transition-old(wallet-percentage),
+::view-transition-new(wallet-percentage) {
+  animation-duration: 500000ms;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Fallback for browsers that don't support view transitions */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* Specific transitions for different wallet types */
+[data-wallet-type="vault"] {
+  view-transition-name: var(--wallet-transition-name);
+}
+
+[data-wallet-type="safe"] {
+  view-transition-name: var(--wallet-transition-name);
+}
+
+[data-wallet-type="tracked"] {
+  view-transition-name: var(--wallet-transition-name);
+}

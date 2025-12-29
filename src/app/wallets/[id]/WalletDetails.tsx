@@ -24,6 +24,7 @@ import useModal from "@/app/hooks/useModal";
 import { Modal } from "@/app/components/modal/Modal";
 import MakeDeposit from "../modals/MakeDeposit";
 import FeatureUnderDevelopment from "@/app/components/FeatureUnderDevlopment/FeatureUnderDevelopment";
+import { getWalletTransitionName } from "../helpers";
 
 interface TransactionWithDateInfo extends Transaction {
     showDate: boolean;
@@ -307,13 +308,28 @@ const WalletHeader = memo(({
                 <div className="flex justify-between items-start self-stretch">
                     <div className="flex flex-col items-start gap-[5px]">
                         <div className="flex items-center gap-3">
-                            {renderTitleWalletIcon(wallet.type)}
-                            <h1 className="text-[#F8FCFF] font-[Figtree] text-[26px] not-italic font-medium leading-[normal] tracking-[1.04px]">
+                            <div style={{ viewTransitionName: getWalletTransitionName(wallet.id, 'icon') }}>
+                                {renderTitleWalletIcon(wallet.type)}
+                            </div>
+                            <h1 
+                                className="text-[#F8FCFF] font-[Figtree] text-[26px] not-italic font-medium leading-[normal] tracking-[1.04px]"
+                                style={{ viewTransitionName: getWalletTransitionName(wallet.id, 'name') }}
+                            >
                                 {displayName}
                             </h1>
+                            {/* {renderTitleWalletIcon(wallet.type)}
+                            <h1 className="text-[#F8FCFF] font-[Figtree] text-[26px] not-italic font-medium leading-[normal] tracking-[1.04px]">
+                                {displayName}
+                            </h1> */}
                         </div>
                         <div className="flex items-center gap-[5px]">
-                            <div className="inline-flex items-center -space-x-[4px]">
+                            {/* <div className="inline-flex items-center -space-x-[4px]">
+                                {getBlockchainIcons(wallet.blockchain)}
+                            </div> */}
+                            <div 
+                                className="inline-flex items-center -space-x-[4px]"
+                                style={{ viewTransitionName: getWalletTransitionName(wallet.id, 'blockchain') }}
+                            >
                                 {getBlockchainIcons(wallet.blockchain)}
                             </div>
                             <TertiaryButton label={wallet.address} status={copiedAddress ? "brand" : "neutral"} tooltipTitle={copiedAddress ? "Address copied" : "Copy address"}
@@ -342,11 +358,19 @@ const WalletHeader = memo(({
                     </div>
                 </div>
             </div>
-            <div className="flex w-full items-center gap-9">
+            <div 
+                className="flex w-full items-center gap-9"
+                style={{ viewTransitionName: getWalletTransitionName(wallet.id, 'balance') }}
+            >
                 <BalanceDisplay label="Proposed" value={proposed} />
                 <BalanceDisplay label="Available" value={available} />
                 <BalanceDisplay label="Total" value={totalBalance} />
             </div>
+            {/* <div className="flex w-full items-center gap-9">
+                <BalanceDisplay label="Proposed" value={proposed} />
+                <BalanceDisplay label="Available" value={available} />
+                <BalanceDisplay label="Total" value={totalBalance} />
+            </div> */}
         </div>
     );
 });
