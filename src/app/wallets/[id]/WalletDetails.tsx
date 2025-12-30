@@ -24,7 +24,7 @@ import useModal from "@/app/hooks/useModal";
 import { Modal } from "@/app/components/modal/Modal";
 import MakeDeposit from "../modals/MakeDeposit";
 import FeatureUnderDevelopment from "@/app/components/FeatureUnderDevlopment/FeatureUnderDevelopment";
-import { getWalletTransitionName } from "../helpers";
+import { navigateWithTransition, getWalletTransitionName } from "../helpers";
 
 interface TransactionWithDateInfo extends Transaction {
     showDate: boolean;
@@ -311,7 +311,7 @@ const WalletHeader = memo(({
                             <div style={{ viewTransitionName: getWalletTransitionName(wallet.id, 'icon') }}>
                                 {renderTitleWalletIcon(wallet.type)}
                             </div>
-                            <h1 
+                            <h1
                                 className="text-[#F8FCFF] font-[Figtree] text-[26px] not-italic font-medium leading-[normal] tracking-[1.04px]"
                                 style={{ viewTransitionName: getWalletTransitionName(wallet.id, 'name') }}
                             >
@@ -326,7 +326,7 @@ const WalletHeader = memo(({
                             {/* <div className="inline-flex items-center -space-x-[4px]">
                                 {getBlockchainIcons(wallet.blockchain)}
                             </div> */}
-                            <div 
+                            <div
                                 className="inline-flex items-center -space-x-[4px]"
                                 style={{ viewTransitionName: getWalletTransitionName(wallet.id, 'blockchain') }}
                             >
@@ -358,7 +358,7 @@ const WalletHeader = memo(({
                     </div>
                 </div>
             </div>
-            <div 
+            <div
                 className="flex w-full items-center gap-9"
                 style={{ viewTransitionName: getWalletTransitionName(wallet.id, 'balance') }}
             >
@@ -709,9 +709,15 @@ export default function WalletDetails({
         }
     }, [activeTab, setAnimationDirection, onTabStateChange, calculateHighestCountSubtitle]);
 
+    // const handleBackToWallets = useCallback(() => {
+    //     dispatchNavHover(false, '/wallets');
+    //     router.push('/wallets');
+    // }, [router]);
+
     const handleBackToWallets = useCallback(() => {
         dispatchNavHover(false, '/wallets');
-        router.push('/wallets');
+        // Use navigateWithTransition instead of router.push
+        navigateWithTransition(router, '/wallets');
     }, [router]);
 
     const handleViewAllProposals = useCallback(() => {

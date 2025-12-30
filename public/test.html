@@ -1,0 +1,36 @@
+<!-- Create test.html in public/ folder -->
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    ::view-transition-old(test),
+    ::view-transition-new(test) {
+      animation-duration: 1s;
+    }
+    #box {
+      view-transition-name: test;
+      width: 100px;
+      height: 100px;
+      background: red;
+      transition: all 1s;
+    }
+  </style>
+</head>
+<body>
+  <div id="box"></div>
+  <button onclick="moveBox()">Move Box</button>
+  
+  <script>
+    function moveBox() {
+      if ('startViewTransition' in document) {
+        document.startViewTransition(() => {
+          const box = document.getElementById('box');
+          box.style.marginLeft = box.style.marginLeft ? '0px' : '300px';
+        });
+      } else {
+        alert('View Transitions not supported!');
+      }
+    }
+  </script>
+</body>
+</html>

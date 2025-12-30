@@ -101,3 +101,23 @@
 [data-wallet-type="tracked"] {
   view-transition-name: var(--wallet-transition-name);
 }
+
+
+
+/* styles/transitions.css */
+@view-transition {
+  navigation: auto;
+}
+
+/* Smooth transitions for wallet elements */
+[style*="viewTransitionName"] {
+  contain: layout;
+}
+
+/* Optional: Add styles for when view transitions are supported */
+@supports (view-transition-name: none) {
+  .wallet-card,
+  .wallet-header {
+    view-transition-name: none;
+  }
+}
