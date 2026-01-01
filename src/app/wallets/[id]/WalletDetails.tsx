@@ -24,7 +24,6 @@ import useModal from "@/app/hooks/useModal";
 import { Modal } from "@/app/components/modal/Modal";
 import MakeDeposit from "../modals/MakeDeposit";
 import FeatureUnderDevelopment from "@/app/components/FeatureUnderDevlopment/FeatureUnderDevelopment";
-import { navigateWithTransition, getWalletTransitionName } from "../helpers";
 
 interface TransactionWithDateInfo extends Transaction {
     showDate: boolean;
@@ -180,8 +179,11 @@ const useTabAnimation = () => {
 };
 
 // OPTIMIZATION: Memoized BalanceDisplay component
-const BalanceDisplay = memo(({ label, value }: { label: string; value: number }) => (
-    <div className="flex flex-col justify-center items-start gap-[7px]">
+const BalanceDisplay = memo(({ label, value, viewTransitionName }: { label: string; value: number; viewTransitionName?: string }) => (
+    <div
+        className="flex flex-col justify-center items-start gap-[7px]"
+        style={viewTransitionName ? { viewTransitionName } as any : {}}
+    >
         <span className="text-[#F8FCFF] font-[Geist] text-xs not-italic font-light leading-[normal] tracking-[0.96px] opacity-80">
             {label}
         </span>
@@ -308,28 +310,18 @@ const WalletHeader = memo(({
                 <div className="flex justify-between items-start self-stretch">
                     <div className="flex flex-col items-start gap-[5px]">
                         <div className="flex items-center gap-3">
-                            <div style={{ viewTransitionName: getWalletTransitionName(wallet.id, 'icon') }}>
+                            <div style={{ viewTransitionName: `wallet-icon-${wallet.id}` } as any}>
                                 {renderTitleWalletIcon(wallet.type)}
                             </div>
                             <h1
                                 className="text-[#F8FCFF] font-[Figtree] text-[26px] not-italic font-medium leading-[normal] tracking-[1.04px]"
-                                style={{ viewTransitionName: getWalletTransitionName(wallet.id, 'name') }}
+                                style={{ viewTransitionName: `wallet-name-${wallet.id}` } as any}
                             >
                                 {displayName}
                             </h1>
-                            {/* {renderTitleWalletIcon(wallet.type)}
-                            <h1 className="text-[#F8FCFF] font-[Figtree] text-[26px] not-italic font-medium leading-[normal] tracking-[1.04px]">
-                                {displayName}
-                            </h1> */}
                         </div>
                         <div className="flex items-center gap-[5px]">
-                            {/* <div className="inline-flex items-center -space-x-[4px]">
-                                {getBlockchainIcons(wallet.blockchain)}
-                            </div> */}
-                            <div
-                                className="inline-flex items-center -space-x-[4px]"
-                                style={{ viewTransitionName: getWalletTransitionName(wallet.id, 'blockchain') }}
-                            >
+                            <div className="inline-flex items-center -space-x-[4px]">
                                 {getBlockchainIcons(wallet.blockchain)}
                             </div>
                             <TertiaryButton label={wallet.address} status={copiedAddress ? "brand" : "neutral"} tooltipTitle={copiedAddress ? "Address copied" : "Copy address"}
@@ -358,19 +350,11 @@ const WalletHeader = memo(({
                     </div>
                 </div>
             </div>
-            <div
-                className="flex w-full items-center gap-9"
-                style={{ viewTransitionName: getWalletTransitionName(wallet.id, 'balance') }}
-            >
+            <div className="flex w-full items-center gap-9">
                 <BalanceDisplay label="Proposed" value={proposed} />
                 <BalanceDisplay label="Available" value={available} />
-                <BalanceDisplay label="Total" value={totalBalance} />
+                <BalanceDisplay label="Total" value={totalBalance} viewTransitionName={`wallet-balance-${wallet.id}`} />
             </div>
-            {/* <div className="flex w-full items-center gap-9">
-                <BalanceDisplay label="Proposed" value={proposed} />
-                <BalanceDisplay label="Available" value={available} />
-                <BalanceDisplay label="Total" value={totalBalance} />
-            </div> */}
         </div>
     );
 });
@@ -709,15 +693,9 @@ export default function WalletDetails({
         }
     }, [activeTab, setAnimationDirection, onTabStateChange, calculateHighestCountSubtitle]);
 
-    // const handleBackToWallets = useCallback(() => {
-    //     dispatchNavHover(false, '/wallets');
-    //     router.push('/wallets');
-    // }, [router]);
-
     const handleBackToWallets = useCallback(() => {
         dispatchNavHover(false, '/wallets');
-        // Use navigateWithTransition instead of router.push
-        navigateWithTransition(router, '/wallets');
+        router.push('/wallets');
     }, [router]);
 
     const handleViewAllProposals = useCallback(() => {

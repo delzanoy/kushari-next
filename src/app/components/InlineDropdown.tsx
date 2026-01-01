@@ -107,7 +107,7 @@ export default function InlineDropdown({
                         className={`group/dropdown flex py-[2px] pl-[8px] pr-[8px] group-hover:pr-[6px] items-center rounded-md border-[0.5px] border-solid border-[#F8FCFF]/24 bg-[#F8FCFF]/02 hover:border-[#F8FCFF] hover:bg-[#F8FCFF]/16 hover:cursor-pointer gap-[2px] hover:gap-[6px] transition-all duration-150 ease-in-out ${open ? "bg-[#F8FCFF]/16" : ""} ${disabled ? "opacity-50 cursor-not-allowed hover:border-[#F8FCFF]/24 hover:bg-[#F8FCFF]/02" : ""}`}
                         onClick={() => !disabled && setOpen(!open)}
                     >
-                        <span className="text-[#F8FCFF] font-[Geist] text-sm not-italic font-light leading-[normal] tracking-[0.7px] group-hover/dropdown:text-[#FFFFFF]">
+                        <span className="text-[#F8FCFF] font-[Geist] text-sm not-italic font-light leading-[normal] tracking-[0.7px] group-hover/dropdown:text-[#FFFFFF] truncate max-w-[120px]">
                             {value}
                         </span>
                         {!disabled && (

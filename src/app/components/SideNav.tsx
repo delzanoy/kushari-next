@@ -9,6 +9,8 @@ import { Modal } from "@/app/components/modal/Modal";
 import FeatureUnderDevelopment from "@/app/components/FeatureUnderDevlopment/FeatureUnderDevelopment";
 import useModal from "@/app/hooks/useModal";
 import ProfileMenu, { ProfileMenuItem } from "./ProfileMenu";
+import WorkspaceDropdown from "./WorkspaceDropdown";
+import { useWorkspaces } from "@/app/hooks/useData"; // Existing hook
 
 import {
     WalletIcon,
@@ -18,8 +20,6 @@ import {
     AddressIcon,
     GroupIcon,
     SettingsIcon,
-    SpaceIcon,
-    ExpandIcon,
     ProfileIcon,
     LifebouyIcon,
     ExternalLinkIcon,
@@ -61,15 +61,15 @@ function MenuIcon({ className = "" }: { className?: string }) {
 
 function FrameAvatar() {
     return (
-        <div className="overflow-clip relative rounded-full w-[33px] h-[33px] z-10 ">
+        <div className="overflow-clip relative rounded-full w-[40px] h-[40px] z-10 ">
             <div
-                className="relative w-[33px] h-[33px] rounded-full flex items-center justify-center text-white font-[geist] font-semibold text-[16px] bg-red-500">
+                className="relative w-[40px] h-[40px] rounded-full flex items-center justify-center text-white font-[geist] font-semibold text-[16px] bg-red-500">
                 <Image
                     src="/avatar/pink.png"
                     alt="Avatar"
-                    width={33}
-                    height={33}
-                    className="absolute left-0 top-0 rounded-full w-[33px] h-[33px] object-cover border-solid border-[0.2px] border-white z-0"
+                    width={40}
+                    height={40}
+                    className="absolute left-0 top-0 rounded-full w-[40px] h-[40px] object-cover border-solid border-[0.2px] border-white z-0"
                 />
                 <span className="z-1">De</span>
             </div>
@@ -81,8 +81,12 @@ export default function SideNav() {
     const pathname = usePathname();
     const [externalHoverTarget, setExternalHoverTarget] = useState<string | null>(null);
     const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+    const [selectedWorkspaceId, setSelectedWorkspaceId] = useState<number>(1); // Default to first workspace
     const menuButtonRef = useRef<HTMLButtonElement | null>(null);
     const { open, closeTop } = useModal();
+
+    // Use the workspaces hook - no casting needed
+    const { workspaces, isLoading } = useWorkspaces();
 
     const navSections = [
         {
@@ -139,7 +143,6 @@ export default function SideNav() {
         {
             label: "Case study",
             action: () => handleProfileMenuAction("case-study"),
-            // icon: <GlobeWebIcon className="w-4 h-4" />,
             trailingIcon: <div className="flex py-[6px] px-[10px] justify-center items-center gap-2.5 rounded-full bg-[#052e21]">
                 <span className="text-[#069668] font-[Figtree] text-xs not-italic font-semibold leading-[normal]">
                     Coming soon
@@ -157,9 +160,12 @@ export default function SideNav() {
             label: "Logout",
             action: () => handleProfileMenuAction("logout"),
             icon: <LogoutBoxIcon className="w-4 h-4" />,
-            // isDestructive: true
         },
     ];
+
+    // Simple create workspace function (mock for now)
+    const handleCreateWorkspace = async () => {
+    };
 
     // Listen for group card hover events
     useEffect(() => {
@@ -254,32 +260,22 @@ export default function SideNav() {
                 background: "linear-gradient(180deg, #0D1F26 0%, #070F13 67.51%, #000 100%)"
             }}
         >
-
             <div className="flex pt-[20px] pr-[20px] pb-[20px] pl-[28px] justify-between items-center self-stretch border-b-[0.5px] border-b-[#2D3436]">
-                <div className="flex items-center gap-2 flex-[1_0_0]">
-                    <div className="relative w-6 h-6">
-                        <SpaceIcon className="w-6 h-6 text-[#D7DCF3] opacity-100 group-hover/sidebar:opacity-0 absolute left-0 top-0" />
-                        <IconButton
-                            className="opacity-0 group-hover/sidebar:opacity-100 absolute left-0 top-0"
-                            icon={<ExpandIcon />}
-                            size="md"
-                            status="neutral"
-                            onClick={() => open(
-                                <Modal onRequestClose={() => {
-                                    closeTop();
-                                    return true;
-                                }}>
-                                    <FeatureUnderDevelopment onClose={closeTop} />
-                                </Modal>
-                            )}
-                        />
-                    </div>
-                    <span className="text-[#D7DCF3] font-[Figtree] text-sm not-italic font-semibold leading-[normal] tracking-[0.112px]">Acme Co.</span>
+                <div className="flex items-center gap-2 flex-[1_0_0] relative">
+                    <WorkspaceDropdown
+                        workspaces={workspaces || []}
+                        value={selectedWorkspaceId}
+                        placeholder="Select workspace"
+                        onChange={setSelectedWorkspaceId}
+                        onCreateWorkspace={handleCreateWorkspace}
+                        isLoading={isLoading}
+                    />
                 </div>
+
                 <IconButton
                     className="opacity-0 group-hover/sidebar:opacity-100"
                     icon={<SettingsIcon />}
-                    size="md"
+                    size="sm"
                     status="neutral"
                     onClick={() => open(
                         <Modal onRequestClose={() => {
@@ -293,7 +289,6 @@ export default function SideNav() {
             </div>
 
             <div className="flex py-[0] px-[20px] flex-col items-start gap-10 flex-[1_0_0] self-stretch">
-
                 {navSections.map((section, index) => (
                     <SideNavSection key={index} title={section.title} pill={section.pill}>
                         {section.items && section.items.map((item) => {
@@ -313,12 +308,11 @@ export default function SideNav() {
                         })}
                     </SideNavSection>
                 ))}
-
             </div>
 
             <div className="flex p-4 flex-col items-start gap-2.5 self-stretch relative">
                 <div className="flex pt-[4px] pr-[16px] pb-[4px] pl-[4px] items-center self-stretch rounded-full border-[0.6px] border-transparent group-hover/sidebar:border-[0.6px] hover:bg-[#26C9C9]/5 group-hover/sidebar:border-[rgba(255,255,255,0.2)] cursor-pointer hover:shadow-[0_0_50px_4px_#26C9C9]/20">
-                    <div className="relative flex justify-center items-center gap-2.5 flex-[1_0_0] rounded-full">
+                    <div className="flex justify-center items-center gap-2.5 flex-[1_0_0] rounded-full">
                         <FrameAvatar />
                         <div className="flex flex-col items-start gap-[1px] flex-[1_0_0]">
                             <span className="text-[#F8FCFF] font-[Geist] text-sm not-italic font-semibold leading-[normal] tracking-[0.7px]">Delanoy Kunil</span>
@@ -335,7 +329,7 @@ export default function SideNav() {
                     />
                 </div>
 
-                {/* Profile Menu - now opens upward */}
+                {/* Profile Menu */}
                 <ProfileMenu
                     isOpen={isProfileMenuOpen}
                     onClose={() => setIsProfileMenuOpen(false)}

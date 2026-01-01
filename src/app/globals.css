@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import './wallets/wallet-transitions.css';
 
 :root {
   --background: #ffffff;

@@ -812,42 +812,57 @@ export default function TransactionListClient({
                                     setFilterCriteria([]);
                                     setCurrentPage(1);
                                 }}
-                                className="flex items-center flex-shrink-0 gap-1 pt-[3px] pr-[8px] pb-[3px] pl-[8px] rounded-full bg-[#F8FCFF]/16 hover:bg-[#F8FCFF]/16 border-solid border-[1px] border-[#F8FCFF]/32 hover:border-[#F8FCFF]/64"
+                                className="flex items-center flex-shrink-0 gap-1 pt-[3px] pr-[8px] pb-[3px] pl-[8px] rounded-full bg-[#F8FCFF]/16 hover:bg-[#F8FCFF]/16 border-solid border-[1px] border-[#F8FCFF]/32 hover:border-[#F8FCFF]/64 cursor-pointer transition-all"
                             >
                                 <span className="font-[Geist] text-sm">
                                     Clear all
                                 </span>
                             </button>
                         )}
-                        {/* pagination options */}
-                        {totalPages > 1 && (
-                            <div className="flex gap-2 items-center">
+
+
+
+
+
+                         <div className="flex gap-2 items-center justify-end flex-grow">
+                             {totalPages > 1 && (
                                 <PageSelector
                                     currentPage={currentPage}
                                     totalPages={totalPages}
                                     onPageChange={setCurrentPage}
                                 />
+                            )}
+                            {totalPages > 1 && (
                                 <span className="text-[#E7E8E9] text-sm not-italic font-light leading-[normal] tracking-[0.48px] opacity-80">
                                     {startIndex + 1}-{Math.min(endIndex, filteredTransactions.length)} of {filteredTransactions.length}
                                 </span>
-                                <IconButton
-                                    size="sm"
-                                    status="neutral"
-                                    icon={<ChevronLeftIcon />}
-                                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                                    disabled={currentPage === 1}
-                                    className={currentPage === 1 ? "opacity-40 cursor-not-allowed" : ""}
-                                />
-                                <IconButton
-                                    size="sm"
-                                    status="neutral"
-                                    icon={<ChevronRightIcon />}
-                                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                                    disabled={currentPage === totalPages}
-                                    className={currentPage === totalPages ? "opacity-40 cursor-not-allowed" : ""}
-                                />
-                            </div>
-                        )}
+                            )}
+                            {totalPages === 1 && (
+                                <span className="text-[#E7E8E9] text-sm not-italic font-light leading-[normal] tracking-[0.48px] opacity-80">
+                                    Showing all {filteredTransactions.length} transactions
+                                </span>
+                            )}
+                            {totalPages > 1 && (
+                                <div className="flex gap-2 items-center justify-end">
+                                    <IconButton
+                                        size="sm"
+                                        status="neutral"
+                                        icon={<ChevronLeftIcon />}
+                                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                                        disabled={currentPage === 1}
+                                        className={currentPage === 1 ? "opacity-40 cursor-not-allowed" : ""}
+                                    />
+                                    <IconButton
+                                        size="sm"
+                                        status="neutral"
+                                        icon={<ChevronRightIcon />}
+                                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                                        disabled={currentPage === totalPages}
+                                        className={currentPage === totalPages ? "opacity-40 cursor-not-allowed" : ""}
+                                    />
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
 

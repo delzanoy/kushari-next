@@ -1,15 +1,16 @@
 // components/DataPreloader.tsx
 'use client'
 
-import { 
-  useWallets, 
-  useCryptocurrencies, 
-  useAssets, 
-  useTransactions, 
-  useProposals, 
-  useAddresses, 
+import {
+  useWallets,
+  useCryptocurrencies,
+  useAssets,
+  useTransactions,
+  useProposals,
+  useAddresses,
   useGroups,
-  useMembers
+  useMembers,
+  useWorkspaces
 } from '../hooks/useData'
 
 // This component runs on the client and preloads all data in the background
@@ -24,5 +25,6 @@ export default function DataPreloader() {
   useAddresses()
   useGroups()
   useMembers()
+  useWorkspaces()
   return null
 }

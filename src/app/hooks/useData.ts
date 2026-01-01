@@ -23,25 +23,25 @@ export function useWallets() {
 export function useWallet(id: string) {
   const walletId = parseInt(id);
   const isUserWallet = walletId >= 30000; // User-created wallets have IDs >= 30000
-  
+
   // For API wallets, fetch from API
   const { data: apiData, error: apiError, isLoading: apiLoading, mutate: apiMutate } = useSWR(
     !isUserWallet && id ? `${process.env.NEXT_PUBLIC_BASE_URL}/wallet/${id}` : null,
     fetcher,
     swrConfig
   );
-  
+
   // For user wallets, fetch from mock cache
   const { data: userData, error: userError, isLoading: userLoading, mutate: userMutate } = useSWR(
     isUserWallet ? ['userWallet', id] : null,
     async () => {
       const userWallets = await getUserWallets();
       const wallet = userWallets.find(w => w.id === walletId);
-      
+
       if (!wallet) {
         throw new Error('Wallet not found in mock cache');
       }
-      
+
       return wallet;
     },
     {
@@ -50,17 +50,17 @@ export function useWallet(id: string) {
       revalidateOnMount: true,
     }
   );
-  
+
   const wallet = isUserWallet ? userData : apiData;
   const error = isUserWallet ? userError : apiError;
   const isLoading = isUserWallet ? userLoading : apiLoading;
   const mutate = isUserWallet ? userMutate : apiMutate;
-  
-  return { 
-    wallet, 
-    isLoading, 
-    isError: error, 
-    mutate 
+
+  return {
+    wallet,
+    isLoading,
+    isError: error,
+    mutate
   }
 }
 
@@ -120,10 +120,20 @@ export function useGroups() {
 
 
 export function useMembers() {
-const { data, error, isLoading, mutate } = useSWR(
+  const { data, error, isLoading, mutate } = useSWR(
     `${process.env.NEXT_PUBLIC_BASE_URL}/members`,
     fetcher,
     swrConfig
   )
   return { members: data, isLoading, isError: error, mutate }
+}
+
+
+export function useWorkspaces() {
+  const { data, error, isLoading, mutate } = useSWR(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/workspaces`,
+    fetcher,
+    swrConfig
+  )
+  return { workspaces: data, isLoading, isError: error, mutate }
 }
