@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import FilterDropdown from '../components/filters/FilterDropdown';
 import { NetworkIcon, TokenIcon, VaultIcon, GnosisSafeIcon, TrackedWalletIcon, WalletIcon, BSCIcon, EthereumIcon, GnosisIcon, OPTIMISMIcon, PolygonIcon, SOLIcon } from './../components/icons';
 import { Asset } from './types';
@@ -15,6 +15,7 @@ export default function AssetListClient({ assets, initialWalletFilter }: AssetLi
   const [selectedTokens, setSelectedTokens] = useState<string[]>([]);
   const [selectedWallets, setSelectedWallets] = useState<string[]>([]);
   const [selectedBlockchains, setSelectedBlockchains] = useState<string[]>([]);
+  const hasAppliedInitialFilter = useRef(false);
 
   const renderWalletIcon = (walletType: number) => {
     switch (walletType) {
@@ -182,7 +183,7 @@ export default function AssetListClient({ assets, initialWalletFilter }: AssetLi
 
 
   useEffect(() => {
-    if (initialWalletFilter && walletOptions.length > 0) {
+    if (initialWalletFilter && walletOptions.length > 0 && !hasAppliedInitialFilter.current) {
       // Find the wallet ID that matches the wallet name
       const matchingWallet = walletOptions.find(
         option => option.displayProps.fullName.toLowerCase() === initialWalletFilter.toLowerCase()
@@ -192,6 +193,7 @@ export default function AssetListClient({ assets, initialWalletFilter }: AssetLi
         setSelectedWallets(prev => {
           // Only update if not already included
           if (!prev.includes(matchingWallet.value)) {
+            hasAppliedInitialFilter.current = true;
             return [matchingWallet.value];
           }
           return prev;

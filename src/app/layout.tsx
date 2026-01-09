@@ -41,7 +41,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${figtreeSans.variable} ${geistMono.variable} antialiased h-[100vh] relative`}
       >
-      <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS as string} />
+        <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GOOGLE_ANALYTICS as string} />
         <ResponsiveLayout
           mobileLayout={<MobileView />}
           desktopLayout={<ModalHost>

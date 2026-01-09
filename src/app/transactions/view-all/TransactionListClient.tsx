@@ -220,6 +220,7 @@ export default function TransactionListClient({
 
     const [filterCriteria, setFilterCriteria] = useState<FilterCriterion[]>([]);
     const [currentPage, setCurrentPage] = useState(initialPage);
+    const hasAppliedInitialFilter = useRef(false);
 
 
     // Clean up filter criteria - remove any with empty values
@@ -358,7 +359,7 @@ export default function TransactionListClient({
     }, [transactions]);
 
     useEffect(() => {
-        if (initialWalletFilter) {
+        if (initialWalletFilter && walletOptions.length > 0 && !hasAppliedInitialFilter.current) {
             // Find the wallet ID that matches the wallet name
             const matchingWallet = walletOptions.find(
                 option => option.displayProps.fullName.toLowerCase() === initialWalletFilter.toLowerCase()
@@ -367,6 +368,7 @@ export default function TransactionListClient({
             if (matchingWallet) {
                 // Set the wallet filter
                 updateFieldCriteria('wallet', [matchingWallet.value]);
+                hasAppliedInitialFilter.current = true;
             }
         }
     }, [initialWalletFilter, walletOptions]);
@@ -824,8 +826,8 @@ export default function TransactionListClient({
 
 
 
-                         <div className="flex gap-2 items-center justify-end flex-grow">
-                             {totalPages > 1 && (
+                        <div className="flex gap-2 items-center justify-end flex-grow">
+                            {totalPages > 1 && (
                                 <PageSelector
                                     currentPage={currentPage}
                                     totalPages={totalPages}

@@ -1,7 +1,6 @@
-"use client";
-
-import { ReactNode, useState } from "react";
+import { ReactNode, useState, useRef } from "react";
 import Tooltip from "../../components/TooltipComponent";
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, animate } from "framer-motion";
 
 type ButtonVariant =
   | "brand"
@@ -53,12 +52,87 @@ export default function PrimaryButton({
   onMouseLeave,
 }: PrimaryButtonProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  // Metal shader values
+  const metalX = useMotionValue(0);
+  const metalY = useMotionValue(0);
+  const metalRadius = useMotionValue(0);
+  const metalOpacity = useSpring(0, {
+    stiffness: 500,
+    damping: 30,
+    mass: 0.7
+  });
+
+  // Highlight effect values
+  const highlightX = useMotionValue(0);
+  const highlightY = useMotionValue(0);
+  const highlightSize = useMotionValue(0);
+  const highlightOpacity = useSpring(0, { stiffness: 400, damping: 25 });
+
+  // Metal gradient - Apple-like specular highlight
+  const metalGradient = useTransform(
+    [metalX, metalY, metalRadius],
+    ([x, y, r]: number[]) => {
+      return `radial-gradient(${r * 2}px at ${x}px ${y}px, 
+        rgba(255, 255, 255, 0.4) 0%,
+        rgba(255, 255, 255, 0.2) 30%,
+        rgba(255, 255, 255, 0.1) 60%,
+        transparent 100%)`;
+    }
+  );
+
+  // Apple-style specular highlight spot
+  const highlightGradient = useTransform(
+    [highlightX, highlightY, highlightSize],
+    ([x, y, s]: number[]) => {
+      return `radial-gradient(${s}px at ${x}px ${y}px, 
+        rgba(255, 255, 255, 0.8) 0%,
+        rgba(255, 255, 255, 0.2) 50%,
+        transparent 100%)`;
+    }
+  );
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLButtonElement>) => {
+    const rect = buttonRef.current?.getBoundingClientRect();
+    if (rect) {
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const maxDimension = Math.max(rect.width, rect.height);
+
+      metalX.set(x);
+      metalY.set(y);
+      metalRadius.set(maxDimension);
+      metalOpacity.set(1);
+
+      highlightX.set(x);
+      highlightY.set(y);
+      highlightSize.set(15);
+      highlightOpacity.set(0.6);
+
+      animate(highlightSize, maxDimension * 0.4, {
+        duration: 0.4,
+        ease: "easeOut"
+      });
+      animate(highlightOpacity, 0, {
+        duration: 0.4,
+        ease: "easeOut"
+      });
+    }
+  };
+
+  const handlePointerUp = () => {
+    animate(metalOpacity, 0, {
+      duration: 0.4,
+      ease: "easeOut"
+    });
+  };
 
   // Size rules
   const sizeClasses = {
-    lg: `h-10 pt-[8px] pr-[16px] pb-[8px] pl-[14px] gap-2.5 ${rounded ? "rounded-full" : "rounded-[14px]"}`,
-    md: `pt-[4px] pr-[12px] pb-[4px] pl-[10px] gap-2 ${rounded ? "rounded-full" : "rounded-[10px]"}`,
-    sm: `pt-[4px] pr-[10px] pb-[4px] pl-[8px] gap-1.5 ${rounded ? "rounded-full" : "rounded-[8px]"}`,
+    lg: `h-10 px-5 gap-2.5 ${rounded ? "rounded-full" : "rounded-[12px]"}`,
+    md: `h-8 px-4 gap-2 ${rounded ? "rounded-full" : "rounded-[10px]"}`,
+    sm: `h-7 px-3 gap-1.5 ${rounded ? "rounded-full" : "rounded-[8px]"}`,
   }[size];
 
   // Border widths by size
@@ -70,16 +144,16 @@ export default function PrimaryButton({
 
   // Typography
   const textClasses = {
-    lg: "text-base font-semibold leading-[22px] tracking-[0.64px]",
-    md: "text-sm font-medium leading-[22px] tracking-[0.56px]",
-    sm: "text-xs font-medium leading-[normal] tracking-[0.48px]",
+    lg: "text-sm font-medium leading-[normal] tracking-[0.4px]",
+    md: "text-[13px] font-medium leading-[normal] tracking-[0.3px]",
+    sm: "text-[11px] font-medium leading-[normal] tracking-[0.2px]",
   }[size];
 
   // Icon
   const iconSizes = {
-    lg: "w-[18px] h-[18px]",
-    md: "w-[16px] h-[16px]",
-    sm: "w-[14px] h-[14px]",
+    lg: "w-4 h-4",
+    md: "w-[14px] h-[14px]",
+    sm: "w-[12px] h-[12px]",
   }[size];
 
   // Variants with proper hover states
@@ -152,7 +226,7 @@ export default function PrimaryButton({
 
   const baseClasses = `
     inline-flex items-center shrink-0 justify-center
-    transition-all duration-150 ease-in-out
+    transition-all duration-150 ease-in-out relative overflow-hidden
     ${sizeClasses} ${variantClasses} ${shadow}
     ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
     ${className}
@@ -169,42 +243,87 @@ export default function PrimaryButton({
   };
 
   const button = (
-    <button
+    <motion.button
+      ref={buttonRef}
       type={type}
       disabled={disabled}
       className={baseClasses}
       onClick={onClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      onPointerDown={handlePointerDown}
+      onPointerUp={handlePointerUp}
+      whileTap={{ scale: 0.98 }}
     >
+      {/* Click Shader Layer */}
+      <motion.div
+        className="absolute inset-0 pointer-events-none z-0 mix-blend-overlay"
+        style={{
+          background: metalGradient,
+          opacity: metalOpacity
+        }}
+      />
+
+      {/* Specular Highlight Layer */}
+      <motion.div
+        className="absolute inset-0 pointer-events-none z-0 mix-blend-screen"
+        style={{
+          background: highlightGradient,
+          opacity: highlightOpacity
+        }}
+      />
+
       {/* Leading Icon */}
       {leadingIcon && (
-        <div className={`${iconSizes} ${textColor}`}>
-          {leadingIcon}
-        </div>
-      )}
-      {/* Text */}
-      <span
-        className={`font-[Geist] not-italic ${textClasses} ${textColor} ${labelOnHover ? "group-hover:opacity-0" : ""
-          } transition-all duration-150`}
-      >
-        {label}
-      </span>
-      {/* Hover Label */}
-      {labelOnHover && (
-        <span
-          className={`absolute opacity-0 group-hover:opacity-100 transition-all duration-150 font-[Geist] not-italic ${textClasses} ${textColor}`}
+        <motion.div
+          className={`${iconSizes} ${textColor} flex items-center justify-center relative z-10`}
+          animate={{ rotate: isHovered ? 5 : 0 }}
+          transition={{ duration: 0.2 }}
         >
-          {labelOnHover}
-        </span>
+          {leadingIcon}
+        </motion.div>
       )}
+
+      {/* Text Container with AnimatePresence */}
+      <div className="relative flex items-center justify-center h-full z-10">
+        <AnimatePresence mode="wait" initial={false}>
+          {(isHovered && labelOnHover) ? (
+            <motion.span
+              key="hover"
+              initial={{ y: 20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -20, opacity: 0 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className={`font-[Geist] not-italic ${textClasses} ${textColor} whitespace-nowrap`}
+            >
+              {labelOnHover}
+            </motion.span>
+          ) : (
+            <motion.span
+              key="default"
+              initial={{ y: -20, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: 20, opacity: 0 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className={`font-[Geist] not-italic ${textClasses} ${textColor} whitespace-nowrap`}
+            >
+              {label}
+            </motion.span>
+          )}
+        </AnimatePresence>
+      </div>
+
       {/* Trailing Icon */}
       {trailingIcon && (
-        <div className={`${iconSizes} ${textColor}`}>
+        <motion.div
+          className={`${iconSizes} ${textColor} flex items-center justify-center relative z-10`}
+          animate={{ x: isHovered ? 2 : 0 }}
+          transition={{ duration: 0.2 }}
+        >
           {trailingIcon}
-        </div>
+        </motion.div>
       )}
-    </button>
+    </motion.button>
   );
 
   if (tooltipTitle) {

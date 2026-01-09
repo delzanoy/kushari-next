@@ -1168,6 +1168,8 @@ export default function ProposalListClient({
     const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
     const [filterCriteria, setFilterCriteria] = useState<FilterCriterion[]>([]);
     const [currentPage, setCurrentPage] = useState(initialPage);
+    const hasAppliedInitialFilter = useRef(false);
+    const hasAppliedInitialTab = useRef(false);
 
     // Sync search query when initialSearchQuery changes (from URL)
     useEffect(() => {
@@ -1180,10 +1182,11 @@ export default function ProposalListClient({
     }, [initialPage]);
 
     useEffect(() => {
-        if (initialTab && initialTab !== activeTab) {
+        if (initialTab && !hasAppliedInitialTab.current) {
             setActiveTab(initialTab);
+            hasAppliedInitialTab.current = true;
         }
-    }, [initialTab, activeTab]); // Added activeTab to dependencies
+    }, [initialTab]);
 
     // Search function for proposals (status removed)
     const searchProposals = useCallback((proposal: Proposal, query: string): boolean => {
@@ -1432,7 +1435,7 @@ export default function ProposalListClient({
     }, [proposals]);
 
     useEffect(() => {
-        if (initialWalletFilter && walletOptions.length > 0) {
+        if (initialWalletFilter && walletOptions.length > 0 && !hasAppliedInitialFilter.current) {
             // Find the wallet that matches the wallet name from URL
             const matchingWallet = walletOptions.find(
                 option => option.displayProps.fullName.toLowerCase() === initialWalletFilter.toLowerCase()
@@ -1446,10 +1449,11 @@ export default function ProposalListClient({
                 if (!isAlreadyFiltered) {
                     // Apply the wallet filter using the existing updateFieldCriteria function
                     updateFieldCriteria('wallet', [matchingWallet.value]);
+                    hasAppliedInitialFilter.current = true;
                 }
             }
         }
-    }, [initialWalletFilter, walletOptions, filterCriteria]);
+    }, [initialWalletFilter, walletOptions]);
 
     // Get network options
     const networkOptions = useMemo((): FilterDropdownOption[] =>
@@ -1825,7 +1829,7 @@ export default function ProposalListClient({
                                     setFilterCriteria([]);
                                     setCurrentPage(1);
                                 }}
-                                className="flex items-center flex-shrink-0 gap-1 pt-[3px] pr-[8px] pb-[3px] pl-[8px] rounded-full bg-[#F8FCFF]/16 hover:bg-[#F8FCFF]/16 border-solid border-[1px] border-[#F8FCFF]/32 hover:border-[#F8FCFF]/64"
+                                className="flex items-center flex-shrink-0 gap-1 pt-[3px] pr-[8px] pb-[3px] pl-[8px] rounded-full bg-[#F8FCFF]/16 hover:bg-[#F8FCFF]/16 border-solid border-[1px] border-[#F8FCFF]/32 hover:border-[#F8FCFF]/64 cursor-pointer transition-all"
                             >
                                 <span className="font-[Geist] text-sm">
                                     Clear all
