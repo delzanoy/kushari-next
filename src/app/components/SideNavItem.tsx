@@ -34,12 +34,12 @@ export default function SideNavItem({
   );
 
   const linkClass = clsx(
-    "flex w-full items-center pt-[8px] pr-[12px] pb-[8px] pl-[8px] gap-[10px] font-[Figtree] text-sm not-italic font-medium leading-[normal] tracking-[0.112px] rounded-[10px] transition-all duration-300 ease-in-out",
+    "flex w-full items-center pt-[8px] pr-[12px] pb-[8px] pl-[8px] gap-[10px] font-[Figtree] text-sm not-italic font-medium leading-[normal] tracking-[0.112px] rounded-[10px] transition-all duration-300 ease-in-out cursor-pointer",
     active
       ? "text-[#D7DCF3] bg-[#232323] group-hover:bg-[#192E2E]"
       : externalHover
-      ? "text-[#D7DCF3] bg-[#155656] group-hover:bg-[#155656]" // External hover gets same background as regular hover
-      : "text-[#C8CACB] bg-black group-hover:bg-[#155656] hover:text-[#D7DCF3]"
+        ? "text-[#D7DCF3] bg-[#155656] group-hover:bg-[#155656]" // External hover gets same background as regular hover
+        : "text-[#C8CACB] bg-black group-hover:bg-[#155656] hover:text-[#D7DCF3]"
   );
 
   return (
@@ -49,8 +49,8 @@ export default function SideNavItem({
         tabIndex={isDisabled ? -1 : 0}
         aria-disabled={isDisabled}
         onClick={onClick}
-      >        
-        <Icon 
+      >
+        <Icon
           className={clsx(
             "h-4.5 w-4.5 transition-colors duration-150",
             (active || externalHover) ? "text-[#C8CACB]" : "text-[#C8CACB]/70",
