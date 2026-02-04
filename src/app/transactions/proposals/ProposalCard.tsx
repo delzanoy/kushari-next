@@ -33,7 +33,7 @@ export default function ProposalCard({
     uniqueClassifications
 }: ProposalListProps) {
     const { open, closeTop } = useModal();
-    const [selected, setSelected] = useState<string | undefined>(uniqueClassifications[0]);
+    const [selected, setSelected] = useState<string | undefined>(proposal.classification);
 
     const getBlockchainIcon = (blockchainName: string) => {
         switch (blockchainName) {

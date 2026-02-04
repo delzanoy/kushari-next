@@ -46,9 +46,8 @@ export default async function TransactionsProposalsPage({ searchParams }: PagePr
   const uniqueClassifications = Array.from(
     new Set(typedProposals.map((tx: Proposal) => tx.classification))
   );
-
+  
   const walletFilter = searchParams.wallet as string | undefined;
-  console.log("Filter : " + walletFilter);
 
   return (
     <ProposalListClient
