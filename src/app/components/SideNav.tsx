@@ -26,6 +26,7 @@ import {
     GlobeWebIcon,
     MagicIcon,
     LogoutBoxIcon,
+    CaseStudyIcon,
 } from "@/app/components/icons";
 
 function SideNavSection({ title, children, pill }: { title: string; children?: React.ReactNode; pill?: React.ReactNode }) {
@@ -143,12 +144,8 @@ export default function SideNav() {
         {
             label: "Case study",
             action: () => handleProfileMenuAction("case-study"),
-            trailingIcon: <div className="flex py-[6px] px-[10px] justify-center items-center gap-2.5 rounded-full bg-[#052e21]">
-                <span className="text-[#069668] font-[Figtree] text-xs not-italic font-semibold leading-[normal]">
-                    Coming soon
-                </span>
-            </div>,
-            disabled: true
+            icon: <CaseStudyIcon className="w-4 h-4" />,
+            trailingIcon: <ExternalLinkIcon className="w-4 h-4" />
         },
         {
             label: "Delanoy's portfolio",
@@ -239,7 +236,7 @@ export default function SideNav() {
                 openExternalLink("https://www.figma.com/proto/Nfz1oTeKS553bZuNAIi3zN/Kushari-2.0?page-id=5%3A35478&node-id=516-5964&viewport=309%2C-657%2C0.11&t=XQe9OJ9u9TGap2y9-1&scaling=scale-down-width&content-scaling=fixed");
                 break;
             case "case-study":
-                showFeatureModal();
+                openExternalLink("https://delanoy.fyi/?work=kushari");
                 break;
             case "portfolio":
                 openExternalLink("https://delanoy.fyi/");

@@ -79,3 +79,4 @@ export { LifebouyIcon } from "./LifebouyIcon";
 export { GlobeWebIcon } from "./GlobeWebIcon";
 export { LogoutBoxIcon } from "./LogoutBoxIcon";
 export { MagicIcon } from "./MagicIcon";
+export { CaseStudyIcon } from "./CaseStudyIcon";
