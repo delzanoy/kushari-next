@@ -140,7 +140,7 @@ export default function InlineDropdown({
                     <div className="p-2 border-b border-[#F8FCFF]/10">
                         <TextInput
                             ref={inputRef}
-                            placeholder="Search or add category"
+                            placeholder="Search or add classification"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             width="full"
