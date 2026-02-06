@@ -29,8 +29,11 @@ import {
     StatusDotIcon,
     ReadyDotIcon,
     StatusSquarecle,
-    ExecutingIcon
+    ExecutingIcon,
+    CheckBoxOutlineIcon,
+    CheckBoxFilledIcon
 } from "./../../components/icons";
+import PrimaryButton from "@/app/components/buttons/PrimaryButton";
 
 interface ProposalListProps {
     proposals: Proposal[];
@@ -224,8 +227,21 @@ export default function ProposalListClient({
     const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
     const [filterCriteria, setFilterCriteria] = useState<FilterCriterion[]>([]);
     const [currentPage, setCurrentPage] = useState(initialPage);
+    const [showMyActions, setShowMyActions] = useState(false); // ADD THIS STATE
     const hasAppliedInitialFilter = useRef(false);
     const hasAppliedInitialTab = useRef(false);
+
+    const myActionsStatuses = useMemo(() => [
+        ProposalStatus.ACTION_REQUIRED,
+        ProposalStatus.READY,
+        ProposalStatus.FAILED,
+        ProposalStatus.FAILED_REJECTED
+    ], []);
+
+    const toggleShowMyActions = () => {
+        setShowMyActions(prev => !prev);
+        setCurrentPage(1); // Reset to first page when toggling
+    };
 
     // Sync search query when initialSearchQuery changes (from URL)
     useEffect(() => {
@@ -675,6 +691,12 @@ export default function ProposalListClient({
             );
         }
 
+        if (showMyActions) {
+            filtered = filtered.filter(proposal =>
+                myActionsStatuses.includes(proposal.status)
+            );
+        }
+
         // Apply filter criteria
         if (cleanedFilterCriteria.length > 0) {
             filtered = filtered.filter(proposal => {
@@ -699,7 +721,7 @@ export default function ProposalListClient({
         }
 
         return filtered;
-    }, [categorizedProposals, searchQuery, cleanedFilterCriteria, searchProposals]);
+    }, [categorizedProposals, searchQuery, cleanedFilterCriteria, searchProposals, showMyActions, myActionsStatuses]);
 
     // Filter proposals based on active tab, search, and filter criteria
     const filteredProposals = useMemo(() => {
@@ -916,6 +938,7 @@ export default function ProposalListClient({
                                 </div>
                             ))}
                         </div>
+
                     </div>
                     <div className={`flex item ${hasActiveFilters ? "justify-between" : "justify-end"} items-center flex-[1_0_0] h-7`}>
                         {hasActiveFilters && (
@@ -932,6 +955,7 @@ export default function ProposalListClient({
                             </button>
                         )}
                     </div>
+                    <PrimaryButton size="sm" onClick={toggleShowMyActions} label="Show my actions" variant="neutral" trailingIcon={showMyActions ? <CheckBoxFilledIcon /> : <CheckBoxOutlineIcon />} />
                 </div>
 
 

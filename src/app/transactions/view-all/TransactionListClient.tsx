@@ -7,6 +7,8 @@ import FilterDropdown from "./../../components/filters/FilterDropdown";
 import IconButton from "./../../components/buttons/IconButton";
 import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import PageSelector from "@/app/components/PageSelector";
+import { format } from "date-fns";
+import { determineMultirecipients } from "./calculations";
 
 // Import icons
 import {
@@ -26,6 +28,7 @@ import {
     PolygonIcon,
     SOLIcon
 } from "./../../components/icons";
+import PrimaryButton from "@/app/components/buttons/PrimaryButton";
 
 interface TransactionListProps {
     transactions: Transaction[];
@@ -88,6 +91,148 @@ export default function TransactionListClient({
     initialWalletFilter
 }: TransactionListProps) {
     const [searchQuery, setSearchQuery] = useState(initialSearchQuery);
+    
+    const formatRecipientsForCSV = (transaction: Transaction): string => {
+    if (!transaction.recipients) return '';
+
+    // Handle multi-recipient transactions
+    if (Array.isArray(transaction.recipients)) {
+        return transaction.recipients
+            .map(recipient => {
+                if (recipient.addressId) {
+                    const addressEntry = addresses.find(addr => addr.id === recipient.addressId);
+                    return addressEntry?.name || recipient.toAddress || '';
+                }
+                return recipient.toAddress || '';
+            })
+            .filter(Boolean)
+            .join('; ');
+    }
+
+    // Handle single recipient object
+    if (typeof transaction.recipients === 'object') {
+        // CORRECTION: Access the recipient object's properties directly
+        if (transaction.recipients.addressId) {
+                return determineMultirecipients(transaction.multiRecipient, transaction.recipients, addresses);
+        }
+        return transaction.recipients.toAddress || '';
+    }
+
+    // Handle string recipient
+    if (typeof transaction.recipients === 'string') {
+        return transaction.recipients;
+    }
+
+    return '';
+};
+
+    // Function to determine transaction type
+    const getTransactionType = (transaction: Transaction): string => {
+        if (transaction.incoming && transaction.outgoing) return 'Interacted';
+        if (transaction.incoming) return 'Received';
+        if (transaction.outgoing) return 'Sent';
+        return '';
+    };
+
+    // Function to format date for CSV
+    const formatDateForCSV = (timestamp: string | number | Date): string => {
+        try {
+            const date = new Date(timestamp);
+            return format(date, 'yyyy-MM-dd HH:mm:ss');
+        } catch (error) {
+            return '';
+        }
+    };
+
+    // Function to convert transactions to CSV
+    const convertToCSV = (transactions: Transaction[]): string => {
+        if (transactions.length === 0) return '';
+
+        // Define CSV headers
+        const headers = [
+            'Date',
+            'Type',
+            'Transaction Hash',
+            'Wallet',
+            'Wallet Type',
+            'Network',
+            'To/From',
+            'In Token Symbol',
+            'In Token Amount',
+            'In USD Value',
+            'Out Token Symbol',
+            'Out Token Amount',
+            'Out USD Value',
+            'Classification',
+            'Initiator',
+            'Executer'
+        ];
+
+        // Convert each transaction to CSV row
+        const rows = transactions.map(transaction => {
+            const type = getTransactionType(transaction);
+            const formattedRecipients = formatRecipientsForCSV(transaction);
+            const walletType = transaction.walletType === 1 ? 'Vault' : 
+                              transaction.walletType === 2 ? 'Gnosis Safe' : 
+                              transaction.walletType === 3 ? 'Tracked Wallet' : '';
+
+            return [
+                formatDateForCSV(transaction.timestamp),
+                type,
+                transaction.id || '',
+                transaction.wallet || '',
+                walletType,
+                transaction.blockchain || '',
+                formattedRecipients,
+                transaction.inTokenSymbol || '',
+                transaction.inTokens?.toString() || '0',
+                transaction.incomingUSD?.toString() || '0',
+                transaction.outTokenSymbol || '',
+                transaction.outTokens?.toString() || '0',
+                transaction.outgoingUSD?.toString() || '0',
+                transaction.classification || '',
+                transaction.initiator || '',
+                transaction.executer || ''
+            ].map(field => {
+                // Escape fields that contain commas, quotes, or newlines
+                if (typeof field === 'string' && (field.includes(',') || field.includes('"') || field.includes('\n'))) {
+                    return `"${field.replace(/"/g, '""')}"`;
+                }
+                return field;
+            }).join(',');
+        });
+
+        // Combine headers and rows
+        return [headers.join(','), ...rows].join('\n');
+    };
+
+    // Function to trigger CSV download
+    const handleExportCSV = () => {
+        // Use filteredTransactions for export (all filtered items, not just paginated)
+        const csvContent = convertToCSV(filteredTransactions);
+        
+        if (!csvContent) {
+            alert('No data to export');
+            return;
+        }
+
+        // Create blob and download link
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        const fileName = `transactions_${format(new Date(), 'yyyy-MM-dd_HH-mm')}.csv`;
+        
+        link.setAttribute('href', url);
+        link.setAttribute('download', fileName);
+        link.style.visibility = 'hidden';
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        
+        // Clean up
+        URL.revokeObjectURL(url);
+    };
 
     // Sync search query when initialSearchQuery changes (from URL)
     useEffect(() => {
@@ -98,6 +243,7 @@ export default function TransactionListClient({
     useEffect(() => {
         setCurrentPage(initialPage);
     }, [initialPage]);
+    
 
     const searchTransactions = useCallback((transaction: Transaction, query: string): boolean => {
         if (!query.trim()) return true;
@@ -864,6 +1010,7 @@ export default function TransactionListClient({
                                     />
                                 </div>
                             )}
+                            <PrimaryButton size="sm" onClick={handleExportCSV} label="Export csv" variant="neutral" />
                         </div>
                     </div>
                 </div>
