@@ -25,7 +25,11 @@ import {
     OPTIMISMIcon,
     PolygonIcon,
     SOLIcon,
-    SmallArrowDown
+    SmallArrowDown,
+    StatusDotIcon,
+    ReadyDotIcon,
+    StatusSquarecle,
+    ExecutingIcon
 } from "./../../components/icons";
 
 interface ProposalListProps {
@@ -153,6 +157,57 @@ const getBlockchainIcon = (blockchainName: string) => {
     }
 };
 
+const renderStatusIcon = (status: ProposalStatus) => {
+    switch (status) {
+        case ProposalStatus.ACTION_REQUIRED:
+            return <StatusDotIcon className="h-4 w-4 text-[#26C9C9]" />;
+        case ProposalStatus.NO_ACTION:
+            return <StatusDotIcon className="h-4 w-4 text-[#969696]" />;
+        case ProposalStatus.ACTIONED:
+            return <StatusDotIcon className="h-4 w-4 text-[#969696]" />;
+        case ProposalStatus.READY:
+            return <ReadyDotIcon className="w-4 h-4" />;
+        case ProposalStatus.FAILED:
+            return <StatusDotIcon className="h-4 w-4 text-[#ED090D]" />;
+        case ProposalStatus.EXECUTING:
+            return <ExecutingIcon className="w-4 h-4" />;
+        case ProposalStatus.AWAITING_NONCE:
+            return <StatusSquarecle className="text-[#787878] w-4 h-4" />;
+        case ProposalStatus.DECLINED:
+            return <StatusSquarecle className="text-[#FD7217] w-4 h-4" />;
+        case ProposalStatus.FAILED_REJECTED:
+            return <StatusDotIcon className="h-4 w-4 text-[#ED090D]" />;
+        default:
+            return null;
+    }
+};
+
+
+const formatStatusName = (status: ProposalStatus): string => {
+    switch (status) {
+        case ProposalStatus.ACTION_REQUIRED:
+            return "Action required";
+        case ProposalStatus.NO_ACTION:
+            return "No action";
+        case ProposalStatus.ACTIONED:
+            return "Actioned";
+        case ProposalStatus.READY:
+            return "Ready";
+        case ProposalStatus.FAILED:
+            return "Failed to execute";
+        case ProposalStatus.EXECUTING:
+            return "Executing";
+        case ProposalStatus.AWAITING_NONCE:
+            return "Awaiting nonce";
+        case ProposalStatus.DECLINED:
+            return "Declined";
+        case ProposalStatus.FAILED_REJECTED:
+            return "Failed";
+        default:
+            return status;
+    }
+};
+
 export default function ProposalListClient({
     proposals,
     addresses,
@@ -205,12 +260,14 @@ export default function ProposalListClient({
         };
 
         // Search in basic string fields (status removed)
-        if (checkValue(proposal.id) || // Proposal hash/ID
+        if (checkValue(proposal.id) ||
             checkValue(proposal.wallet) ||
             checkValue(proposal.classification) ||
-            checkValue(proposal.initiator)) {
+            checkValue(proposal.initiator) ||
+            checkValue(formatStatusName(proposal.status))) {
             return true;
         }
+
 
         // Search in recipients/addresses - handle different formats
         if (proposal.recipients) {
@@ -351,10 +408,38 @@ export default function ProposalListClient({
                 return '';
             case 'classification':
                 return proposal.classification || '';
+            case 'status':
+                return proposal.status || '';
             default:
                 return '';
         }
     };
+
+    // Get status options
+    const statusOptions = useMemo((): FilterDropdownOption[] => {
+        const allStatuses = Object.values(ProposalStatus);
+        return allStatuses.map(status => ({
+            value: status,
+            id: status,
+            searchText: formatStatusName(status).toLowerCase(),
+            display: (
+                <div className="flex items-center gap-3 flex-1">
+                    <div className="flex-shrink-0 w-5 h-5 flex items-center justify-center">
+                        {renderStatusIcon(status)}
+                    </div>
+                    <div className="flex flex-col flex-1 min-w-0">
+                        <span className="text-[#F8FCFF] font-[Geist] text-sm font-medium truncate">
+                            {formatStatusName(status)}
+                        </span>
+                    </div>
+                </div>
+            ),
+            displayProps: {
+                fullName: formatStatusName(status),
+                icon: renderStatusIcon(status)
+            }
+        }));
+    }, []);
 
     // Get selected values for a specific field from filter criteria
     const getSelectedValuesForField = (fieldKey: string): string[] => {
@@ -673,6 +758,8 @@ export default function ProposalListClient({
                 return addressOptions;
             case 'classification':
                 return classificationOptions;
+            case 'status': // ADD THIS CASE
+                return statusOptions;
             default:
                 return [];
         }
@@ -720,8 +807,15 @@ export default function ProposalListClient({
             type: 'multiselect',
             options: classificationOptions,
             icon: <TrackedWalletIcon className="w-4 h-4" />
+        },
+        {
+            key: 'status',
+            label: 'Status',
+            type: 'multiselect',
+            options: statusOptions,
+            icon: <StatusDotIcon className="w-4 h-4" />
         }
-    ], [walletOptions, networkOptions, addressOptions, classificationOptions]);
+    ], [walletOptions, networkOptions, addressOptions, classificationOptions, statusOptions]);
 
     const hasActiveFilters = cleanedFilterCriteria.length > 0;
 
