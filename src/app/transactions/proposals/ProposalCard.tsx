@@ -148,7 +148,7 @@ export default function ProposalCard({
                             </div>
                             <span className="text-[#F8FCFF] font-[Geist] text-sm not-italic font-semibold leading-[normal] tracking-[0.7px]">Failed</span>
                         </div>
-                        <TertiaryButton label="Retry" className="group-hover:opacity-100 opacity-0" />
+                        <TertiaryButton label="Re-submit" className="group-hover:opacity-100 opacity-0" />
                     </div>
                 </div>;
             default:
