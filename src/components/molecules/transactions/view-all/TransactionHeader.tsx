@@ -15,7 +15,6 @@ import {
 } from "@remixicon/react";
 import { GnosisSafeIcon } from "@/media/icons/GnosisSafeIcon";
 import { BlockchainIconStack } from "@/components/atoms/BlockchainIconStack";
-import { formatDollars, formatCents } from "@/lib/formatters";
 import { TransactionHeaderProps } from "./types";
 import { determineMultirecipients } from "./calculations";
 import { ClassificationDropdown } from "./ClassificationDropdown";
@@ -82,15 +81,9 @@ export default function TransactionHeader({ transaction, addresses, uniqueClassi
             <div className="flex w-full items-center gap-4 self-stretch pb-3">
                 {/* Type */}
                 <div className="flex w-40 shrink-0 items-center gap-2 pl-4">
-                    <div className="w-6 h-6 rounded-full bg-[var(--color-surface-surface)] border border-[var(--color-border-default)] flex items-center justify-center shrink-0">
-                        {transaction.incoming ? (
-                            <RiArrowLeftDownLine size={14} className="text-[var(--color-icon-success)]" />
-                        ) : (
-                            <RiArrowRightUpLine size={14} className="text-[var(--color-icon-secondary)]" />
-                        )}
-                    </div>
+                    {getTransactionIcon()}
                     <span className="text-[var(--color-text-primary)] text-sm font-medium tracking-tight truncate leading-tight">
-                        {transaction.incoming ? "Received" : "Sent"}
+                        {getTransactionTypeLabel()}
                     </span>
                 </div>
 
@@ -118,48 +111,32 @@ export default function TransactionHeader({ transaction, addresses, uniqueClassi
 
                 {/* In */}
                 <div className="relative flex w-32 shrink-0 flex-col justify-center min-w-0 h-5">
-                    {transaction.incoming ? (() => {
-                        const val = transaction.incomingUSD ?? (transaction.inTokens && transaction.inUSDPrice ? transaction.inTokens * transaction.inUSDPrice : 0);
-                        return (
-                            <>
-                                <div className="flex items-baseline">
-                                    <span className="text-[var(--color-text-success)] text-sm font-medium tracking-tight truncate leading-tight">
-                                        ${formatDollars(val)}
-                                    </span>
-                                    <span className="text-[var(--color-text-success)] opacity-60 text-xs font-normal tracking-tight truncate leading-tight">
-                                        .{formatCents(val)}
-                                    </span>
-                                </div>
-                                <span className="absolute top-5 left-0 text-[var(--color-text-muted)] text-[10px] font-light tracking-tight truncate leading-none w-full">
-                                    {transaction.inTokenSymbol} {transaction.inTokens}
-                                </span>
-                            </>
-                        );
-                    })() : (
+                    {transaction.incoming ? (
+                        <>
+                            <span className="text-[var(--color-text-success)] text-sm font-medium tracking-tight truncate leading-tight">
+                                ${(transaction.incomingUSD ?? (transaction.inTokens && transaction.inUSDPrice ? transaction.inTokens * transaction.inUSDPrice : 0)).toFixed(2)}
+                            </span>
+                            <span className="absolute top-5 left-0 text-[var(--color-text-muted)] text-[10px] font-light tracking-tight truncate leading-none w-full">
+                                {transaction.inTokenSymbol} {transaction.inTokens}
+                            </span>
+                        </>
+                    ) : (
                         <span className="text-[var(--color-text-disabled)] text-sm font-light">-</span>
                     )}
                 </div>
 
                 {/* Out */}
                 <div className="relative flex w-32 shrink-0 flex-col justify-center min-w-0 h-5">
-                    {transaction.outgoing ? (() => {
-                        const val = transaction.outgoingUSD ?? (transaction.outTokens && transaction.outUSDPrice ? transaction.outTokens * transaction.outUSDPrice : 0);
-                        return (
-                            <>
-                                <div className="flex items-baseline">
-                                    <span className="text-[var(--color-text-primary)] text-sm font-medium tracking-tight truncate leading-tight">
-                                        ${formatDollars(val)}
-                                    </span>
-                                    <span className="text-[var(--color-text-muted)] text-xs font-normal tracking-tight truncate leading-tight">
-                                        .{formatCents(val)}
-                                    </span>
-                                </div>
-                                <span className="absolute top-5 left-0 text-[var(--color-text-muted)] text-[10px] font-light tracking-tight truncate leading-none w-full">
-                                    {transaction.outTokenSymbol} {transaction.outTokens}
-                                </span>
-                            </>
-                        );
-                    })() : (
+                    {transaction.outgoing ? (
+                        <>
+                            <span className="text-[var(--color-text-primary)] text-sm font-medium tracking-tight truncate leading-tight">
+                                ${(transaction.outgoingUSD ?? (transaction.outTokens && transaction.outUSDPrice ? transaction.outTokens * transaction.outUSDPrice : 0)).toFixed(2)}
+                            </span>
+                            <span className="absolute top-5 left-0 text-[var(--color-text-muted)] text-[10px] font-light tracking-tight truncate leading-none w-full">
+                                {transaction.outTokenSymbol} {transaction.outTokens}
+                            </span>
+                        </>
+                    ) : (
                         <span className="text-[var(--color-text-disabled)] text-sm font-light">-</span>
                     )}
                 </div>
