@@ -14,7 +14,7 @@ import { Tooltip } from "@/components/atoms/Tooltip";
 import { IconButton } from "@/components/atoms/IconButton";
 import { BlockchainIconStack } from "@/components/atoms/BlockchainIconStack";
 import { formatDollars, formatCents, formatPercent } from "@/lib/formatters";
-import { Asset } from "./types";
+import { Asset, getCoinMarketCapUrl } from "./types";
 import { cn } from "@/lib/utils";
 
 interface NonExpandableAssetProps {
@@ -107,7 +107,7 @@ export function NonExpandableAsset({ asset }: NonExpandableAssetProps) {
                   aria-label="View on CoinMarketCap"
                   onClick={(e) => {
                     e.stopPropagation();
-                    window.open(`https://coinmarketcap.com`, "_blank");
+                    window.open(getCoinMarketCapUrl(asset), "_blank");
                   }}
                 />
               </Tooltip>

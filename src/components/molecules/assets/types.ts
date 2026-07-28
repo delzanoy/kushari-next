@@ -25,7 +25,58 @@ export interface Asset {
   symbol: string;
   name: string;
   fullName: string;
+  slug?: string;
   USD: number;
+}
+
+export function getCoinMarketCapUrl(asset: Asset): string {
+  if (asset.slug) {
+    return `https://coinmarketcap.com/currencies/${asset.slug}/`;
+  }
+
+  const symbolUpper = (asset.symbol || "").toUpperCase();
+  const knownSlugs: Record<string, string> = {
+    BTC: "bitcoin",
+    ETH: "ethereum",
+    USDT: "tether",
+    USDC: "usd-coin",
+    BNB: "bnb",
+    SOL: "solana",
+    XRP: "xrp",
+    ADA: "cardano",
+    AVAX: "avalanche",
+    DOGE: "dogecoin",
+    DOT: "polkadot-new",
+    MATIC: "polygon",
+    POL: "polygon-ecosystem",
+    LINK: "chainlink",
+    UNI: "uniswap",
+    DAI: "multi-collateral-dai",
+    WBTC: "wrapped-bitcoin",
+    SHIB: "shiba-inu",
+    LTC: "litecoin",
+    BCH: "bitcoin-cash",
+    NEAR: "near-protocol",
+    APT: "aptos",
+    SUI: "sui",
+    OP: "optimism-ethereum",
+    ARB: "arbitrum",
+  };
+
+  if (symbolUpper && knownSlugs[symbolUpper]) {
+    return `https://coinmarketcap.com/currencies/${knownSlugs[symbolUpper]}/`;
+  }
+
+  const rawName = asset.fullName || asset.name || asset.symbol || "";
+  const slugified = rawName
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "");
+
+  return slugified
+    ? `https://coinmarketcap.com/currencies/${slugified}/`
+    : "https://coinmarketcap.com/";
 }
 
 export interface WalletShare {
