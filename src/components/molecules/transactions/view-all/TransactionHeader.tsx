@@ -126,7 +126,7 @@ export default function TransactionHeader({ transaction, addresses, uniqueClassi
                                     <span className="text-[var(--color-text-success)] text-sm font-medium tracking-tight truncate leading-tight">
                                         ${formatDollars(val)}
                                     </span>
-                                    <span className="text-[var(--color-text-muted)] text-xs font-normal tracking-tight truncate leading-tight">
+                                    <span className="text-[var(--color-text-success)] opacity-60 text-xs font-normal tracking-tight truncate leading-tight">
                                         .{formatCents(val)}
                                     </span>
                                 </div>
