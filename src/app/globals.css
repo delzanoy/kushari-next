@@ -1,0 +1,552 @@
+@import "tailwindcss";
+
+/* ============================================================
+   LAYER 1 — DESIGN TOKENS
+   Token v2 — Color System
+   ============================================================ */
+
+@theme inline {
+  /* --- Fonts --- */
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-general-sans);
+
+  /* --- Base --- */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  /* ============================================================
+     1a. COLOR PRIMITIVES
+     ============================================================ */
+
+  /* --- Cyan (Brand) --- 15-step scale */
+  --color-cyan-0: #FFFFFF;
+  --color-cyan-50: #F0FDFD;
+  --color-cyan-100: #CCFBFB;
+  --color-cyan-200: #9EF5F5;
+  --color-cyan-300: #6CDFE0;
+  --color-cyan-400: #3CC8C8;
+  --color-cyan-500: #26C9C9;
+  --color-cyan-600: #1EA3A3;
+  --color-cyan-700: #1A7E7E;
+  --color-cyan-750: #155E5E;
+  --color-cyan-800: #0E4949;
+  --color-cyan-850: #0A3535;
+  --color-cyan-900: #072727;
+  --color-cyan-925: #051C1C;
+  --color-cyan-950: #030F0F;
+
+  /* --- Red (Danger) --- 15-step scale */
+  --color-red-0: #FFFFFF;
+  --color-red-50: #FEF2F2;
+  --color-red-100: #FEE2E2;
+  --color-red-200: #FECACA;
+  --color-red-300: #FCA5A5;
+  --color-red-400: #F87171;
+  --color-red-500: #EF4444;
+  --color-red-600: #DC2626;
+  --color-red-700: #B91C1C;
+  --color-red-750: #A91B1B;
+  --color-red-800: #991B1B;
+  --color-red-850: #8C1A1A;
+  --color-red-900: #7F1D1D;
+  --color-red-925: #621414;
+  --color-red-950: #450A0A;
+
+  /* --- Green (Success) --- 15-step scale */
+  --color-green-0: #FFFFFF;
+  --color-green-50: #EDFFF4;
+  --color-green-100: #D1FAE5;
+  --color-green-200: #A7F3D0;
+  --color-green-300: #6EE7A0;
+  --color-green-400: #34D471;
+  --color-green-500: #22C55E;
+  --color-green-600: #16A34A;
+  --color-green-700: #15803D;
+  --color-green-750: #0F6B35;
+  --color-green-800: #064D40;
+  --color-green-850: #053B30;
+  --color-green-900: #052E21;
+  --color-green-925: #042218;
+  --color-green-950: #031710;
+
+  /* --- Amber (Warning) --- 15-step scale */
+  --color-amber-0: #FFFFFF;
+  --color-amber-50: #FFFBEB;
+  --color-amber-100: #FEF3C7;
+  --color-amber-200: #FDE68A;
+  --color-amber-300: #FCD34D;
+  --color-amber-400: #FBBF24;
+  --color-amber-500: #F59E0B;
+  --color-amber-600: #D97706;
+  --color-amber-700: #B45309;
+  --color-amber-750: #92400E;
+  --color-amber-800: #78350F;
+  --color-amber-850: #5C2A0E;
+  --color-amber-900: #422006;
+  --color-amber-925: #311A05;
+  --color-amber-950: #1F1104;
+
+  /* --- Lime --- 15-step scale */
+  --color-lime-0: #FFFFFF;
+  --color-lime-50: #F7FEE7;
+  --color-lime-100: #ECFCCB;
+  --color-lime-200: #D9F99D;
+  --color-lime-300: #BEF264;
+  --color-lime-400: #A3E635;
+  --color-lime-500: #84CC16;
+  --color-lime-600: #65A30D;
+  --color-lime-700: #4D7C0F;
+  --color-lime-750: #466F11;
+  --color-lime-800: #3F6212;
+  --color-lime-850: #3A5A13;
+  --color-lime-900: #365314;
+  --color-lime-925: #28400D;
+  --color-lime-950: #1A2E05;
+
+  /* --- Emerald --- 15-step scale */
+  --color-emerald-0: #FFFFFF;
+  --color-emerald-50: #ECFDF5;
+  --color-emerald-100: #D1FAE5;
+  --color-emerald-200: #A7F3D0;
+  --color-emerald-300: #6EE7B7;
+  --color-emerald-400: #34D399;
+  --color-emerald-500: #10B981;
+  --color-emerald-600: #059669;
+  --color-emerald-700: #047857;
+  --color-emerald-750: #056B4F;
+  --color-emerald-800: #065F46;
+  --color-emerald-850: #065741;
+  --color-emerald-900: #064E3B;
+  --color-emerald-925: #043D2F;
+  --color-emerald-950: #022C22;
+
+  /* --- Teal --- 15-step scale */
+  --color-teal-0: #FFFFFF;
+  --color-teal-50: #F0FDFA;
+  --color-teal-100: #CCFBF1;
+  --color-teal-200: #99F6E4;
+  --color-teal-300: #5EEAD4;
+  --color-teal-400: #2DD4BF;
+  --color-teal-500: #14B8A6;
+  --color-teal-600: #0D9488;
+  --color-teal-700: #0F766E;
+  --color-teal-750: #106A64;
+  --color-teal-800: #115E59;
+  --color-teal-850: #125652;
+  --color-teal-900: #134E4A;
+  --color-teal-925: #0B3F3C;
+  --color-teal-950: #042F2E;
+
+  /* --- Sky --- 15-step scale */
+  --color-sky-0: #FFFFFF;
+  --color-sky-50: #F0F9FF;
+  --color-sky-100: #E0F2FE;
+  --color-sky-200: #BAE6FD;
+  --color-sky-300: #7DD3FC;
+  --color-sky-400: #38BDF8;
+  --color-sky-500: #0EA5E9;
+  --color-sky-600: #0284C7;
+  --color-sky-700: #0369A1;
+  --color-sky-750: #056193;
+  --color-sky-800: #075985;
+  --color-sky-850: #09517A;
+  --color-sky-900: #0C4A6E;
+  --color-sky-925: #0A3C5C;
+  --color-sky-950: #082F49;
+
+  /* --- Blue --- 15-step scale */
+  --color-blue-0: #FFFFFF;
+  --color-blue-50: #EFF6FF;
+  --color-blue-100: #DBEAFE;
+  --color-blue-200: #BFDBFE;
+  --color-blue-300: #93C5FD;
+  --color-blue-400: #60A5FA;
+  --color-blue-500: #3B82F6;
+  --color-blue-600: #2563EB;
+  --color-blue-700: #1D4ED8;
+  --color-blue-750: #1E47C4;
+  --color-blue-800: #1E40AF;
+  --color-blue-850: #1E3D9D;
+  --color-blue-900: #1E3A8A;
+  --color-blue-925: #1B336F;
+  --color-blue-950: #172554;
+
+  /* --- Neutral (Cool Gray, blue-tinted) --- 15-step scale */
+  --color-neutral-0: #FFFFFF;
+  --color-neutral-50: #F8FCFF;
+  --color-neutral-100: #EDEEEE;
+  --color-neutral-200: #DDDFDF;
+  --color-neutral-300: #C8CACB;
+  --color-neutral-400: #A3A7A8;
+  --color-neutral-500: #6B7280;
+  --color-neutral-600: #52525B;
+  --color-neutral-700: #454545;
+  --color-neutral-750: #2D3436;
+  --color-neutral-800: #1C1E1F;
+  --color-neutral-850: #151819;
+  --color-neutral-900: #121315;
+  --color-neutral-925: #0E1011;
+  --color-neutral-950: #0A0A0A;
+
+  /* --- Accent Colors (Blockchain / Data Viz) --- */
+  --color-accent-ethereum: #627EEA;
+  --color-accent-bitcoin: #F0B90B;
+  --color-accent-neon: #E5F25A;
+  --color-accent-hot: #FF5C16;
+
+  /* ============================================================
+     1b. TYPOGRAPHY PRIMITIVES
+     ============================================================ */
+
+  /* Type Scale */
+  --text-2xs: 0.625rem;
+  --text-2xs--line-height: 1;
+  --text-xs: 0.6875rem;
+  --text-xs--line-height: 1;
+  --text-sm: 0.75rem;
+  --text-sm--line-height: 1.3;
+  --text-base: 0.8125rem;
+  --text-base--line-height: 1.3;
+  --text-md: 0.875rem;
+  --text-md--line-height: 1.3;
+  --text-lg: 1rem;
+  --text-lg--line-height: 1.3;
+  --text-xl: 1.125rem;
+  --text-xl--line-height: 1.3;
+  --text-2xl: 1.25rem;
+  --text-2xl--line-height: 1.3;
+  --text-3xl: 1.5rem;
+  --text-3xl--line-height: 1.3;
+  --text-4xl: 1.625rem;
+  --text-4xl--line-height: 1.3;
+
+  /* Letter Spacing */
+  --tracking-tightest: -0.03em;
+  --tracking-tight: -0.015em;
+  --tracking-normal: 0em;
+  --tracking-wide: 0.025em;
+  --tracking-widest: 0.06em;
+
+  /* ============================================================
+     1c. SPACING PRIMITIVES (4px grid)
+     ============================================================ */
+  --spacing-0: 0px;
+  --spacing-0_5: 2px;
+  --spacing-1: 4px;
+  --spacing-1_5: 6px;
+  --spacing-2: 8px;
+  --spacing-2_5: 10px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+  --spacing-7: 28px;
+  --spacing-8: 32px;
+  --spacing-10: 40px;
+  --spacing-12: 48px;
+  --spacing-16: 64px;
+
+  /* ============================================================
+     1e. SHADOW & DEPTH PRIMITIVES
+     ============================================================ */
+
+  /* Elevation — dark-mode optimized
+     Uses layered approach: light top-edge highlight + dark drop shadow.
+     On dark UIs, elevation = lighter surface + visible shadow spread. */
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.6), 0 0 0 0.5px rgba(255, 255, 255, 0.03);
+  --shadow-sm: 0 2px 6px -1px rgba(0, 0, 0, 0.7), 0 1px 0 0 rgba(255, 255, 255, 0.04);
+  --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.8), 0 2px 4px -1px rgba(0, 0, 0, 0.6), 0 1px 0 0 rgba(255, 255, 255, 0.05);
+  --shadow-lg: 0 8px 24px -4px rgba(0, 0, 0, 0.85), 0 4px 8px -2px rgba(0, 0, 0, 0.6), 0 1px 0 0 rgba(255, 255, 255, 0.06);
+  --shadow-xl: 0 16px 40px -8px rgba(0, 0, 0, 0.9), 0 8px 16px -4px rgba(0, 0, 0, 0.7), 0 1px 0 0 rgba(255, 255, 255, 0.07);
+  --shadow-2xl: 0 24px 56px -12px rgba(0, 0, 0, 0.95), 0 12px 24px -6px rgba(0, 0, 0, 0.8), 0 1px 0 0 rgba(255, 255, 255, 0.08);
+
+  /* Inset — pressed / sunken states */
+  --shadow-inset-xs: inset 0 1px 3px 0 rgba(0, 0, 0, 0.5), inset 0 0 0 0.5px rgba(0, 0, 0, 0.3);
+  --shadow-inset-sm: inset 0 2px 6px 0 rgba(0, 0, 0, 0.6), inset 0 0 0 0.5px rgba(0, 0, 0, 0.4);
+  --shadow-inset-md: inset 0 4px 12px 0 rgba(0, 0, 0, 0.7), inset 0 0 0 1px rgba(0, 0, 0, 0.4);
+
+  /* Brand Glows */
+  --shadow-glow-brand-xs: 0 0 4px 0 rgba(38, 201, 201, 0.15);
+  --shadow-glow-brand-sm: 0 0 8px 2px rgba(38, 201, 201, 0.15);
+  --shadow-glow-brand-md: 0 0 16px 4px rgba(38, 201, 201, 0.15);
+  --shadow-glow-brand-lg: 0 0 32px 8px rgba(38, 201, 201, 0.12);
+  --shadow-glow-brand-xl: 0 0 50px 16px rgba(38, 201, 201, 0.10);
+
+  /* Status Glows */
+  --shadow-glow-danger-sm: 0 0 8px 2px rgba(239, 68, 68, 0.15);
+  --shadow-glow-danger-md: 0 0 16px 4px rgba(239, 68, 68, 0.15);
+  --shadow-glow-success-sm: 0 0 8px 2px rgba(34, 197, 94, 0.15);
+  --shadow-glow-success-md: 0 0 16px 4px rgba(34, 197, 94, 0.15);
+  --shadow-glow-warning-sm: 0 0 8px 2px rgba(245, 158, 11, 0.15);
+
+  /* White Glow */
+  --shadow-glow-white-sm: 0 0 8px 2px rgba(248, 252, 255, 0.08);
+  --shadow-glow-white-md: 0 0 16px 4px rgba(248, 252, 255, 0.08);
+
+  /* Focus Rings */
+  --shadow-focus-ring-brand:   0 0 0 2px #0A0A0A, 0 0 0 4px rgba(38, 201, 201, 0.5);
+  --shadow-focus-ring-danger:  0 0 0 2px #0A0A0A, 0 0 0 4px rgba(239, 68, 68, 0.5);
+  --shadow-focus-ring-warning: 0 0 0 2px #0A0A0A, 0 0 0 4px rgba(245, 158, 11, 0.5);
+  --shadow-focus-ring-success: 0 0 0 2px #0A0A0A, 0 0 0 4px rgba(34, 197, 94, 0.5);
+  --shadow-focus-ring-neutral: 0 0 0 2px #0A0A0A, 0 0 0 4px rgba(168, 173, 175, 0.3);
+
+  /* ============================================================
+     1f. DURATION & EASING PRIMITIVES
+     ============================================================ */
+
+  --duration-75: 75ms;
+  --duration-150: 150ms;
+  --duration-200: 200ms;
+  --duration-300: 300ms;
+  --duration-500: 500ms;
+  --duration-800: 800ms;
+
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
+  --ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
+  --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+  /* ============================================================
+     LAYER 2 — SEMANTIC TOKENS
+     Mapping primitives to functional intent.
+     ============================================================ */
+
+  /* --- 2a. Surface --- */
+  --color-surface-page: var(--color-neutral-950);
+  --color-surface-sunken: var(--color-neutral-925);
+  --color-surface-surface: var(--color-neutral-800);
+  --color-surface-elevated: var(--color-neutral-750);
+  --color-surface-overlay: var(--color-neutral-700);
+  --color-surface-notification: color-mix(in srgb, var(--color-neutral-800) 90%, transparent);
+  --color-surface-scrim: rgba(0, 0, 0, 0.6);
+
+  /* --- 2b. Border --- */
+  --color-border-subtle: var(--color-neutral-800);
+  --color-border-default: var(--color-neutral-750);
+  --color-border-strong: var(--color-neutral-600);
+  --color-border-focus: var(--color-cyan-500);
+  --color-border-brand: var(--color-cyan-500);
+  --color-border-danger: var(--color-red-500);
+  --color-border-success: var(--color-green-500);
+  --color-border-warning: var(--color-amber-500);
+
+  /* --- 2c. Text --- */
+  --color-text-primary: var(--color-neutral-0);
+  --color-text-secondary: var(--color-neutral-300);
+  --color-text-muted: var(--color-neutral-400);
+  --color-text-disabled: var(--color-neutral-700);
+  --color-text-inverse: var(--color-neutral-950);
+  --color-text-brand: var(--color-cyan-400);
+  --color-text-danger: var(--color-red-400);
+  --color-text-success: var(--color-green-400);
+  --color-text-warning: var(--color-amber-400);
+  /* On-light text — for inverted buttons (white bg on dark surface) */
+  --color-text-danger-on-light:  var(--color-red-600);
+  --color-text-warning-on-light: var(--color-amber-700);
+  --color-text-success-on-light: var(--color-green-700);
+
+  /* --- 2d. Icon --- */
+  --color-icon-primary:  var(--color-neutral-0);
+  --color-icon-secondary: var(--color-neutral-300);
+  --color-icon-muted:    var(--color-neutral-600);
+  --color-icon-brand:    var(--color-cyan-500);
+  --color-icon-danger:   var(--color-red-500);
+  --color-icon-warning:  var(--color-amber-500);
+  --color-icon-success:  var(--color-green-500);
+  /* Icon on a filled/coloured control background (checkbox fill, radio fill, etc.) */
+  --color-icon-on-fill:  var(--color-neutral-0);
+
+  /* --- 2e. Interactive --- */
+  /* Brand States */
+  --color-interactive-brand-default:          var(--color-cyan-500);
+  --color-interactive-brand-hover:            var(--color-cyan-400);
+  --color-interactive-brand-active:           var(--color-cyan-600);
+  --color-interactive-brand-tonal-bg:         var(--color-cyan-950);
+  --color-interactive-brand-tonal-bg-hover:   var(--color-cyan-900);
+  --color-interactive-brand-tonal-bg-active:  var(--color-cyan-925);
+  --color-interactive-brand-tonal-border:     var(--color-cyan-850);
+
+  /* Neutral States */
+  --color-interactive-neutral-default:          var(--color-neutral-800);
+  --color-interactive-neutral-hover:            var(--color-neutral-750);
+  --color-interactive-neutral-active:           var(--color-neutral-900);
+  --color-interactive-neutral-tonal-bg:         var(--color-neutral-900);
+  --color-interactive-neutral-tonal-bg-hover:   var(--color-neutral-850);
+  --color-interactive-neutral-tonal-bg-active:  var(--color-neutral-925);
+  --color-interactive-neutral-tonal-border:     var(--color-neutral-750);
+  --color-interactive-neutral-outline-border:   var(--color-neutral-400);
+
+  /* Danger States */
+  --color-interactive-danger-default:          var(--color-red-500);
+  --color-interactive-danger-hover:            var(--color-red-400);
+  --color-interactive-danger-active:           var(--color-red-600);
+  --color-interactive-danger-tonal-bg:         var(--color-red-950);
+  --color-interactive-danger-tonal-bg-hover:   var(--color-red-900);
+  --color-interactive-danger-tonal-bg-active:  var(--color-red-925);
+  --color-interactive-danger-tonal-border:     var(--color-red-900);
+
+  /* Warning States */
+  --color-interactive-warning-default:          var(--color-amber-500);
+  --color-interactive-warning-hover:            var(--color-amber-400);
+  --color-interactive-warning-active:           var(--color-amber-600);
+  --color-interactive-warning-tonal-bg:         var(--color-amber-950);
+  --color-interactive-warning-tonal-bg-hover:   var(--color-amber-900);
+  --color-interactive-warning-tonal-bg-active:  var(--color-amber-925);
+  --color-interactive-warning-tonal-border:     var(--color-amber-900);
+
+  /* Success States */
+  --color-interactive-success-default:          var(--color-green-500);
+  --color-interactive-success-hover:            var(--color-green-400);
+  --color-interactive-success-active:           var(--color-green-600);
+  --color-interactive-success-tonal-bg:         var(--color-green-950);
+  --color-interactive-success-tonal-bg-hover:   var(--color-green-900);
+  --color-interactive-success-tonal-bg-active:  var(--color-green-925);
+  --color-interactive-success-tonal-border:     var(--color-green-900);
+
+  /* Ghost hover/active — color-mix tints at low opacity.
+     Ghost buttons have no base fill so tonal bg values are too vivid.
+     These sit between transparent and the tonal base. */
+  --color-interactive-brand-ghost-bg-hover:    color-mix(in srgb, var(--color-cyan-500)    18%, transparent);
+  --color-interactive-brand-ghost-bg-active:   color-mix(in srgb, var(--color-cyan-500)    26%, transparent);
+  --color-interactive-neutral-ghost-bg-hover:  color-mix(in srgb, var(--color-neutral-300) 22%, transparent);
+  --color-interactive-neutral-ghost-bg-active: color-mix(in srgb, var(--color-neutral-300) 32%, transparent);
+  --color-interactive-danger-ghost-bg-hover:   color-mix(in srgb, var(--color-red-500)      8%, transparent);
+  --color-interactive-danger-ghost-bg-active:  color-mix(in srgb, var(--color-red-500)     13%, transparent);
+  --color-interactive-warning-ghost-bg-hover:  color-mix(in srgb, var(--color-amber-500)    8%, transparent);
+  --color-interactive-warning-ghost-bg-active: color-mix(in srgb, var(--color-amber-500)   13%, transparent);
+  --color-interactive-success-ghost-bg-hover:  color-mix(in srgb, var(--color-green-500)    8%, transparent);
+  --color-interactive-success-ghost-bg-active: color-mix(in srgb, var(--color-green-500)   13%, transparent);
+
+
+  /* --- 2f. Component Specific --- */
+  /* Filter chips */
+  --color-filter-default-bg: color-mix(in srgb, var(--color-text-primary) 2%, transparent);
+  --color-filter-default-border: color-mix(in srgb, var(--color-text-primary) 20%, transparent);
+  --color-filter-hover-bg: color-mix(in srgb, var(--color-text-primary) 8%, transparent);
+  --color-filter-hover-border: color-mix(in srgb, var(--color-text-primary) 30%, transparent);
+
+  /* Button backgrounds — WCAG AA compliant (≥4.5:1 with white text)
+     brand    cyan-700   #1A7E7E  4.57:1 ✓
+     danger   red-600    #DC2626  4.88:1 ✓
+     warning  amber-700  #B45309  4.77:1 ✓
+     success  green-700  #15803D  4.86:1 ✓
+     gradient cyan-700→emerald-700 midpoint 4.93:1 ✓ */
+  --color-button-brand-bg:       var(--color-cyan-700);
+  --color-button-brand-hover:    var(--color-cyan-600);
+  --color-button-brand-active:   var(--color-cyan-800);
+  --color-button-danger-bg:      var(--color-red-600);
+  --color-button-danger-hover:   var(--color-red-500);
+  --color-button-danger-active:  var(--color-red-700);
+  --color-button-warning-bg:     var(--color-amber-700);
+  --color-button-warning-hover:  var(--color-amber-600);
+  --color-button-warning-active: var(--color-amber-750);
+  --color-button-success-bg:     var(--color-green-700);
+  --color-button-success-hover:  var(--color-green-600);
+  --color-button-success-active: var(--color-green-750);
+
+  /* Inverted button (white bg, for use on dark/colored surfaces) */
+  --color-button-inverted-bg:              var(--color-neutral-0);
+  --color-button-inverted-hover:           var(--color-neutral-50);
+  --color-button-inverted-active:          var(--color-neutral-100);
+  --color-button-inverted-danger-hover:    var(--color-red-50);
+  --color-button-inverted-danger-active:   var(--color-red-100);
+  --color-button-inverted-warning-hover:   var(--color-amber-50);
+  --color-button-inverted-warning-active:  var(--color-amber-100);
+  --color-button-inverted-success-hover:   var(--color-green-50);
+  --color-button-inverted-success-active:  var(--color-green-100);
+
+  /* Input */
+  --color-input-bg:               var(--color-surface-sunken);
+  --color-input-bg-readonly:      var(--color-neutral-900);
+  --color-input-border:           var(--color-border-default);
+  --color-input-border-hover:     var(--color-border-strong);
+  --color-input-border-focus:     var(--color-border-brand);
+  --color-input-border-error:     var(--color-border-danger);
+  --color-input-border-warning:   var(--color-border-warning);
+  --color-input-border-success:   var(--color-border-success);
+
+  /* Label */
+  --color-label-default:  var(--color-text-secondary);
+  --color-label-focused:  var(--color-text-primary);
+  --color-label-disabled: var(--color-text-disabled);
+  --color-label-error:    var(--color-text-danger);
+  --color-label-warning:  var(--color-text-warning);
+  --color-label-success:  var(--color-text-success);
+  --color-label-required: var(--color-text-danger);
+  --color-label-optional: var(--color-text-muted);
+
+  /* Form control fills — same -700/-600 shades as button BGs for white-icon contrast
+     brand    cyan-700   #1A7E7E  4.45:1 ✓
+     danger   red-600    #DC2626  4.79:1 ✓
+     warning  amber-700  #B45309  4.63:1 ✓
+     success  green-700  #15803D  4.61:1 ✓ */
+  --color-control-fill-brand:   var(--color-cyan-700);
+  --color-control-fill-danger:  var(--color-red-600);
+  --color-control-fill-warning: var(--color-amber-700);
+  --color-control-fill-success: var(--color-green-700);
+  /* Hover tint — state colour at 8 % opacity; derived via color-mix so it
+     stays in sync if the underlying primitive ever changes. */
+  --color-control-tint-brand:   color-mix(in srgb, var(--color-cyan-500)  8%, transparent);
+  --color-control-tint-danger:  color-mix(in srgb, var(--color-red-500)   8%, transparent);
+  --color-control-tint-warning: color-mix(in srgb, var(--color-amber-500) 8%, transparent);
+  --color-control-tint-success: color-mix(in srgb, var(--color-green-500) 8%, transparent);
+
+  /* Card */
+  --color-card-bg: var(--color-surface-sunken);
+  --color-card-border: var(--color-border-subtle);
+  --color-card-border-hover: var(--color-border-default);
+  --color-card-border-selected: var(--color-interactive-brand-default);
+  --shadow-card-hover: var(--shadow-md);
+  --shadow-card-selected: 0 0 0 2px #0A0A0A, 0 0 0 4px var(--color-interactive-brand-default);
+
+  /* Skeleton */
+  --color-skeleton-base: var(--color-neutral-850);
+  --color-skeleton-shimmer: var(--color-neutral-800);
+}
+
+/* ============================================================
+   ROOT VARIABLES
+   ============================================================ */
+
+:root {
+  --background: #000000;
+  --foreground: #ededed;
+}
+
+/* ============================================================
+   BASE STYLES
+   ============================================================ */
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  scrollbar-gutter: stable;
+}
+
+/* Autofill — override browser yellow/blue tint */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px var(--color-input-bg) inset !important;
+  -webkit-text-fill-color: var(--color-text-primary) !important;
+  caret-color: var(--color-text-primary);
+}
+
+/* Base utility for smooth native-feeling animations */
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.transition-transform {
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}
+
