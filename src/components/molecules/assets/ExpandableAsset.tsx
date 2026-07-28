@@ -26,11 +26,19 @@ interface ExpandableAssetProps {
 export function ExpandableAsset({ asset }: ExpandableAssetProps) {
   const [expanded, setExpanded] = useState(false);
   const [hovered, setHovered] = useState(false);
+  const symbol = asset.symbol || "";
+  const symbolLower = symbol.toLowerCase();
+  const fullName = asset.fullName || asset.name || symbol;
+  const price = asset.price ?? 0;
+  const percentChange = asset.percent_change_24h ?? 0;
+  const totalTokens = asset.totalTokens ?? 0;
+  const usdValue = asset.USD ?? 0;
+  const wallets = asset.wallets || [];
 
-  const renderWalletTypeCounts = (wallets: WalletInfo[], isHovered: boolean) => {
+  const renderWalletTypeCounts = (walletsList: WalletInfo[], isHovered: boolean) => {
     const counts = { 1: 0, 2: 0, 3: 0 } as Record<number, number>;
-    wallets.forEach((w) => {
-      if ([1, 2, 3].includes(w.walletType)) counts[w.walletType]++;
+    walletsList.forEach((w) => {
+      if (w && [1, 2, 3].includes(w.walletType)) counts[w.walletType]++;
     });
 
     const iconColor = "text-[var(--color-icon-muted)]";
@@ -70,38 +78,38 @@ export function ExpandableAsset({ asset }: ExpandableAssetProps) {
       <div className="flex items-center gap-4 w-full justify-between relative z-10">
         <div className="flex w-[242px] items-center gap-3 shrink-0">
           <div className="w-8 h-8 shrink-0 relative flex items-center justify-center rounded-full bg-[var(--color-surface-surface)] border border-[var(--color-border-default)]">
-            <i className={`cf cf-${asset.symbol.toLowerCase()} text-xl text-[var(--color-text-primary)]`} />
+            <i className={`cf cf-${symbolLower} text-xl text-[var(--color-text-primary)]`} />
             <div className="absolute -bottom-4 left-[22px]">
               <BlockchainIconStack blockchain={asset.blockchain} size={14} max={3} />
             </div>
           </div>
           <div className="flex items-baseline gap-1.5">
             <span className="text-sm font-medium tracking-tight text-[var(--color-text-primary)]">
-              {asset.fullName}
+              {fullName}
             </span>
             <span className="text-[10px] font-thin uppercase tracking-widest text-[var(--color-text-muted)]">
-              {asset.symbol}
+              {symbol}
             </span>
           </div>
         </div>
 
         <div className="flex w-[248px] items-center justify-between shrink-0">
           <span className="text-sm font-light tracking-tight text-[var(--color-text-primary)] w-[116px] text-right truncate">
-            ${asset.price.toLocaleString(undefined, { maximumFractionDigits: 6 })}
+            ${price.toLocaleString(undefined, { maximumFractionDigits: 6 })}
           </span>
           <div className="flex items-center justify-start gap-2 w-[116px]">
-            {asset.percent_change_24h < 0 ? (
+            {percentChange < 0 ? (
               <div className="flex items-center gap-1">
                 <RiArrowDownLine size={14} className="text-[var(--color-text-danger)]" />
                 <span className="font-mono text-xs tracking-wider text-[var(--color-text-danger)]">
-                  {formatPercent(Math.abs(asset.percent_change_24h))}%
+                  {formatPercent(Math.abs(percentChange))}%
                 </span>
               </div>
             ) : (
               <div className="flex items-center gap-1">
                 <RiArrowUpLine size={14} className="text-[var(--color-text-success)]" />
                 <span className="font-mono text-xs tracking-wider text-[var(--color-text-success)]">
-                  {formatPercent(asset.percent_change_24h)}%
+                  {formatPercent(percentChange)}%
                 </span>
               </div>
             )}
@@ -129,27 +137,27 @@ export function ExpandableAsset({ asset }: ExpandableAssetProps) {
 
         <div className="flex w-[336px] items-baseline gap-4 shrink-0 justify-between">
           <span className="truncate w-[160px] text-right text-sm font-semibold tracking-tight text-[var(--color-text-primary)]">
-            {asset.totalTokens.toLocaleString(undefined, { maximumFractionDigits: 6 })}
+            {totalTokens.toLocaleString(undefined, { maximumFractionDigits: 6 })}
           </span>
           <div className="flex items-baseline gap-2 w-[160px]">
             <div className="flex items-baseline">
               <span className="text-sm font-light tracking-tight text-[var(--color-text-primary)]">
-                ${formatDollars(asset.USD)}
+                ${formatDollars(usdValue)}
               </span>
               <span className="text-xs font-thin tracking-tight text-[var(--color-text-muted)]">
-                .{formatCents(asset.USD)}
+                .{formatCents(usdValue)}
               </span>
             </div>
-            {asset.percentageShareInUSD && (
+            {asset.percentageShareInUSD ? (
               <span className="text-xs font-thin tracking-tight text-[var(--color-text-muted)]">
                 {formatPercent(asset.percentageShareInUSD)}%
               </span>
-            )}
+            ) : null}
           </div>
         </div>
 
         <div className="flex w-[146px] items-center gap-4 shrink-0">
-          {renderWalletTypeCounts(asset.wallets, hovered)}
+          {renderWalletTypeCounts(wallets, hovered)}
           <motion.div
             animate={{ rotate: expanded ? 180 : 0 }}
             transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
@@ -161,7 +169,7 @@ export function ExpandableAsset({ asset }: ExpandableAssetProps) {
       </div>
 
       <AnimatePresence>
-        {expanded && <AssetBreakdown wallets={asset.wallets} />}
+        {expanded && <AssetBreakdown wallets={wallets} />}
       </AnimatePresence>
     </motion.div>
   );
