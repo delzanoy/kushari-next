@@ -115,27 +115,31 @@ export function AssetListClient({
       ).values()
     );
 
-    uniqueAssets = uniqueAssets.sort((a, b) =>
-      a.name.localeCompare(b.name)
-    );
+    uniqueAssets = uniqueAssets.sort((a, b) => {
+      const nameA = a.name || a.fullName || a.symbol || "";
+      const nameB = b.name || b.fullName || b.symbol || "";
+      return nameA.localeCompare(nameB);
+    });
 
     return uniqueAssets.map((asset) => ({
-      value: asset.symbol,
-      label: asset.fullName,
-      description: asset.symbol,
-      icon: <i className={`cf cf-${asset.symbol} text-lg`} />,
+      value: asset.symbol || String(asset.assetId || ""),
+      label: asset.fullName || asset.name || asset.symbol || "",
+      description: asset.symbol || "",
+      icon: <i className={`cf cf-${(asset.symbol || "").toLowerCase()} text-lg`} />,
     }));
   }, [assetsForTokenOptions]);
 
   const walletOptions = useMemo(() => {
-    const allWallets = assetsForWalletOptions.flatMap((asset) => asset.wallets);
+    const allWallets = assetsForWalletOptions.flatMap((asset) => asset.wallets || []);
     let uniqueWallets = Array.from(
       new Map(allWallets.map((wallet) => [wallet.walletId, wallet])).values()
     );
 
-    uniqueWallets = uniqueWallets.sort((a, b) =>
-      a.name.localeCompare(b.name)
-    );
+    uniqueWallets = uniqueWallets.sort((a, b) => {
+      const nameA = a.name || `Wallet ${a.walletId}`;
+      const nameB = b.name || `Wallet ${b.walletId}`;
+      return nameA.localeCompare(nameB);
+    });
 
     return uniqueWallets.map((wallet) => ({
       value: wallet.walletId.toString(),
@@ -182,7 +186,7 @@ export function AssetListClient({
     );
 
     uniqueBlockchains = uniqueBlockchains.sort((a, b) =>
-      a.toLowerCase().localeCompare(b.toLowerCase())
+      (a || "").toLowerCase().localeCompare((b || "").toLowerCase())
     );
 
     return uniqueBlockchains.map((blockchain) => ({
