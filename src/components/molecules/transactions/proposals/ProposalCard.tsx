@@ -24,6 +24,7 @@ import { Tooltip } from "@/components/atoms/Tooltip";
 import { TertiaryButton } from "@/components/atoms/TertiaryButton";
 import { IconButton } from "@/components/atoms/IconButton";
 import { Avatar } from "@/components/atoms/Avatar";
+import { formatDollars, formatCents } from "@/lib/formatters";
 import { Button } from "@/components/atoms/Button";
 
 interface Props {
@@ -409,12 +410,24 @@ export default function ProposalCard({ proposal, addresses, uniqueClassification
 
                         {/* Outgoing */}
                         <div className="relative flex w-32 shrink-0 flex-col justify-center min-w-0 h-5">
-                            <span className="text-[var(--color-text-primary)] text-sm font-medium tracking-tight truncate leading-tight">
-                                ${(proposal.outgoingUSD ?? (proposal.outTokens && proposal.outUSDPrice ? proposal.outTokens * proposal.outUSDPrice : 0)).toFixed(2)}
-                            </span>
-                            <span className="absolute top-5 left-0 text-[var(--color-text-muted)] text-[10px] font-light tracking-tight truncate leading-none w-full">
-                                {proposal.outTokenSymbol} {proposal.outTokens}
-                            </span>
+                            {(() => {
+                                const val = proposal.outgoingUSD ?? (proposal.outTokens && proposal.outUSDPrice ? proposal.outTokens * proposal.outUSDPrice : 0);
+                                return (
+                                    <>
+                                        <div className="flex items-baseline">
+                                            <span className="text-[var(--color-text-primary)] text-sm font-medium tracking-tight truncate leading-tight">
+                                                ${formatDollars(val)}
+                                            </span>
+                                            <span className="text-[var(--color-text-muted)] text-xs font-normal tracking-tight truncate leading-tight">
+                                                .{formatCents(val)}
+                                            </span>
+                                        </div>
+                                        <span className="absolute top-5 left-0 text-[var(--color-text-muted)] text-[10px] font-light tracking-tight truncate leading-none w-full">
+                                            {proposal.outTokenSymbol} {proposal.outTokens}
+                                        </span>
+                                    </>
+                                );
+                            })()}
                         </div>
 
                         {/* Classification */}
