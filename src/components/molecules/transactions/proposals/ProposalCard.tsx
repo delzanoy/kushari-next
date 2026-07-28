@@ -410,7 +410,7 @@ export default function ProposalCard({ proposal, addresses, uniqueClassification
                         {/* Outgoing */}
                         <div className="relative flex w-32 shrink-0 flex-col justify-center min-w-0 h-5">
                             <span className="text-[var(--color-text-primary)] text-sm font-medium tracking-tight truncate leading-tight">
-                                ${proposal.outgoingUSD?.toFixed(2)}
+                                ${(proposal.outgoingUSD ?? (proposal.outTokens && proposal.outUSDPrice ? proposal.outTokens * proposal.outUSDPrice : 0)).toFixed(2)}
                             </span>
                             <span className="absolute top-5 left-0 text-[var(--color-text-muted)] text-[10px] font-light tracking-tight truncate leading-none w-full">
                                 {proposal.outTokenSymbol} {proposal.outTokens}

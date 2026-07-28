@@ -114,7 +114,7 @@ export default function TransactionHeader({ transaction, addresses, uniqueClassi
                     {transaction.incoming ? (
                         <>
                             <span className="text-[var(--color-text-success)] text-sm font-medium tracking-tight truncate leading-tight">
-                                ${transaction.incomingUSD?.toFixed(2)}
+                                ${(transaction.incomingUSD ?? (transaction.inTokens && transaction.inUSDPrice ? transaction.inTokens * transaction.inUSDPrice : 0)).toFixed(2)}
                             </span>
                             <span className="absolute top-5 left-0 text-[var(--color-text-muted)] text-[10px] font-light tracking-tight truncate leading-none w-full">
                                 {transaction.inTokenSymbol} {transaction.inTokens}
@@ -130,7 +130,7 @@ export default function TransactionHeader({ transaction, addresses, uniqueClassi
                     {transaction.outgoing ? (
                         <>
                             <span className="text-[var(--color-text-primary)] text-sm font-medium tracking-tight truncate leading-tight">
-                                ${transaction.outgoingUSD?.toFixed(2)}
+                                ${(transaction.outgoingUSD ?? (transaction.outTokens && transaction.outUSDPrice ? transaction.outTokens * transaction.outUSDPrice : 0)).toFixed(2)}
                             </span>
                             <span className="absolute top-5 left-0 text-[var(--color-text-muted)] text-[10px] font-light tracking-tight truncate leading-none w-full">
                                 {transaction.outTokenSymbol} {transaction.outTokens}
