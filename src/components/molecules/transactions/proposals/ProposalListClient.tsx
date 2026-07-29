@@ -24,6 +24,7 @@ import {
 interface ProposalListProps {
     proposals: Proposal[];
     addresses: AddressCardProps[];
+    wallets?: any[];
     uniqueClassifications: string[];
     initialSearchQuery?: string;
     initialPage?: number;
@@ -150,6 +151,7 @@ function getProposalCategory(status: ProposalStatus): ProposalCategory {
 export default function ProposalListClient({
     proposals,
     addresses,
+    wallets,
     uniqueClassifications,
     initialSearchQuery = "",
     initialPage = 1,
@@ -741,6 +743,7 @@ export default function ProposalListClient({
                 <ProposalList
                     proposals={paginatedProposals}
                     addresses={addresses}
+                    wallets={wallets}
                     uniqueClassifications={classificationsList}
                     userGroups={userGroups}
                     addressGroups={addressGroups}

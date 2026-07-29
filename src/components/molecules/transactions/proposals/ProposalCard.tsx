@@ -20,6 +20,7 @@ import { RecipientDisplay } from "../RecipientDisplay";
 import { ClassificationDropdown } from "../view-all/ClassificationDropdown";
 import { useModal } from "@/components/molecules/modal/useModal";
 import { Modal } from "@/components/molecules/modal/Modal";
+import ReviewProposalModal from "./modals/ReviewProposalModal";
 import { Tooltip } from "@/components/atoms/Tooltip";
 import { TertiaryButton } from "@/components/atoms/TertiaryButton";
 import { IconButton } from "@/components/atoms/IconButton";
@@ -30,6 +31,7 @@ interface Props {
     proposal: Proposal & { showDate?: boolean; isFirstOfDate?: boolean };
     uniqueClassifications: string[];
     addresses: AddressCardProps[];
+    wallets?: any[];
     userGroups?: any[];
     addressGroups?: Record<number, number[]>;
     onUpdateClassification?: (proposalId: string, newClassification: string) => void;
@@ -82,7 +84,7 @@ const getPresetForUser = (name: string): string => {
     return AVATAR_PRESETS[index];
 };
 
-export default function ProposalCard({ proposal, addresses, uniqueClassifications, userGroups, addressGroups, onUpdateClassification }: Props) {
+export default function ProposalCard({ proposal, addresses, wallets, uniqueClassifications, userGroups, addressGroups, onUpdateClassification }: Props) {
     const [hovered, setHovered] = useState(false);
     const [copied, setCopied] = useState(false);
     const { open, closeTop } = useModal();
@@ -258,97 +260,19 @@ export default function ProposalCard({ proposal, addresses, uniqueClassification
         const isClassificationClick = target.closest("[data-classification]");
 
         if (!isClassificationClick) {
+            const rect = e.currentTarget.getBoundingClientRect();
             open(
-                <Modal onClose={closeTop}>
-                    <div className="flex w-[600px] p-6 flex-col items-start gap-6 rounded-3xl border border-[var(--color-border-subtle)] bg-[var(--color-surface-sunken)] shadow-2xl">
-                        <div className="flex justify-between items-center w-full pb-3 border-b border-[var(--color-border-subtle)]">
-                            <h3 className="text-[var(--color-text-primary)] text-lg font-semibold">Proposal details</h3>
-                        </div>
-
-                        <div className="flex flex-col items-start w-full bg-transparent py-3">
-                            {/* Timeline Steps */}
-                            <div className="flex -mx-4 py-3 items-start gap-4 self-stretch mb-3">
-                                {/* Initiated Step */}
-                                <div className="flex w-40 shrink-0 flex-col items-start gap-1 pl-4">
-                                    <div className="flex w-full items-center gap-1.5 text-[var(--color-text-brand)]">
-                                        <RiCheckboxCircleLine size={16} />
-                                        <span className="text-sm font-medium tracking-tight">Initiated</span>
-                                    </div>
-                                    <div className="flex pl-[22px] flex-col items-start">
-                                        <span className="text-[var(--color-text-primary)] text-xs font-semibold">{initiator}</span>
-                                        <span className="text-[var(--color-text-muted)] text-[10px]">
-                                            {formattedDate}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                {/* Approved Step */}
-                                <div className="flex w-40 shrink-0 flex-col items-start gap-1">
-                                    <div className="flex w-full items-center gap-1.5 text-[var(--color-text-brand)]">
-                                        <RiCheckboxCircleLine size={16} />
-                                        <span className="text-sm font-medium tracking-tight">Approved</span>
-                                    </div>
-                                    <div className="flex pl-[22px] flex-col items-start gap-1">
-                                        <TertiaryButton variant="neutral" hoverVariant="brand" size="sm">Details</TertiaryButton>
-                                        <span className="text-[var(--color-text-muted)] text-[10px]">
-                                            {formattedDate}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                {/* Executed Step */}
-                                <div className="flex w-40 shrink-0 flex-col items-start gap-1">
-                                    <div className="flex w-full items-center gap-1.5 text-[var(--color-text-brand)]">
-                                        <RiCheckboxCircleLine size={16} />
-                                        <span className="text-sm font-medium tracking-tight">Executed</span>
-                                    </div>
-                                    <div className="flex pl-[22px] flex-col items-start">
-                                        <span className="text-[var(--color-text-primary)] text-xs font-semibold">{executer}</span>
-                                        <span className="text-[var(--color-text-muted)] text-[10px]">
-                                            {formattedDate}
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Proposal ID and Explorer Link */}
-                            <div className="flex justify-between items-center self-stretch w-full">
-                                <div className="flex items-center gap-2">
-                                    <span className="text-[var(--color-text-muted)] text-xs font-normal">
-                                        Proposal type
-                                    </span>
-                                    <span className="text-[var(--color-text-primary)] text-xs font-medium">
-                                        On-chain Multisig
-                                    </span>
-                                </div>
-
-                                <div className="flex items-center gap-2">
-                                    <span className="text-[var(--color-text-muted)] text-xs font-normal">Proposal hash</span>
-                                    <Tooltip content="Copy hash">
-                                        <TertiaryButton
-                                            size="sm"
-                                            variant={copied ? "brand" : "neutral"}
-                                            hoverVariant="brand"
-                                            onClick={handleCopyHash}
-                                        >
-                                            {copied ? "Copied!" : proposal.id}
-                                        </TertiaryButton>
-                                    </Tooltip>
-                                    <Tooltip content={`Explore on ${getExplorerName(proposal.blockchain)}`}>
-                                        <IconButton
-                                            icon={<RiExternalLinkLine />}
-                                            size="sm"
-                                            variant="neutral"
-                                            appearance="ghost"
-                                            flat
-                                            aria-label="View on explorer"
-                                            onClick={handleExplorerClick}
-                                        />
-                                    </Tooltip>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <Modal onClose={closeTop} animation="expand" originRect={rect}>
+                    <ReviewProposalModal
+                        proposal={proposal}
+                        addresses={addresses}
+                        wallets={wallets}
+                        uniqueClassifications={uniqueClassifications}
+                        userGroups={userGroups}
+                        addressGroups={addressGroups}
+                        onClose={closeTop}
+                        onUpdateClassification={onUpdateClassification}
+                    />
                 </Modal>
             );
         }

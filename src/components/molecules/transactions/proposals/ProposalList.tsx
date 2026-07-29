@@ -7,6 +7,7 @@ import ProposalCard from "./ProposalCard";
 interface ProposalListProps {
     proposals: (Proposal & { showDate?: boolean; isFirstOfDate?: boolean })[];
     addresses: AddressCardProps[];
+    wallets?: any[];
     uniqueClassifications: string[];
     userGroups?: any[];
     addressGroups?: Record<number, number[]>;
@@ -16,6 +17,7 @@ interface ProposalListProps {
 export default function ProposalList({
     proposals,
     addresses,
+    wallets,
     uniqueClassifications,
     userGroups,
     addressGroups,
@@ -39,6 +41,7 @@ export default function ProposalList({
                     proposal={proposal}
                     uniqueClassifications={uniqueClassifications}
                     addresses={addresses}
+                    wallets={wallets}
                     userGroups={userGroups}
                     addressGroups={addressGroups}
                     onUpdateClassification={onUpdateClassification}

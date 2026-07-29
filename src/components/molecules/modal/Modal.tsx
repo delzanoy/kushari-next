@@ -133,14 +133,16 @@ export const Modal: React.FC<ModalProps> = (props) => {
     const buttonCenterX = originRect.left + originRect.width / 2;
     const offsetX = buttonCenterX - vw / 2;
     const offsetY = originRect.top - 100;
+    const targetWidth = props.width ? (typeof props.width === "number" ? props.width : parseInt(String(props.width)) || 1372) : 1372;
+    const scale = Math.min(1, originRect.width / targetWidth);
     return { 
       x: offsetX, 
       y: offsetY, 
-      scale: originRect.width / 568, 
+      scale, 
       opacity: 0,
       transformOrigin: "top center" 
     };
-  }, [animation, originRect]);
+  }, [animation, originRect, props.width]);
 
   return (
     <ModalContext.Provider value={{ escStage, isTopModal: internalIsTop }}>

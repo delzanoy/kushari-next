@@ -1,4 +1,4 @@
-import { getProposals, getAddresses } from "@/lib/server-data";
+import { getProposals, getAddresses, getWallets } from "@/lib/server-data";
 import { transformApiDataToProposals } from "@/components/molecules/transactions/proposals/utils/transformProposals";
 import ProposalListClient from "@/components/molecules/transactions/proposals/ProposalListClient";
 import { Suspense } from "react";
@@ -12,6 +12,7 @@ export default async function ProposalsPage({ searchParams }: PageProps) {
 
   const rawProposals = await getProposals();
   const addresses = await getAddresses();
+  const wallets = await getWallets().catch(() => []);
 
   const proposals = transformApiDataToProposals(rawProposals);
 
@@ -30,6 +31,7 @@ export default async function ProposalsPage({ searchParams }: PageProps) {
           <ProposalListClient
             proposals={proposals}
             addresses={addresses}
+            wallets={wallets}
             uniqueClassifications={uniqueClassifications}
             initialWalletFilter={walletFilter}
           />

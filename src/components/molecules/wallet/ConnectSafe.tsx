@@ -560,11 +560,21 @@ export default function ConnectSafe({ onClose, members: propMembers = [], onSafe
     };
 
     const getChainIcon = (chain: string) => {
-        switch (chain) {
-            case "polygon": return <PolygonIcon />;
-            case "gnosis": return <GnosisIcon />;
-            case "ethereum": return <EthereumIcon />;
-            default: return null;
+        if (!chain) return null;
+        switch (chain.toLowerCase().trim()) {
+            case "polygon":
+            case "matic":
+                return <PolygonIcon />;
+            case "gnosis":
+            case "gnosis chain":
+            case "gnosis-chain":
+            case "xdai":
+                return <GnosisIcon />;
+            case "ethereum":
+            case "eth":
+                return <EthereumIcon />;
+            default:
+                return null;
         }
     };
 

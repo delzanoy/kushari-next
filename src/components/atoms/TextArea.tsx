@@ -483,6 +483,8 @@ export interface TextAreaProps
   required?: boolean;
   /** Renders "(optional)" label tag — mutually exclusive with required. */
   optional?: boolean;
+  /** Icon node rendered in the leading slot (top-left). */
+  leadingIcon?: React.ReactNode;
   helperText?: string;
   /** Shown instead of helperText when state="error". */
   errorMessage?: string;
@@ -614,6 +616,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
       label,
       required,
       optional,
+      leadingIcon,
       helperText,
       errorMessage,
       warningMessage,
@@ -803,7 +806,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
           }}
           transition={{ duration: 0.15, ease: "easeOut" }}
           className={cn(
-            "relative border bg-[var(--color-input-bg)]",
+            "relative border bg-[var(--color-input-bg)] flex items-start gap-2",
             "transition-[border-color,background-color] duration-150 ease-out",
             PADDING_X[size],
             PADDING_Y[size],
@@ -823,6 +826,23 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
           )}
           onClick={() => !isDisabled && textareaRef.current?.focus()}
         >
+          {/* Leading icon */}
+          {leadingIcon && (
+            <span
+              className={cn(
+                ICON_SIZE[size],
+                "inline-flex items-center justify-center shrink-0 mt-0.5",
+                "[&>svg]:w-full [&>svg]:h-full [&>svg]:block",
+                "transition-colors duration-150",
+                focused
+                  ? "text-[var(--color-icon-brand)]"
+                  : "text-[var(--color-icon-muted)]",
+              )}
+            >
+              {leadingIcon}
+            </span>
+          )}
+
           {/* Native textarea */}
           <textarea
             ref={(node) => {

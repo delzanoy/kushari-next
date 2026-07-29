@@ -101,14 +101,22 @@ export function WalletList({
   const safes = wallets.filter((w) => w.type === 2);
   const tracked = wallets.filter((w) => w.type === 3);
 
-  // Unique chains across all vaults — shown in the section header
-  const vaultChains = Array.from(new Set(
-    vaults.flatMap((w) =>
-      typeof w.blockchain === "string"
-        ? [w.blockchain]
-        : (w.blockchain as BlockchainInfo[]).map((b) => b.blockchain)
+  // Unique chains across all vaults — shown in the Vaults section header
+  const vaultChains = Array.from(
+    new Set(
+      vaults.flatMap((w) =>
+        !w.blockchain
+          ? []
+          : typeof w.blockchain === "string"
+          ? w.blockchain.includes(",")
+            ? w.blockchain.split(",").map((s) => s.trim())
+            : [w.blockchain.trim()]
+          : (w.blockchain as BlockchainInfo[]).map((b) =>
+              typeof b === "string" ? b : b?.blockchain
+            )
+      ).filter(Boolean)
     )
-  ));
+  );
 
   return (
     <div className="flex flex-col gap-10">
