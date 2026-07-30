@@ -40,7 +40,8 @@ const getDaysAgo = (username: string) => {
     return (Math.abs(hash) % 10) + 1;
 };
 
-const getPresetForUser = (username: string) => {
+const getPresetForUser = (username: string, member?: any) => {
+    if (member?.avatarPreset) return member.avatarPreset;
     if (!username) return AVATAR_PRESETS[0];
     let hash = 0;
     for (let i = 0; i < username.length; i++) {
@@ -122,7 +123,7 @@ const ApproverCard = memo(({ member, isCurrentUser, userPreset, userPins, onRemo
         <div className="flex items-center justify-between w-full p-2 hover:bg-white/5 rounded-lg transition-colors cursor-default gap-4" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center gap-[12px] w-[200px] shrink-0">
                 <div className="relative flex items-center justify-center">
-                    <Avatar name={member.name} size="sm" preset={isCurrentUser ? userPreset : getPresetForUser(member.name)} pins={isCurrentUser ? (userPins || undefined) : undefined} />
+                    <Avatar name={member.name} size="sm" preset={isCurrentUser ? userPreset : getPresetForUser(member.name, member)} pins={isCurrentUser ? (userPins || undefined) : undefined} />
                 </div>
                 <div className="flex flex-col items-start gap-[1px] min-w-0">
                     <span className="text-[#F8FCFF] font-[Geist] text-sm not-italic font-semibold leading-[normal] tracking-[0.7px] truncate max-w-full">{member.name}</span>
@@ -367,7 +368,7 @@ const PolicyContent = memo(({ wallet, cryptocurrencies = [], members = [] }: Pol
                                     return (
                                         <div key={member.id} className="flex items-start gap-[12px]">
                                             <div className="relative flex items-center justify-center">
-                                                <Avatar name={member.name} size="sm" preset={isCurrentUser ? userPreset : getPresetForUser(member.name)} pins={isCurrentUser ? (userPins || undefined) : undefined} />
+                                                <Avatar name={member.name} size="sm" preset={isCurrentUser ? userPreset : getPresetForUser(member.name, member)} pins={isCurrentUser ? (userPins || undefined) : undefined} />
                                             </div>
                                             <div className="flex flex-col items-start gap-[1px]">
                                                 <span className="text-[#F8FCFF] font-[Geist] text-sm not-italic font-semibold leading-[normal] tracking-[0.7px]">{member.name}</span>

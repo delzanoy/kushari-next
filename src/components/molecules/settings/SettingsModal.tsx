@@ -371,6 +371,8 @@ interface MemberRowItem {
   status: "Invited" | "Active" | "Suspended" | "Authorisation reset";
   role: string;
   vaults?: string;
+  avatarColor?: string;
+  avatarPreset?: string;
   isCurrentUser?: boolean;
   actions: { label: string; action: string; danger?: boolean }[];
 }
@@ -414,6 +416,7 @@ function MembersTab() {
       status: "Active",
       role: "Approver",
       vaults: "2 MPC vault",
+      avatarPreset: "Cyan Dusk",
       isCurrentUser: true,
       actions: [{ label: "Resume access", action: "resume" }],
     },
@@ -425,6 +428,7 @@ function MembersTab() {
       status: "Suspended",
       role: "Approver",
       vaults: "2 MPC vault, 1 Safe",
+      avatarPreset: "Ember",
       actions: [{ label: "Resume access", action: "resume" }],
     },
     {
@@ -435,6 +439,7 @@ function MembersTab() {
       status: "Authorisation reset",
       role: "Approver",
       vaults: "3 MPC vault",
+      avatarPreset: "Sunset",
       actions: [],
     },
     {
@@ -445,6 +450,7 @@ function MembersTab() {
       status: "Active",
       role: "Approver",
       vaults: "1 MPC vault, 1 Safe",
+      avatarPreset: "Rose Gold",
       actions: [
         { label: "Suspend", action: "suspend", danger: true },
         { label: "Reset authentication", action: "reset_auth" },
@@ -458,6 +464,7 @@ function MembersTab() {
       status: "Active",
       role: "Admin, Approver",
       vaults: "2 MPC vault",
+      avatarPreset: "Deep Sea",
       actions: [
         { label: "Suspend", action: "suspend", danger: true },
         { label: "Reset authentication", action: "reset_auth" },
@@ -467,18 +474,24 @@ function MembersTab() {
 
   useEffect(() => {
     if (apiMembers && apiMembers.length > 0) {
-      const delanoy = apiMembers.find(
-        (m: any) => m.isCurrentUser || m.name === "Delanoy Kunil"
+      setMemberList((prev) =>
+        prev.map((item) => {
+          const apiMatch = apiMembers.find(
+            (m: any) =>
+              (item.name && m.name?.toLowerCase().includes(item.name.split(" ")[0].toLowerCase())) ||
+              (m.email && item.email && m.email.toLowerCase().includes(item.email.split("@")[0].toLowerCase()))
+          );
+          if (apiMatch) {
+            return {
+              ...item,
+              avatarColor: (apiMatch as any).avatarColor || apiMatch.colour,
+              avatarPreset: (apiMatch as any).avatarPreset || item.avatarPreset,
+              isCurrentUser: Boolean((apiMatch as any).isCurrentUser || apiMatch.name === "Delanoy Kunil"),
+            };
+          }
+          return item;
+        })
       );
-      if (delanoy) {
-        setMemberList((prev) =>
-          prev.map((item) =>
-            item.name === "Delanoy Kunil" || item.isCurrentUser
-              ? { ...item, name: delanoy.name, isCurrentUser: true }
-              : item
-          )
-        );
-      }
     }
   }, [apiMembers]);
 
@@ -552,7 +565,7 @@ function MembersTab() {
                   <RiMailLine size={18} />
                 </div>
               ) : (
-                <Avatar name={member.name || member.email} size="md" />
+                <Avatar name={member.name || member.email} size="md" preset={member.avatarPreset} />
               )}
 
               <div className="flex flex-col min-w-0">

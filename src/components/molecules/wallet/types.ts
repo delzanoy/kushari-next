@@ -14,6 +14,8 @@ export interface Member {
   name: string;
   email: string;
   colour: string;
+  avatarColor?: string;
+  avatarPreset?: string;
   isCurrentUser?: boolean;
 }
 
