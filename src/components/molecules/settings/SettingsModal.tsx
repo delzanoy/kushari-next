@@ -22,6 +22,7 @@ import {
   RiMailLine,
   RiNotification3Line,
   RiUser2Line,
+  RiCloseLine,
 } from "@remixicon/react";
 import { useModal } from "@/components/molecules/modal";
 import { useOnboarding } from "@/lib/onboarding";
@@ -378,6 +379,10 @@ function MembersTab() {
   const [search, setSearch] = useState("");
   const { members: apiMembers } = useMembers();
 
+  const [inviteModalOpen, setInviteModalOpen] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState("");
+  const [inviteRole, setInviteRole] = useState("Approver");
+
   const [memberList, setMemberList] = useState<MemberRowItem[]>([
     {
       id: "1",
@@ -460,6 +465,23 @@ function MembersTab() {
     },
   ]);
 
+  useEffect(() => {
+    if (apiMembers && apiMembers.length > 0) {
+      const delanoy = apiMembers.find(
+        (m: any) => m.isCurrentUser || m.name === "Delanoy Kunil"
+      );
+      if (delanoy) {
+        setMemberList((prev) =>
+          prev.map((item) =>
+            item.name === "Delanoy Kunil" || item.isCurrentUser
+              ? { ...item, name: delanoy.name, isCurrentUser: true }
+              : item
+          )
+        );
+      }
+    }
+  }, [apiMembers]);
+
   const handleAction = (id: string, actionType: string) => {
     if (actionType === "withdraw") {
       setMemberList((prev) => prev.filter((m) => m.id !== id));
@@ -474,6 +496,25 @@ function MembersTab() {
     }
   };
 
+  const handleInviteSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inviteEmail.trim()) return;
+    const newMember: MemberRowItem = {
+      id: String(Date.now()),
+      type: "invited",
+      email: inviteEmail.trim(),
+      status: "Invited",
+      role: inviteRole,
+      actions: [
+        { label: "Withdraw", action: "withdraw", danger: true },
+        { label: "Resend", action: "resend" },
+      ],
+    };
+    setMemberList((prev) => [newMember, ...prev]);
+    setInviteEmail("");
+    setInviteModalOpen(false);
+  };
+
   const filteredMembers = memberList.filter((m) => {
     const query = search.toLowerCase();
     return (
@@ -484,12 +525,13 @@ function MembersTab() {
   });
 
   return (
-    <div className="flex flex-col gap-6 h-full overflow-y-auto pr-2">
+    <div className="flex flex-col gap-6 h-full overflow-y-auto pr-2 relative">
       {/* Header Row */}
       <div className="flex items-center justify-between pt-1 pb-2">
         <h1 className="text-3xl font-semibold tracking-tight text-white">Members</h1>
         <button
           type="button"
+          onClick={() => setInviteModalOpen(true)}
           className="px-5 py-2 text-sm font-medium rounded-full bg-[#D5D7E8] text-black hover:bg-white active:scale-95 transition-all cursor-pointer shadow-sm"
         >
           Invite member
@@ -580,6 +622,72 @@ function MembersTab() {
           </div>
         ))}
       </div>
+
+      {/* Invite Member Popup Modal */}
+      <AnimatePresence>
+        {inviteModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="w-[420px] max-w-full rounded-2xl border border-white/10 bg-[#161618] p-6 shadow-2xl flex flex-col gap-4 text-white"
+            >
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold tracking-tight">Invite new member</h3>
+                <button
+                  type="button"
+                  onClick={() => setInviteModalOpen(false)}
+                  className="text-white/60 hover:text-white transition-colors cursor-pointer"
+                >
+                  <RiCloseLine size={20} />
+                </button>
+              </div>
+
+              <form onSubmit={handleInviteSubmit} className="flex flex-col gap-4">
+                <div>
+                  <label className="block text-xs font-medium text-white/70 mb-1.5">Email address</label>
+                  <TextInput
+                    placeholder="name@company.com"
+                    value={inviteEmail}
+                    onChange={(e) => setInviteEmail(e.target.value)}
+                    autoFocus
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-white/70 mb-1.5">Role</label>
+                  <select
+                    value={inviteRole}
+                    onChange={(e) => setInviteRole(e.target.value)}
+                    className="w-full h-10 px-3 rounded-xl bg-white/[0.06] border border-white/[0.08] text-sm text-white focus:outline-none focus:border-cyan-500"
+                  >
+                    <option value="Approver" className="bg-[#161618]">Approver</option>
+                    <option value="Admin" className="bg-[#161618]">Admin</option>
+                    <option value="Viewer" className="bg-[#161618]">Viewer</option>
+                  </select>
+                </div>
+
+                <div className="flex items-center justify-end gap-3 pt-2">
+                  <Button
+                    variant="neutral"
+                    appearance="filled"
+                    size="sm"
+                    flat
+                    type="button"
+                    onClick={() => setInviteModalOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button variant="brand" appearance="filled" size="sm" type="submit">
+                    Send invite
+                  </Button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
