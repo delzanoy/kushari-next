@@ -516,8 +516,8 @@ function MembersTab() {
             key={member.id}
             className="grid grid-cols-12 px-2 py-4 items-center hover:bg-white/[0.02] transition-colors"
           >
-            {/* Col 1: Identity */}
-            <div className="col-span-5 flex items-center gap-3.5 pl-1">
+            {/* Col 1: Identity (Reduced to col-span-4 for action space) */}
+            <div className="col-span-4 flex items-center gap-3 pl-1 min-w-0 pr-2">
               {member.type === "invited" ? (
                 <div className="w-9 h-9 rounded-xl bg-white/[0.06] border border-white/[0.08] flex items-center justify-center shrink-0 text-white/70">
                   <RiMailLine size={18} />
@@ -526,56 +526,56 @@ function MembersTab() {
                 <Avatar name={member.name || member.email} size="md" preset={member.avatarPreset} />
               )}
 
-              <div className="flex flex-col min-w-0">
+              <div className="flex flex-col min-w-0 truncate">
                 {member.name ? (
                   <>
-                    <span className="text-sm font-medium text-white tracking-tight">{member.name}</span>
-                    <span className="text-xs text-[var(--color-text-muted)] font-mono">{member.email}</span>
+                    <span className="text-sm font-medium text-white tracking-tight truncate">{member.name}</span>
+                    <span className="text-xs text-[var(--color-text-muted)] font-mono truncate">{member.email}</span>
                   </>
                 ) : (
-                  <span className="text-sm font-medium text-white/90 font-mono tracking-tight">{member.email}</span>
+                  <span className="text-sm font-medium text-white/90 font-mono tracking-tight truncate">{member.email}</span>
                 )}
               </div>
             </div>
 
-            {/* Col 2: Status Indicator */}
-            <div className="col-span-3 flex items-center gap-2 text-sm font-medium">
+            {/* Col 2: Status Indicator (col-span-2) */}
+            <div className="col-span-2 flex items-center gap-2 text-sm font-medium pr-2">
               {member.status === "Active" && (
                 <>
-                  <span className="w-2 h-2 rounded-full bg-[#26C9C9] shadow-[0_0_8px_rgba(38,201,201,0.6)]" />
-                  <span className="text-white/90">Active</span>
+                  <span className="w-2 h-2 rounded-full bg-[#26C9C9] shadow-[0_0_8px_rgba(38,201,201,0.6)] shrink-0" />
+                  <span className="text-white/90 truncate">Active</span>
                 </>
               )}
               {member.status === "Invited" && (
                 <>
-                  <span className="w-2 h-2 rounded-full bg-white/40" />
-                  <span className="text-white/60">Invited</span>
+                  <span className="w-2 h-2 rounded-full bg-white/40 shrink-0" />
+                  <span className="text-white/60 truncate">Invited</span>
                 </>
               )}
               {member.status === "Suspended" && (
                 <>
-                  <span className="w-2 h-2 rounded-full bg-[#EF4444] shadow-[0_0_8px_rgba(239,68,68,0.5)]" />
-                  <span className="text-white/90">Suspended</span>
+                  <span className="w-2 h-2 rounded-full bg-[#EF4444] shadow-[0_0_8px_rgba(239,68,68,0.5)] shrink-0" />
+                  <span className="text-white/90 truncate">Suspended</span>
                 </>
               )}
               {member.status === "Authorisation reset" && (
                 <>
-                  <span className="w-2 h-2 rounded-full bg-[#F59E0B] shadow-[0_0_8px_rgba(245,158,11,0.5)]" />
-                  <span className="text-white/90">Authorisation reset</span>
+                  <span className="w-2 h-2 rounded-full bg-[#F59E0B] shadow-[0_0_8px_rgba(245,158,11,0.5)] shrink-0" />
+                  <span className="text-white/90 truncate">Authorisation reset</span>
                 </>
               )}
             </div>
 
-            {/* Col 3: Role & Vault Access */}
-            <div className="col-span-2 flex flex-col justify-center">
-              <span className="text-sm font-medium text-white/90">{member.role}</span>
+            {/* Col 3: Role & Vault Access (col-span-2) */}
+            <div className="col-span-2 flex flex-col justify-center min-w-0 pr-2">
+              <span className="text-sm font-medium text-white/90 truncate">{member.role}</span>
               {member.vaults && (
-                <span className="text-xs text-[var(--color-text-muted)] mt-0.5">{member.vaults}</span>
+                <span className="text-xs text-[var(--color-text-muted)] mt-0.5 truncate">{member.vaults}</span>
               )}
             </div>
 
-            {/* Col 4: Action Buttons */}
-            <div className="col-span-2 flex items-center justify-end gap-4 pr-2">
+            {/* Col 4: Action Buttons (Expanded to col-span-4) */}
+            <div className="col-span-4 flex items-center justify-end gap-3.5 pr-2">
               {member.actions.map((act, idx) => (
                 <button
                   key={idx}
