@@ -496,9 +496,9 @@ function MembersTab() {
   });
 
   return (
-    <div className="flex flex-col gap-6 h-full overflow-y-auto pr-2 relative">
-      {/* Header Row */}
-      <div className="flex items-center justify-between pt-1 pb-2">
+    <div className="flex flex-col h-full overflow-hidden relative">
+      {/* Header Row (Fixed at top) */}
+      <div className="flex items-center justify-between pt-1 pb-4 shrink-0">
         <h1 className="text-3xl font-semibold tracking-tight text-white">Members</h1>
         <button
           type="button"
@@ -509,8 +509,8 @@ function MembersTab() {
         </button>
       </div>
 
-      {/* Members List Table */}
-      <div className="flex flex-col border-t border-white/[0.08] divide-y divide-white/[0.08]">
+      {/* Members List Table (Scrollable container) */}
+      <div className="flex-1 min-h-0 overflow-y-auto pr-2 flex flex-col border-t border-white/[0.08] divide-y divide-white/[0.08]">
         {filteredMembers.map((member) => (
           <div
             key={member.id}
