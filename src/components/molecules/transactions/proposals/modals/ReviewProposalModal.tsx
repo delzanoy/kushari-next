@@ -381,10 +381,10 @@ export default function ReviewProposalModal({
 
   const renderWalletIcon = (walletType?: number) => {
     switch (walletType) {
-      case 1: return <RiSafeLine size={18} className="text-[var(--color-icon-secondary)]" />;
-      case 2: return <GnosisSafeIcon size={18} color="var(--color-icon-secondary)" />;
-      case 3: return <RiWalletLine size={18} className="text-[var(--color-icon-secondary)]" />;
-      default: return <GnosisSafeIcon size={18} color="var(--color-icon-secondary)" />;
+      case 1: return <RiSafeLine size={18} className="text-[var(--color-icon-muted)]" />;
+      case 2: return <GnosisSafeIcon size={18} color="var(--color-icon-muted)" className="text-[var(--color-icon-muted)]" />;
+      case 3: return <RiWalletLine size={18} className="text-[var(--color-icon-muted)]" />;
+      default: return <GnosisSafeIcon size={18} color="var(--color-icon-muted)" className="text-[var(--color-icon-muted)]" />;
     }
   };
 
