@@ -385,113 +385,71 @@ function MembersTab() {
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState("Approver");
 
-  const [memberList, setMemberList] = useState<MemberRowItem[]>([
-    {
-      id: "1",
-      type: "invited",
-      email: "d•••••••••@kushari.com",
-      status: "Invited",
-      role: "Approver",
-      actions: [
-        { label: "Withdraw", action: "withdraw", danger: true },
-        { label: "Resend", action: "resend" },
-      ],
-    },
-    {
-      id: "2",
-      type: "invited",
-      email: "r••••••••@kushari.com",
-      status: "Invited",
-      role: "Viewer",
-      actions: [
-        { label: "Withdraw", action: "withdraw", danger: true },
-        { label: "Resend", action: "resend" },
-      ],
-    },
-    {
-      id: "3",
-      type: "member",
-      name: "Delanoy Kunil",
-      email: "d••••••@kushari.com",
-      status: "Active",
-      role: "Approver",
-      vaults: "2 MPC vault",
-      avatarPreset: "Cyan Dusk",
-      isCurrentUser: true,
-      actions: [{ label: "Resume access", action: "resume" }],
-    },
-    {
-      id: "4",
-      type: "member",
-      name: "Elon Musk",
-      email: "e••@x.com",
-      status: "Suspended",
-      role: "Approver",
-      vaults: "2 MPC vault, 1 Safe",
-      avatarPreset: "Ember",
-      actions: [{ label: "Resume access", action: "resume" }],
-    },
-    {
-      id: "5",
-      type: "member",
-      name: "Robert Kiyosaki",
-      email: "r••••••@richdad.com",
-      status: "Authorisation reset",
-      role: "Approver",
-      vaults: "3 MPC vault",
-      avatarPreset: "Sunset",
-      actions: [],
-    },
-    {
-      id: "6",
-      type: "member",
-      name: "Sandeep Nailwal",
-      email: "s••••••@polygon.com",
-      status: "Active",
-      role: "Approver",
-      vaults: "1 MPC vault, 1 Safe",
-      avatarPreset: "Rose Gold",
-      actions: [
-        { label: "Suspend", action: "suspend", danger: true },
-        { label: "Reset authentication", action: "reset_auth" },
-      ],
-    },
-    {
-      id: "7",
-      type: "member",
-      name: "Vitalik Buterin",
-      email: "v••••••@ethereum.org",
-      status: "Active",
-      role: "Admin, Approver",
-      vaults: "2 MPC vault",
-      avatarPreset: "Deep Sea",
-      actions: [
-        { label: "Suspend", action: "suspend", danger: true },
-        { label: "Reset authentication", action: "reset_auth" },
-      ],
-    },
-  ]);
+  const [memberList, setMemberList] = useState<MemberRowItem[]>([]);
 
   useEffect(() => {
     if (apiMembers && apiMembers.length > 0) {
-      setMemberList((prev) =>
-        prev.map((item) => {
-          const apiMatch = apiMembers.find(
-            (m: any) =>
-              (item.name && m.name?.toLowerCase().includes(item.name.split(" ")[0].toLowerCase())) ||
-              (m.email && item.email && m.email.toLowerCase().includes(item.email.split("@")[0].toLowerCase()))
-          );
-          if (apiMatch) {
-            return {
-              ...item,
-              avatarColor: (apiMatch as any).avatarColor || apiMatch.colour,
-              avatarPreset: (apiMatch as any).avatarPreset || item.avatarPreset,
-              isCurrentUser: Boolean((apiMatch as any).isCurrentUser || apiMatch.name === "Delanoy Kunil"),
-            };
-          }
-          return item;
-        })
-      );
+      const mappedApiMembers: MemberRowItem[] = apiMembers.map((m: any) => {
+        const isInvited = m.status === "Invited" || !m.name;
+        if (isInvited) {
+          return {
+            id: String(m.id),
+            type: "invited",
+            email: m.email,
+            status: "Invited",
+            role: m.role || "Approver",
+            actions: [
+              { label: "Withdraw", action: "withdraw", danger: true },
+              { label: "Resend", action: "resend" },
+            ],
+          };
+        }
+
+        const isDelanoy = m.isCurrentUser || m.name === "Delanoy Kunil";
+        let status: MemberRowItem["status"] = m.status || "Active";
+        if (m.name === "Elon Musk") status = "Suspended";
+        if (m.name === "Robert Kiyosaki") status = "Authorisation reset";
+
+        let role = m.role || "Approver";
+        if (m.name === "Vitalik Buterin") role = "Admin, Approver";
+
+        let vaults = m.vaults;
+        if (!vaults) {
+          if (m.name === "Elon Musk") vaults = "2 MPC vault, 1 Safe";
+          else if (m.name === "Robert Kiyosaki") vaults = "3 MPC vault";
+          else if (m.name === "Sandeep Nailwal") vaults = "1 MPC vault, 1 Safe";
+          else vaults = "2 MPC vault";
+        }
+
+        let actions: MemberRowItem["actions"] = [];
+        if (status === "Suspended" || isDelanoy) {
+          actions = [{ label: "Resume access", action: "resume" }];
+        } else if (status === "Active") {
+          actions = [
+            { label: "Suspend", action: "suspend", danger: true },
+            { label: "Reset authentication", action: "reset_auth" },
+          ];
+        }
+
+        return {
+          id: String(m.id),
+          type: "member",
+          name: m.name,
+          email: m.email,
+          status,
+          role,
+          vaults,
+          avatarColor: m.avatarColor || m.colour,
+          avatarPreset: m.avatarPreset,
+          isCurrentUser: isDelanoy,
+          actions,
+        };
+      });
+
+      setMemberList((prev) => {
+        const customInvites = prev.filter((item) => Number(item.id) > 1000);
+        return [...customInvites, ...mappedApiMembers];
+      });
     }
   }, [apiMembers]);
 
