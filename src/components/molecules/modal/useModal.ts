@@ -3,8 +3,14 @@
 import { useContext } from "react";
 import { ModalContext, ModalContextValue } from "./ModalProvider";
 
+const fallbackCtx: ModalContextValue = {
+  open: () => 0,
+  close: () => {},
+  closeTop: () => {},
+  count: 0,
+};
+
 export const useModal = (): ModalContextValue => {
   const ctx = useContext(ModalContext);
-  if (!ctx) throw new Error("useModal must be used within ModalProvider");
-  return ctx;
+  return ctx || fallbackCtx;
 };

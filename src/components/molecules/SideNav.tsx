@@ -42,6 +42,8 @@ import { cn } from "@/lib/utils";
 import { useDemoMode } from "@/lib/demo-mode";
 import { useOnboarding } from "@/lib/onboarding";
 import { useWorkspaces } from "@/hooks/useData";
+import { useModal } from "@/components/molecules/modal";
+import { SettingsModal } from "@/components/molecules/settings/SettingsModal";
 
 // Define a type for API workspaces if needed, or use any for now
 // Since useWorkspaces returns 'data', we'll handle the type in the component.
@@ -286,6 +288,7 @@ function ComingSoonSection({ label }: { label: string }) {
 function UserFooter() {
   const [open, setOpen] = useState(false);
   const { userName, userPreset, userPins } = useOnboarding();
+  const { open: openModal } = useModal();
 
   return (
     <Dropdown open={open} onOpenChange={setOpen}>
@@ -341,6 +344,9 @@ function UserFooter() {
         <DropdownItem icon={<RiUserLine size={15} />}>
           Profile
         </DropdownItem>
+        <DropdownItem icon={<RiSettings6Line size={15} />} onSelect={() => openModal(<SettingsModal />)}>
+          Settings
+        </DropdownItem>
         <DropdownItem icon={<RiLifebuoyLine size={15} />}>
           Help & support
         </DropdownItem>
@@ -391,6 +397,7 @@ export function SideNav({ className }: { className?: string }) {
   const { phase, start: startOnboarding } = useOnboarding();
   const isActive = useIsActive();
   const { workspaces } = useWorkspaces();
+  const { open } = useModal();
 
   useEffect(() => {
     if (demoMode && workspaces && workspaces.length > 0 && workspaceId === 1) {
@@ -437,6 +444,7 @@ export function SideNav({ className }: { className?: string }) {
                 variant="neutral"
                 icon={<RiSettings6Line size={15} />}
                 aria-label="Settings"
+                onClick={() => open(<SettingsModal />)}
               />
             </span>
           </div>
