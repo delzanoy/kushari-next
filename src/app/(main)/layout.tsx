@@ -46,14 +46,14 @@ export default function MainLayout({
         <SWRProvider>
           <DemoModeProvider>
             <OnboardingProvider>
-              <OnboardingShell>
-                <SideNav />
-                <main className="flex-1 h-full overflow-auto">
-                  <ModalProvider>
+              <ModalProvider>
+                <OnboardingShell>
+                  <SideNav />
+                  <main className="flex-1 h-full overflow-auto">
                     {children}
-                  </ModalProvider>
-                </main>
-              </OnboardingShell>
+                  </main>
+                </OnboardingShell>
+              </ModalProvider>
             </OnboardingProvider>
           </DemoModeProvider>
         </SWRProvider>

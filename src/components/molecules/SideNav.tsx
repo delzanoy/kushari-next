@@ -10,6 +10,7 @@ import {
   RiCheckboxCircleLine,
   RiGroupLine,
   RiSettings6Line,
+  RiUserSettingsLine,
   RiMenuLine,
   RiExpandUpDownLine,
   RiPlanetLine,
@@ -41,8 +42,8 @@ import { IconButton } from "@/components/atoms/IconButton";
 import { cn } from "@/lib/utils";
 import { useDemoMode } from "@/lib/demo-mode";
 import { useOnboarding } from "@/lib/onboarding";
-import { useWorkspaces } from "@/hooks/useData";
-import { useModal } from "@/components/molecules/modal";
+import { useWorkspaces, useMembers } from "@/hooks/useData";
+import { useModal, Modal } from "@/components/molecules/modal";
 import { SettingsModal } from "@/components/molecules/settings/SettingsModal";
 
 // Define a type for API workspaces if needed, or use any for now
@@ -288,7 +289,11 @@ function ComingSoonSection({ label }: { label: string }) {
 function UserFooter() {
   const [open, setOpen] = useState(false);
   const { userName, userPreset, userPins } = useOnboarding();
-  const { open: openModal } = useModal();
+  const { open: openModal, closeTop } = useModal();
+  const { members } = useMembers();
+
+  const currentUser = members?.find((m: any) => m.isCurrentUser || m.name === "Delanoy Kunil");
+  const displayName = currentUser?.name || userName || "Delanoy Kunil";
 
   return (
     <Dropdown open={open} onOpenChange={setOpen}>
@@ -311,7 +316,7 @@ function UserFooter() {
 
           <span className="relative z-10 flex w-full items-center gap-[10px] pl-[10px] pr-[8px] py-[9px]">
             <div className="shrink-0">
-              <Avatar name={userName} size="sm" preset={userPreset} pins={userPins || undefined} />
+              <Avatar name={displayName} size="sm" preset={userPreset} pins={userPins || undefined} />
             </div>
 
             <div className="flex-1 min-w-0">
@@ -319,7 +324,7 @@ function UserFooter() {
                 "block font-semibold text-sm leading-none tracking-[0.01em] truncate transition-colors duration-[130ms]",
                 open ? "text-[var(--color-text-primary)]" : "text-[var(--color-text-secondary)] group-hover/footer:text-[var(--color-text-primary)]",
               )}>
-                {userName}
+                {displayName}
               </span>
               <span className={cn(
                 "block text-xs leading-none tracking-[0.02em] mt-[4px] truncate transition-colors duration-[130ms]",
@@ -344,7 +349,16 @@ function UserFooter() {
         <DropdownItem icon={<RiUserLine size={15} />}>
           Profile
         </DropdownItem>
-        <DropdownItem icon={<RiSettings6Line size={15} />} onSelect={() => openModal(<SettingsModal />)}>
+        <DropdownItem
+          icon={<RiUserSettingsLine size={15} />}
+          onSelect={() =>
+            openModal(
+              <Modal onClose={closeTop} animation="slide-up">
+                <SettingsModal onClose={closeTop} />
+              </Modal>
+            )
+          }
+        >
           Settings
         </DropdownItem>
         <DropdownItem icon={<RiLifebuoyLine size={15} />}>
@@ -397,7 +411,7 @@ export function SideNav({ className }: { className?: string }) {
   const { phase, start: startOnboarding } = useOnboarding();
   const isActive = useIsActive();
   const { workspaces } = useWorkspaces();
-  const { open } = useModal();
+  const { open, closeTop } = useModal();
 
   useEffect(() => {
     if (demoMode && workspaces && workspaces.length > 0 && workspaceId === 1) {
@@ -406,6 +420,15 @@ export function SideNav({ className }: { className?: string }) {
       setWorkspaceId(1);
     }
   }, [demoMode, workspaces, workspaceId]);
+
+  const handleOpenSettings = (e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    open(
+      <Modal onClose={closeTop} animation="slide-up">
+        <SettingsModal onClose={closeTop} />
+      </Modal>
+    );
+  };
 
   return (
     // Outer shell: provides the padding so the panel floats inside the layout column
@@ -429,25 +452,24 @@ export function SideNav({ className }: { className?: string }) {
       >
         {/* ── Header: workspace switcher + settings ──────────────────────────── */}
         <motion.div
-          className="flex items-center gap-1.5 px-3 py-3 shrink-0"
+          className="flex items-center justify-between gap-1.5 px-3 py-3 shrink-0"
           animate={{ opacity: phase === "workspace" ? 0 : 1 }}
           transition={{ duration: 0.3, ease: "easeOut" }}
           style={phase === "workspace" ? { pointerEvents: "none" } : undefined}
         >
-          <div className="flex items-center gap-1.5 flex-1 min-w-0">
-            <WorkspaceSwitcher value={workspaceId} onChange={setWorkspaceId} />
-            <span className="shrink-0 opacity-0 group-hover/sidebar:opacity-100 transition-opacity duration-200">
-              <IconButton
-                size="sm"
-                shape="pill"
-                appearance="tonal"
-                variant="neutral"
-                icon={<RiSettings6Line size={15} />}
-                aria-label="Settings"
-                onClick={() => open(<SettingsModal />)}
-              />
-            </span>
-          </div>
+          <WorkspaceSwitcher value={workspaceId} onChange={setWorkspaceId} />
+          <span className="shrink-0 opacity-0 group-hover/sidebar:opacity-100 transition-opacity duration-200">
+            <IconButton
+              size="sm"
+              shape="pill"
+              appearance="tonal"
+              variant="neutral"
+              flat
+              icon={<RiSettings6Line size={15} />}
+              aria-label="Settings"
+              onClick={handleOpenSettings}
+            />
+          </span>
         </motion.div>
 
         {/* ── Nav body ───────────────────────────────────────────────────────── */}

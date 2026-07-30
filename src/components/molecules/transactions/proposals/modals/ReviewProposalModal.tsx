@@ -574,6 +574,9 @@ export default function ReviewProposalModal({
                 <Avatar name={app.name} size="xs" preset={getPresetForUser(app.name)} />
                 <span className="text-sm font-medium text-[var(--color-text-primary)] tracking-tight truncate">
                   {app.name}
+                  {app.name.toLowerCase().includes("delanoy") && (
+                    <span className="text-xs text-[var(--color-text-brand)] font-normal ml-1.5">(You)</span>
+                  )}
                 </span>
               </div>
 

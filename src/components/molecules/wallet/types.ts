@@ -14,6 +14,7 @@ export interface Member {
   name: string;
   email: string;
   colour: string;
+  isCurrentUser?: boolean;
 }
 
 export interface WalletMember {

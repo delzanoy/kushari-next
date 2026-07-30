@@ -89,6 +89,7 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
       className,
       onPointerDown,
       onPointerUp,
+      onClick,
       ...rest
     },
     forwardedRef
@@ -198,6 +199,11 @@ export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
         onPointerUp={handlePointerUp}
         onPointerLeave={handlePointerLeave}
         onPointerCancel={handlePointerCancel}
+        onClick={(e) => {
+          if (!isDisabled) {
+            onClick?.(e);
+          }
+        }}
         onHoverStart={() => {
           if (!isDisabled) {
             hoverRef.current = true;

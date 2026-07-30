@@ -363,7 +363,7 @@ const PolicyContent = memo(({ wallet, cryptocurrencies = [], members = [] }: Pol
                             </div>
                             <div className="flex gap-6 w-full flex-wrap">
                                 {matchingMembers.map((member) => {
-                                    const isCurrentUser = member.name === "Delanoy Kunil" || member.name === userName;
+                                    const isCurrentUser = member.isCurrentUser || member.name === "Delanoy Kunil" || member.name === userName;
                                     return (
                                         <div key={member.id} className="flex items-start gap-[12px]">
                                             <div className="relative flex items-center justify-center">
@@ -456,7 +456,7 @@ const PolicyContent = memo(({ wallet, cryptocurrencies = [], members = [] }: Pol
 
                             <div className="flex flex-col gap-2 w-full">
                                 {activeMatchingMembers.map((member) => {
-                                    const isCurrentUser = member.name === "Delanoy Kunil" || member.name === userName;
+                                    const isCurrentUser = member.isCurrentUser || member.name === "Delanoy Kunil" || member.name === userName;
                                     return (
                                         <ApproverCard key={member.id} member={member} isCurrentUser={isCurrentUser} userPreset={userPreset} userPins={userPins} onRemove={(m: any) => setRemovedApprovers([...removedApprovers, m.id.toString()])} isEditing={editingSection === "approval"} />
                                     )

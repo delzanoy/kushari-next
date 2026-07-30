@@ -21,12 +21,15 @@ import {
   RiShieldUserLine,
   RiMailLine,
   RiNotification3Line,
+  RiUser2Line,
 } from "@remixicon/react";
 import { useModal } from "@/components/molecules/modal";
 import { useOnboarding } from "@/lib/onboarding";
 import { Button } from "@/components/atoms/Button";
 import { Avatar } from "@/components/atoms/Avatar";
 import { TextInput } from "@/components/atoms/TextInput";
+import { SidebarNavGroup, SidebarNavItem } from "@/components/molecules/SidebarNav";
+import { useMembers } from "@/hooks/useData";
 
 export type SettingsTab = "members" | "workspace" | "email" | "others" | "integrations";
 
@@ -131,57 +134,48 @@ export function SettingsModal({
           </div>
 
           {/* Navigation Groups */}
-          <div className="flex flex-col gap-6 overflow-y-auto pr-1">
+          <div className="flex flex-col gap-4 overflow-y-auto pr-1">
             {/* Group 1: WORKSPACE */}
-            <div className="flex flex-col gap-1">
-              <div className="text-[11px] font-mono font-semibold tracking-wider text-[var(--color-text-muted)] uppercase px-3 pb-1.5">
-                Workspace
-              </div>
-              <NavItem
+            <SidebarNavGroup label="Workspace">
+              <SidebarNavItem
                 label="Members"
-                icon={<RiGroupLine size={16} />}
+                icon={<RiUser2Line size={15} />}
                 active={activeTab === "members"}
                 onClick={() => setActiveTab("members")}
               />
-              <NavItem
+              <SidebarNavItem
                 label="Workspace"
-                icon={<RiBuilding4Line size={16} />}
+                icon={<RiBuilding4Line size={15} />}
                 active={activeTab === "workspace"}
                 onClick={() => setActiveTab("workspace")}
               />
-            </div>
+            </SidebarNavGroup>
 
             {/* Group 2: NOTIFICATIONS */}
-            <div className="flex flex-col gap-1">
-              <div className="text-[11px] font-mono font-semibold tracking-wider text-[var(--color-text-muted)] uppercase px-3 pb-1.5">
-                Notifications
-              </div>
-              <NavItem
+            <SidebarNavGroup label="Notifications">
+              <SidebarNavItem
                 label="Email"
-                icon={<RiAtLine size={16} />}
+                icon={<RiAtLine size={15} />}
                 active={activeTab === "email"}
                 onClick={() => setActiveTab("email")}
               />
-              <NavItem
+              <SidebarNavItem
                 label="Others"
-                icon={<RiBellLine size={16} />}
+                icon={<RiBellLine size={15} />}
                 active={activeTab === "others"}
                 onClick={() => setActiveTab("others")}
               />
-            </div>
+            </SidebarNavGroup>
 
             {/* Group 3: CONNECTIONS */}
-            <div className="flex flex-col gap-1">
-              <div className="text-[11px] font-mono font-semibold tracking-wider text-[var(--color-text-muted)] uppercase px-3 pb-1.5">
-                Connections
-              </div>
-              <NavItem
+            <SidebarNavGroup label="Connections">
+              <SidebarNavItem
                 label="Integrations"
-                icon={<RiGridFill size={16} />}
+                icon={<RiGridFill size={15} />}
                 active={activeTab === "integrations"}
                 onClick={() => setActiveTab("integrations")}
               />
-            </div>
+            </SidebarNavGroup>
           </div>
         </div>
 
@@ -366,85 +360,225 @@ function IntegrationCard({
 
 // ─── Tab 2: Members ────────────────────────────────────────────────────────────
 
+// ─── Tab 2: Members ────────────────────────────────────────────────────────────
+
+interface MemberRowItem {
+  id: string;
+  type: "invited" | "member";
+  email: string;
+  name?: string;
+  status: "Invited" | "Active" | "Suspended" | "Authorisation reset";
+  role: string;
+  vaults?: string;
+  isCurrentUser?: boolean;
+  actions: { label: string; action: string; danger?: boolean }[];
+}
+
 function MembersTab() {
   const [search, setSearch] = useState("");
+  const { members: apiMembers } = useMembers();
 
-  const members = [
-    { name: "Alex Rivera", email: "alex@tokenlabs.io", role: "Owner", status: "Active" },
-    { name: "Sarah Chen", email: "sarah@tokenlabs.io", role: "Admin", status: "Active" },
-    { name: "Elena Rostova", email: "elena@tokenlabs.io", role: "Approver", status: "Active" },
-    { name: "Marcus Vance", email: "marcus@tokenlabs.io", role: "Viewer", status: "Invited" },
-  ];
+  const [memberList, setMemberList] = useState<MemberRowItem[]>([
+    {
+      id: "1",
+      type: "invited",
+      email: "d•••••••••@kushari.com",
+      status: "Invited",
+      role: "Approver",
+      actions: [
+        { label: "Withdraw", action: "withdraw", danger: true },
+        { label: "Resend", action: "resend" },
+      ],
+    },
+    {
+      id: "2",
+      type: "invited",
+      email: "r••••••••@kushari.com",
+      status: "Invited",
+      role: "Viewer",
+      actions: [
+        { label: "Withdraw", action: "withdraw", danger: true },
+        { label: "Resend", action: "resend" },
+      ],
+    },
+    {
+      id: "3",
+      type: "member",
+      name: "Delanoy Kunil",
+      email: "d••••••@kushari.com",
+      status: "Active",
+      role: "Approver",
+      vaults: "2 MPC vault",
+      isCurrentUser: true,
+      actions: [{ label: "Resume access", action: "resume" }],
+    },
+    {
+      id: "4",
+      type: "member",
+      name: "Elon Musk",
+      email: "e••@x.com",
+      status: "Suspended",
+      role: "Approver",
+      vaults: "2 MPC vault, 1 Safe",
+      actions: [{ label: "Resume access", action: "resume" }],
+    },
+    {
+      id: "5",
+      type: "member",
+      name: "Robert Kiyosaki",
+      email: "r••••••@richdad.com",
+      status: "Authorisation reset",
+      role: "Approver",
+      vaults: "3 MPC vault",
+      actions: [],
+    },
+    {
+      id: "6",
+      type: "member",
+      name: "Sandeep Nailwal",
+      email: "s••••••@polygon.com",
+      status: "Active",
+      role: "Approver",
+      vaults: "1 MPC vault, 1 Safe",
+      actions: [
+        { label: "Suspend", action: "suspend", danger: true },
+        { label: "Reset authentication", action: "reset_auth" },
+      ],
+    },
+    {
+      id: "7",
+      type: "member",
+      name: "Vitalik Buterin",
+      email: "v••••••@ethereum.org",
+      status: "Active",
+      role: "Admin, Approver",
+      vaults: "2 MPC vault",
+      actions: [
+        { label: "Suspend", action: "suspend", danger: true },
+        { label: "Reset authentication", action: "reset_auth" },
+      ],
+    },
+  ]);
 
-  const filteredMembers = members.filter(
-    (m) =>
-      m.name.toLowerCase().includes(search.toLowerCase()) ||
-      m.email.toLowerCase().includes(search.toLowerCase())
-  );
+  const handleAction = (id: string, actionType: string) => {
+    if (actionType === "withdraw") {
+      setMemberList((prev) => prev.filter((m) => m.id !== id));
+    } else if (actionType === "suspend") {
+      setMemberList((prev) =>
+        prev.map((m) => (m.id === id ? { ...m, status: "Suspended" as const } : m))
+      );
+    } else if (actionType === "resume") {
+      setMemberList((prev) =>
+        prev.map((m) => (m.id === id ? { ...m, status: "Active" as const } : m))
+      );
+    }
+  };
+
+  const filteredMembers = memberList.filter((m) => {
+    const query = search.toLowerCase();
+    return (
+      m.email.toLowerCase().includes(query) ||
+      (m.name && m.name.toLowerCase().includes(query)) ||
+      m.role.toLowerCase().includes(query)
+    );
+  });
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-medium tracking-tight text-white">Members</h1>
-          <p className="text-sm text-[var(--color-text-secondary)] mt-1">
-            Manage team members, roles, and vault approval permissions.
-          </p>
-        </div>
-        <Button variant="brand" appearance="filled" size="sm" className="rounded-full gap-1.5">
-          <RiUserAddLine size={15} />
-          <span>Invite Member</span>
-        </Button>
+    <div className="flex flex-col gap-6 h-full overflow-y-auto pr-2">
+      {/* Header Row */}
+      <div className="flex items-center justify-between pt-1 pb-2">
+        <h1 className="text-3xl font-semibold tracking-tight text-white">Members</h1>
+        <button
+          type="button"
+          className="px-5 py-2 text-sm font-medium rounded-full bg-[#D5D7E8] text-black hover:bg-white active:scale-95 transition-all cursor-pointer shadow-sm"
+        >
+          Invite member
+        </button>
       </div>
 
-      {/* Search Input */}
-      <div className="relative w-72">
-        <TextInput
-          placeholder="Search member..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          leadingIcon={<RiSearchLine size={15} className="text-[var(--color-icon-muted)]" />}
-        />
-      </div>
-
-      {/* Member List */}
-      <div className="border border-white/[0.08] rounded-2xl overflow-hidden bg-white/[0.01]">
-        <div className="grid grid-cols-12 px-5 py-3 border-b border-white/[0.08] text-xs font-mono font-medium text-[var(--color-text-muted)] uppercase">
-          <div className="col-span-5">Member</div>
-          <div className="col-span-4">Role</div>
-          <div className="col-span-3 text-right">Status</div>
-        </div>
-
-        <div className="divide-y divide-white/[0.06]">
-          {filteredMembers.map((member, i) => (
-            <div key={i} className="grid grid-cols-12 px-5 py-3.5 items-center hover:bg-white/[0.03] transition-all">
-              <div className="col-span-5 flex items-center gap-3">
-                <Avatar name={member.name} size="sm" />
-                <div className="flex flex-col min-w-0">
-                  <span className="text-sm font-medium text-white truncate">{member.name}</span>
-                  <span className="text-xs text-[var(--color-text-muted)] truncate">{member.email}</span>
+      {/* Members List Table */}
+      <div className="flex flex-col border-t border-white/[0.08] divide-y divide-white/[0.08]">
+        {filteredMembers.map((member) => (
+          <div
+            key={member.id}
+            className="grid grid-cols-12 px-2 py-4 items-center hover:bg-white/[0.02] transition-colors"
+          >
+            {/* Col 1: Identity */}
+            <div className="col-span-5 flex items-center gap-3.5 pl-1">
+              {member.type === "invited" ? (
+                <div className="w-9 h-9 rounded-xl bg-white/[0.06] border border-white/[0.08] flex items-center justify-center shrink-0 text-white/70">
+                  <RiMailLine size={18} />
                 </div>
-              </div>
-              <div className="col-span-4">
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-white/[0.08] text-white/90 border border-white/[0.08]">
-                  {member.role}
-                </span>
-              </div>
-              <div className="col-span-3 text-right">
-                <span
-                  className={cn(
-                    "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border",
-                    member.status === "Active"
-                      ? "bg-teal-500/10 text-teal-300 border-teal-500/20"
-                      : "bg-amber-500/10 text-amber-300 border-amber-500/20"
-                  )}
-                >
-                  {member.status}
-                </span>
+              ) : (
+                <Avatar name={member.name || member.email} size="md" />
+              )}
+
+              <div className="flex flex-col min-w-0">
+                {member.name ? (
+                  <>
+                    <span className="text-sm font-medium text-white tracking-tight">{member.name}</span>
+                    <span className="text-xs text-[var(--color-text-muted)] font-mono">{member.email}</span>
+                  </>
+                ) : (
+                  <span className="text-sm font-medium text-white/90 font-mono tracking-tight">{member.email}</span>
+                )}
               </div>
             </div>
-          ))}
-        </div>
+
+            {/* Col 2: Status Indicator */}
+            <div className="col-span-3 flex items-center gap-2 text-sm font-medium">
+              {member.status === "Active" && (
+                <>
+                  <span className="w-2 h-2 rounded-full bg-[#26C9C9] shadow-[0_0_8px_rgba(38,201,201,0.6)]" />
+                  <span className="text-white/90">Active</span>
+                </>
+              )}
+              {member.status === "Invited" && (
+                <>
+                  <span className="w-2 h-2 rounded-full bg-white/40" />
+                  <span className="text-white/60">Invited</span>
+                </>
+              )}
+              {member.status === "Suspended" && (
+                <>
+                  <span className="w-2 h-2 rounded-full bg-[#EF4444] shadow-[0_0_8px_rgba(239,68,68,0.5)]" />
+                  <span className="text-white/90">Suspended</span>
+                </>
+              )}
+              {member.status === "Authorisation reset" && (
+                <>
+                  <span className="w-2 h-2 rounded-full bg-[#F59E0B] shadow-[0_0_8px_rgba(245,158,11,0.5)]" />
+                  <span className="text-white/90">Authorisation reset</span>
+                </>
+              )}
+            </div>
+
+            {/* Col 3: Role & Vault Access */}
+            <div className="col-span-2 flex flex-col justify-center">
+              <span className="text-sm font-medium text-white/90">{member.role}</span>
+              {member.vaults && (
+                <span className="text-xs text-[var(--color-text-muted)] mt-0.5">{member.vaults}</span>
+              )}
+            </div>
+
+            {/* Col 4: Action Buttons */}
+            <div className="col-span-2 flex items-center justify-end gap-4 pr-2">
+              {member.actions.map((act, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => handleAction(member.id, act.action)}
+                  className={cn(
+                    "text-xs font-medium transition-all cursor-pointer hover:underline",
+                    act.danger ? "text-[#EF4444] hover:text-red-400" : "text-white/90 hover:text-white"
+                  )}
+                >
+                  {act.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
