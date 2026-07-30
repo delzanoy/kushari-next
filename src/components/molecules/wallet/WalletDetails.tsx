@@ -13,6 +13,7 @@ import { BlockchainIconStack } from "@/components/atoms/BlockchainIconStack";
 import NavTab from "@/components/atoms/NavTab";
 import { Tooltip } from "@/components/atoms/Tooltip";
 import { useModal, Modal } from "@/components/molecules/modal";
+import { useMembers } from "@/hooks/useData";
 
 // Icons
 import { RiQrCodeLine, RiSendPlaneFill, RiArrowRightUpLine, RiSafeLine, RiWalletLine } from "@remixicon/react";
@@ -287,6 +288,10 @@ export default function WalletDetails({
     onWalletChange
 }: WalletDetailsProps) {
     const router = useRouter();
+    const { members: fetchedMembers } = useMembers();
+    const effectiveMembers = useMemo(() => {
+        return members.length > 0 ? members : (fetchedMembers || []);
+    }, [members, fetchedMembers]);
 
     const tabOrder = useMemo(() => getTabOrder(wallet.type), [wallet.type]);
     const searchParams = useSearchParams();
@@ -676,7 +681,7 @@ export default function WalletDetails({
 
                 {activeTab === 'policy' && wallet.type !== 3 && (
                     <div className="w-full">
-                        <PolicyContent wallet={wallet} cryptocurrencies={cryptocurrencies} members={members} />
+                        <PolicyContent wallet={wallet} cryptocurrencies={cryptocurrencies} members={effectiveMembers} />
                     </div>
                 )}
             </div>
