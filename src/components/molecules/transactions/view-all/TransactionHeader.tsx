@@ -55,24 +55,52 @@ export default function TransactionHeader({ transaction, addresses, uniqueClassi
 
 
 
+    const formatDateHeader = (timestamp: number | string | Date): string => {
+        const date = new Date(timestamp);
+        if (isNaN(date.getTime())) return "";
+
+        const today = new Date();
+        const targetStart = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+        const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+
+        const diffInDays = Math.round((todayStart - targetStart) / (1000 * 60 * 60 * 24));
+
+        if (diffInDays === 0) {
+            return "Today";
+        } else if (diffInDays === 1) {
+            return "Yesterday";
+        } else if (diffInDays === 2) {
+            return "2 days ago";
+        } else {
+            return format(date, "MMM d, yyyy");
+        }
+    };
+
     const dateText = (() => {
         const isHoveredOrExpanded = hovered || expanded;
-        if (transaction.showDate) {
-            return isHoveredOrExpanded
-                ? format(new Date(transaction.timestamp), "MMM d, yyyy, h:mm a")
-                : format(new Date(transaction.timestamp), "MMM d, yyyy");
-        } else {
-            return isHoveredOrExpanded
-                ? format(new Date(transaction.timestamp), "h:mm a")
-                : "";
+        const isTopCardOfDate = transaction.showDate ?? (transaction as any).isFirstOfDate ?? (transaction as any).titleTransaction ?? false;
+
+        // Hover or expanded: Always show full date and time no matter what
+        if (isHoveredOrExpanded) {
+            return format(new Date(transaction.timestamp), "MMM d, yyyy, h:mm a");
         }
+
+        // Not hovered: Show relative date header on top transaction card of each date group
+        if (isTopCardOfDate) {
+            return formatDateHeader(transaction.timestamp);
+        }
+
+        return "";
     })();
 
     return (
         <div className="flex flex-col w-full self-stretch py-1">
             {/* Date Row (stably positioned above the columns to keep alignment uniform) */}
             <div className="flex items-center pl-4 select-none min-h-[14px]">
-                <span className="text-[var(--color-text-muted)] text-[10px] font-normal leading-none">
+                <span
+                    className="text-[var(--color-text-muted)] text-[10px] font-normal leading-none transition-colors duration-150"
+                    title={format(new Date(transaction.timestamp), "MMM d, yyyy, h:mm a")}
+                >
                     {dateText}
                 </span>
             </div>

@@ -204,17 +204,42 @@ export default function ProposalCard({ proposal, addresses, wallets, uniqueClass
         proposal.status === ProposalStatus.FAILED_REJECTED ||
         proposal.status === ProposalStatus.DECLINED);
 
+    const formatDateHeader = (timestamp: number | string | Date): string => {
+        const date = new Date(timestamp);
+        if (isNaN(date.getTime())) return "";
+
+        const today = new Date();
+        const targetStart = new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+        const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+
+        const diffInDays = Math.round((todayStart - targetStart) / (1000 * 60 * 60 * 24));
+
+        if (diffInDays === 0) {
+            return "Today";
+        } else if (diffInDays === 1) {
+            return "Yesterday";
+        } else if (diffInDays === 2) {
+            return "2 days ago";
+        } else {
+            return format(date, "MMM d, yyyy");
+        }
+    };
+
     const dateText = (() => {
         const isHovered = hovered;
-        if (proposal.showDate) {
-            return isHovered
-                ? format(new Date(proposal.timestamp), "MMM d, yyyy, h:mm a")
-                : format(new Date(proposal.timestamp), "MMM d, yyyy");
-        } else {
-            return isHovered
-                ? format(new Date(proposal.timestamp), "h:mm a")
-                : "";
+        const isTopCardOfDate = proposal.showDate ?? (proposal as any).isFirstOfDate ?? (proposal as any).titleTransaction ?? false;
+
+        // Hover: Always show full date and time no matter what
+        if (isHovered) {
+            return format(new Date(proposal.timestamp), "MMM d, yyyy, h:mm a");
         }
+
+        // Not hovered: Show relative date header on top proposal card of each date group
+        if (isTopCardOfDate) {
+            return formatDateHeader(proposal.timestamp);
+        }
+
+        return "";
     })();
 
     const getStatusStyle = () => {
@@ -292,7 +317,10 @@ export default function ProposalCard({ proposal, addresses, wallets, uniqueClass
                 <div className="flex flex-col w-full self-stretch py-1">
                     {/* Date Row */}
                     <div className="flex items-center pl-4 select-none min-h-[14px]">
-                        <span className="text-[var(--color-text-muted)] text-[10px] font-normal leading-none">
+                        <span
+                            className="text-[var(--color-text-muted)] text-[10px] font-normal leading-none transition-colors duration-150"
+                            title={format(new Date(proposal.timestamp), "MMM d, yyyy, h:mm a")}
+                        >
                             {dateText}
                         </span>
                     </div>

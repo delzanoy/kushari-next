@@ -345,16 +345,25 @@ export default function WalletDetails({
     }, [transformedProposals]);
 
     const filteredProposals = useMemo(() => {
+        let proposalsList = transformedProposals;
         if (activeProposalFilter === ProposalCategory.NEEDS_APPROVAL) {
-            return transformedProposals.filter(p => p.status === ProposalStatus.ACTION_REQUIRED);
+            proposalsList = transformedProposals.filter(p => p.status === ProposalStatus.ACTION_REQUIRED);
+        } else if (activeProposalFilter === ProposalCategory.READY_TO_EXECUTE) {
+            proposalsList = transformedProposals.filter(p => p.status === ProposalStatus.FAILED || p.status === ProposalStatus.READY);
+        } else if (activeProposalFilter === ProposalCategory.DISCARDED) {
+            proposalsList = transformedProposals.filter(p => p.status === ProposalStatus.FAILED_REJECTED || p.status === ProposalStatus.DECLINED);
         }
-        if (activeProposalFilter === ProposalCategory.READY_TO_EXECUTE) {
-            return transformedProposals.filter(p => p.status === ProposalStatus.FAILED || p.status === ProposalStatus.READY);
-        }
-        if (activeProposalFilter === ProposalCategory.DISCARDED) {
-            return transformedProposals.filter(p => p.status === ProposalStatus.FAILED_REJECTED || p.status === ProposalStatus.DECLINED);
-        }
-        return transformedProposals;
+
+        return proposalsList.map((proposal, index, array) => {
+            const currentDate = new Date(proposal.timestamp).toDateString();
+            const prevDate = index > 0 ? new Date(array[index - 1].timestamp).toDateString() : null;
+            const isFirstOfDate = index === 0 || currentDate !== prevDate;
+            return {
+                ...proposal,
+                showDate: isFirstOfDate,
+                isFirstOfDate
+            };
+        });
     }, [transformedProposals, activeProposalFilter]);
 
     const memoizedTransformedTransactions = useMemo(() => {

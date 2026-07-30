@@ -546,7 +546,19 @@ export default function ProposalListClient({
     const totalPages = Math.ceil(filteredProposals.length / ITEMS_PER_PAGE);
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
     const endIndex = startIndex + ITEMS_PER_PAGE;
-    const paginatedProposals = filteredProposals.slice(startIndex, endIndex);
+    const paginatedProposals = useMemo(() => {
+        const sliced = filteredProposals.slice(startIndex, endIndex);
+        return sliced.map((prop, index, arr) => {
+            const currentDate = new Date(prop.timestamp).toDateString();
+            const prevDate = index > 0 ? new Date(arr[index - 1].timestamp).toDateString() : null;
+            const isFirstOfDate = index === 0 || currentDate !== prevDate;
+            return {
+                ...prop,
+                showDate: isFirstOfDate,
+                isFirstOfDate
+            };
+        });
+    }, [filteredProposals, startIndex, endIndex]);
 
     useEffect(() => {
         if (currentPage > totalPages && totalPages > 0) {

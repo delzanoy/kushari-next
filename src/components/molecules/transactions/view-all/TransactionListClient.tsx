@@ -284,7 +284,19 @@ export default function TransactionListClient({
     const totalPages = Math.ceil(transactionsWithDateInfo.length / ITEMS_PER_PAGE);
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
     const endIndex = startIndex + ITEMS_PER_PAGE;
-    const paginatedTransactions = transactionsWithDateInfo.slice(startIndex, endIndex);
+    const paginatedTransactions = useMemo(() => {
+        const sliced = transactionsWithDateInfo.slice(startIndex, endIndex);
+        return sliced.map((tx, index, arr) => {
+            const currentDate = new Date(tx.timestamp).toDateString();
+            const prevDate = index > 0 ? new Date(arr[index - 1].timestamp).toDateString() : null;
+            const isFirstOfDate = index === 0 || currentDate !== prevDate;
+            return {
+                ...tx,
+                showDate: isFirstOfDate,
+                isFirstOfDate
+            };
+        });
+    }, [transactionsWithDateInfo, startIndex, endIndex]);
 
     useEffect(() => {
         if (currentPage > totalPages && totalPages > 0) {
