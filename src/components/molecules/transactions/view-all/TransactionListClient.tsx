@@ -112,7 +112,7 @@ export default function TransactionListClient({
 
     const filterFields = useMemo<FilterField[]>(() => {
         const uniqueWallets = Array.from(new Map(txList.map(tx => [tx.wallet, { id: tx.walletId, name: tx.wallet, type: tx.walletType }])).values());
-        uniqueWallets.sort((a, b) => a.name.localeCompare(b.name));
+        uniqueWallets.sort((a, b) => (a?.name || '').localeCompare(b?.name || ''));
         const walletOptions = uniqueWallets.map(w => ({
             id: w.id?.toString() || w.name,
             value: w.id?.toString() || w.name,

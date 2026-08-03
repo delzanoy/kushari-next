@@ -220,13 +220,13 @@ const PolicyContent = memo(({ wallet, cryptocurrencies = [], members = [] }: Pol
 
     const filteredOptions = useMemo(() => {
         const query = searchQuery.toLowerCase().trim();
-        const baseOptions = [...members];
-        baseOptions.sort((a, b) => a.name.localeCompare(b.name));
+        const baseOptions = members ? members.filter((m): m is Member => Boolean(m && typeof m === 'object')) : [];
+        baseOptions.sort((a, b) => (a?.name || '').localeCompare(b?.name || ''));
 
         if (!query) return baseOptions;
         return baseOptions.filter(member =>
-            member.name.toLowerCase().includes(query) ||
-            (member.email || "").toLowerCase().includes(query)
+            (member?.name || '').toLowerCase().includes(query) ||
+            (member?.email || "").toLowerCase().includes(query)
         );
     }, [members, searchQuery]);
 

@@ -351,13 +351,14 @@ function UserFooter() {
         </DropdownItem>
         <DropdownItem
           icon={<RiUserSettingsLine size={15} />}
-          onSelect={() =>
+          onSelect={(e?: React.MouseEvent) => {
+            const rect = (e?.target as HTMLElement)?.getBoundingClientRect() || (e?.currentTarget as HTMLElement)?.getBoundingClientRect();
             openModal(
-              <Modal onClose={closeTop} animation="slide-up">
-                <SettingsModal onClose={closeTop} />
+              <Modal onClose={closeTop} animation={rect ? "expand" : "slide-up"} originRect={rect}>
+                <SettingsModal initialTab="members" onClose={closeTop} />
               </Modal>
-            )
-          }
+            );
+          }}
         >
           Settings
         </DropdownItem>
@@ -423,9 +424,10 @@ export function SideNav({ className }: { className?: string }) {
 
   const handleOpenSettings = (e?: React.MouseEvent) => {
     e?.stopPropagation();
+    const rect = e?.currentTarget?.getBoundingClientRect();
     open(
-      <Modal onClose={closeTop} animation="slide-up">
-        <SettingsModal onClose={closeTop} />
+      <Modal onClose={closeTop} animation={rect ? "expand" : "slide-up"} originRect={rect}>
+        <SettingsModal initialTab="members" onClose={closeTop} />
       </Modal>
     );
   };

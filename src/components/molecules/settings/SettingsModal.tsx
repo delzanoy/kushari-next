@@ -29,6 +29,15 @@ import { useOnboarding } from "@/lib/onboarding";
 import { Button } from "@/components/atoms/Button";
 import { Avatar } from "@/components/atoms/Avatar";
 import { TextInput } from "@/components/atoms/TextInput";
+import { Toggle } from "@/components/atoms/Toggle";
+import {
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem,
+  DropdownSearch,
+} from "@/components/atoms/Dropdown";
+import { Checkbox } from "@/components/atoms/Checkbox";
 import { SidebarNavGroup, SidebarNavItem } from "@/components/molecules/SidebarNav";
 import { useMembers } from "@/hooks/useData";
 
@@ -56,7 +65,7 @@ function ZapierIcon({ size = 26, className = "" }: { size?: number; className?: 
 }
 
 export function SettingsModal({
-  initialTab = "integrations",
+  initialTab = "members",
   onClose,
 }: {
   initialTab?: SettingsTab;
@@ -102,10 +111,6 @@ export function SettingsModal({
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.97, y: 8 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.97, y: 8 }}
-      transition={{ type: "spring", stiffness: 320, damping: 28 }}
       className="relative flex flex-col w-[1372px] max-w-[calc(100vw-32px)] h-[840px] max-h-[calc(100vh-32px)] rounded-[28px] border border-[var(--color-border-subtle)] bg-[var(--color-surface-sunken)] backdrop-blur-2xl text-white shadow-2xl overflow-hidden outline-none select-none"
     >
       {/* ── Top Left Header Bar: Workspace back button ─────────────────── */}
@@ -123,7 +128,7 @@ export function SettingsModal({
       {/* ── Main Layout: Left Navigation + Right Content Pane ──────────── */}
       <div className="flex flex-1 min-h-0 w-full px-6 pb-6 gap-8 pt-2">
         {/* ── Left Sidebar Navigation ────────────────────────────────────── */}
-        <div className="w-[240px] shrink-0 border-r border-white/[0.06] pr-6 flex flex-col gap-6">
+        <div className="w-[240px] shrink-0 border-r border-white/[0.06] pr-4 flex flex-col gap-6">
           {/* Workspace Title Header */}
           <div className="flex items-center gap-2.5 pb-4 border-b border-white/[0.08]">
             <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-cyan-500/20 to-teal-400/30 flex items-center justify-center border border-teal-500/30 shrink-0">
@@ -135,7 +140,7 @@ export function SettingsModal({
           </div>
 
           {/* Navigation Groups */}
-          <div className="flex flex-col gap-4 overflow-y-auto pr-1">
+          <div className="flex flex-col gap-4 overflow-y-auto px-1 py-1">
             {/* Group 1: WORKSPACE */}
             <SidebarNavGroup label="Workspace">
               <SidebarNavItem
@@ -181,7 +186,7 @@ export function SettingsModal({
         </div>
 
         {/* ── Right Content Pane ─────────────────────────────────────────── */}
-        <div className="flex-1 min-h-0 overflow-y-auto pr-2 pt-1">
+        <div className="flex-1 min-h-0 overflow-y-auto px-4 pt-1 pb-4">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
@@ -199,12 +204,7 @@ export function SettingsModal({
               )}
               {activeTab === "members" && <MembersTab />}
               {activeTab === "workspace" && <WorkspaceTab />}
-              {activeTab === "email" && (
-                <EmailTab
-                  notifications={notifications}
-                  onToggle={toggleNotification}
-                />
-              )}
+              {activeTab === "email" && <EmailTab />}
               {activeTab === "others" && (
                 <OthersTab
                   notifications={notifications}
@@ -628,15 +628,20 @@ function MembersTab() {
 
                 <div>
                   <label className="block text-xs font-medium text-white/70 mb-1.5">Role</label>
-                  <select
-                    value={inviteRole}
-                    onChange={(e) => setInviteRole(e.target.value)}
-                    className="w-full h-10 px-3 rounded-xl bg-white/[0.06] border border-white/[0.08] text-sm text-white focus:outline-none focus:border-cyan-500"
-                  >
-                    <option value="Approver" className="bg-[#161618]">Approver</option>
-                    <option value="Admin" className="bg-[#161618]">Admin</option>
-                    <option value="Viewer" className="bg-[#161618]">Viewer</option>
-                  </select>
+                  <Dropdown>
+                    <DropdownTrigger placeholder="Select role" label={inviteRole} />
+                    <DropdownMenu minWidth={200}>
+                      <DropdownItem selected={inviteRole === "Approver"} onSelect={() => setInviteRole("Approver")}>
+                        Approver
+                      </DropdownItem>
+                      <DropdownItem selected={inviteRole === "Admin"} onSelect={() => setInviteRole("Admin")}>
+                        Admin
+                      </DropdownItem>
+                      <DropdownItem selected={inviteRole === "Viewer"} onSelect={() => setInviteRole("Viewer")}>
+                        Viewer
+                      </DropdownItem>
+                    </DropdownMenu>
+                  </Dropdown>
                 </div>
 
                 <div className="flex items-center justify-end gap-3 pt-2">
@@ -665,66 +670,186 @@ function MembersTab() {
 
 // ─── Tab 3: Workspace ──────────────────────────────────────────────────────────
 
+const CURRENCY_LIST = [
+  { code: "USD", symbol: "$", name: "US Dollar" },
+  { code: "EUR", symbol: "€", name: "Euro" },
+  { code: "GBP", symbol: "£", name: "British Pound" },
+  { code: "JPY", symbol: "¥", name: "Japanese Yen" },
+  { code: "CAD", symbol: "$", name: "Canadian Dollar" },
+  { code: "AUD", symbol: "$", name: "Australian Dollar" },
+  { code: "CHF", symbol: "Fr", name: "Swiss Franc" },
+  { code: "CNY", symbol: "¥", name: "Chinese Yuan" },
+  { code: "SGD", symbol: "$", name: "Singapore Dollar" },
+  { code: "HKD", symbol: "$", name: "Hong Kong Dollar" },
+  { code: "INR", symbol: "₹", name: "Indian Rupee" },
+  { code: "BRL", symbol: "R$", name: "Brazilian Real" },
+  { code: "BTC", symbol: "₿", name: "Bitcoin" },
+  { code: "ETH", symbol: "Ξ", name: "Ethereum" },
+  { code: "SOL", symbol: "◎", name: "Solana" },
+  { code: "USDC", symbol: "$", name: "USD Coin" },
+  { code: "USDT", symbol: "$", name: "Tether" },
+];
+
+const COMPANY_TYPES = [
+  { id: "DAO", label: "DAO" },
+  { id: "LLC", label: "LLC" },
+  { id: "C-Corp", label: "C-Corp" },
+  { id: "S-Corp", label: "S-Corp" },
+  { id: "Venture Fund", label: "Venture Fund" },
+  { id: "Non-Profit", label: "Non-Profit" },
+  { id: "Sole Proprietorship", label: "Sole Proprietorship" },
+  { id: "Other", label: "Other" },
+];
+
 function WorkspaceTab() {
   const { workspaceName, setWorkspaceName } = useOnboarding();
+
+  const [companyName, setCompanyName] = useState("Acme Inc.");
+  const [sameAsCompany, setSameAsCompany] = useState(false);
   const [name, setName] = useState(workspaceName || "Acme co.");
+  const [companyType, setCompanyType] = useState("DAO");
+  const [currency, setCurrency] = useState("USD");
+  const [currencySearch, setCurrencySearch] = useState("");
   const [saved, setSaved] = useState(false);
 
+  const handleCompanyNameChange = (val: string) => {
+    setCompanyName(val);
+    if (sameAsCompany) {
+      setName(val);
+    }
+  };
+
+  const handleSameAsCompanyToggle = (checked: boolean) => {
+    setSameAsCompany(checked);
+    if (checked) {
+      setName(companyName);
+    }
+  };
+
   const handleSave = () => {
-    if (name.trim()) {
-      setWorkspaceName(name.trim());
+    const finalName = sameAsCompany ? companyName : name;
+    if (finalName.trim()) {
+      setWorkspaceName(finalName.trim());
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
     }
   };
 
+  const selectedCurrencyObj =
+    CURRENCY_LIST.find((c) => c.code === currency) || CURRENCY_LIST[0];
+
+  const selectedCompanyTypeObj =
+    COMPANY_TYPES.find((ct) => ct.id === companyType) || COMPANY_TYPES[0];
+
+  const filteredCurrencies = CURRENCY_LIST.filter((c) => {
+    const q = currencySearch.toLowerCase().trim();
+    return (
+      c.code.toLowerCase().includes(q) ||
+      c.name.toLowerCase().includes(q) ||
+      c.symbol.toLowerCase().includes(q)
+    );
+  });
+
   return (
-    <div className="flex flex-col gap-6 max-w-2xl">
+    <div className="flex flex-col gap-6 w-full max-w-2xl pb-6">
       <div>
         <h1 className="text-3xl font-medium tracking-tight text-white">Workspace</h1>
-        <p className="text-sm text-[var(--color-text-secondary)] mt-1">
-          Configure general workspace branding, threshold policies, and regional settings.
-        </p>
       </div>
 
-      <div className="border border-white/[0.08] bg-white/[0.02] rounded-2xl p-6 flex flex-col gap-5">
+      <div className="flex flex-col gap-5">
+        {/* Company name - Text Input */}
+        <TextInput
+          fullWidth
+          label="Company name"
+          placeholder="Enter company name"
+          value={companyName}
+          onChange={(e) => handleCompanyNameChange(e.target.value)}
+        />
+
+        {/* Workspace name - Text Input with Helper Text & Checkbox */}
         <div className="flex flex-col gap-2">
-          <label className="text-xs font-medium text-[var(--color-text-secondary)]">
-            Workspace Name
-          </label>
           <TextInput
+            fullWidth
+            label="Workspace name"
             placeholder="Workspace name"
-            value={name}
+            value={sameAsCompany ? companyName : name}
+            disabled={sameAsCompany}
             onChange={(e) => setName(e.target.value)}
+            helperText="Visible to you and invited members of this workspace."
           />
+          <div className="pt-0.5">
+            <Checkbox
+              label="Same as company name"
+              checked={sameAsCompany}
+              onChange={(e) => handleSameAsCompanyToggle(e.target.checked)}
+            />
+          </div>
         </div>
 
-        <div className="flex flex-col gap-2">
-          <label className="text-xs font-medium text-[var(--color-text-secondary)]">
-            Default Base Currency
-          </label>
-          <select className="w-full bg-white/[0.06] border border-white/[0.1] rounded-xl px-3.5 py-2 text-sm text-white outline-none focus:border-[var(--color-border-brand)]">
-            <option value="USD" className="bg-neutral-900 text-white">USD ($) - US Dollar</option>
-            <option value="EUR" className="bg-neutral-900 text-white">EUR (€) - Euro</option>
-            <option value="GBP" className="bg-neutral-900 text-white">GBP (£) - British Pound</option>
-            <option value="BTC" className="bg-neutral-900 text-white">BTC (₿) - Bitcoin</option>
-          </select>
-        </div>
+        {/* Company type - Dropdown */}
+        <Dropdown label="Company type">
+          <DropdownTrigger
+            placeholder="Select company type"
+            label={selectedCompanyTypeObj.label}
+          />
+          <DropdownMenu minWidth="100%">
+            {COMPANY_TYPES.map((type) => (
+              <DropdownItem
+                key={type.id}
+                selected={companyType === type.id}
+                onSelect={() => setCompanyType(type.id)}
+              >
+                {type.label}
+              </DropdownItem>
+            ))}
+          </DropdownMenu>
+        </Dropdown>
 
-        <div className="flex flex-col gap-2">
-          <label className="text-xs font-medium text-[var(--color-text-secondary)]">
-            Default Signature Threshold
-          </label>
-          <select className="w-full bg-white/[0.06] border border-white/[0.1] rounded-xl px-3.5 py-2 text-sm text-white outline-none focus:border-[var(--color-border-brand)]">
-            <option value="2-3" className="bg-neutral-900 text-white">2 of 3 signatures required</option>
-            <option value="3-5" className="bg-neutral-900 text-white">3 of 5 signatures required</option>
-            <option value="1-1" className="bg-neutral-900 text-white">1 of 1 single owner</option>
-          </select>
-        </div>
+        {/* Base currency - Dropdown with Search option */}
+        <Dropdown label="Base currency">
+          <DropdownTrigger
+            placeholder="Select base currency"
+            label={`${selectedCurrencyObj.code} (${selectedCurrencyObj.symbol}) - ${selectedCurrencyObj.name}`}
+          />
+          <DropdownMenu minWidth="100%">
+            <DropdownSearch
+              value={currencySearch}
+              onChange={setCurrencySearch}
+              placeholder="Search currency..."
+            />
+            <div className="max-h-56 overflow-y-auto pt-1">
+              {filteredCurrencies.map((c) => (
+                <DropdownItem
+                  key={c.code}
+                  selected={currency === c.code}
+                  onSelect={() => {
+                    setCurrency(c.code);
+                    setCurrencySearch("");
+                  }}
+                >
+                  {c.code} ({c.symbol}) - {c.name}
+                </DropdownItem>
+              ))}
+              {filteredCurrencies.length === 0 && (
+                <div className="px-3 py-2 text-xs text-[var(--color-text-muted)]">
+                  No currencies found
+                </div>
+              )}
+            </div>
+          </DropdownMenu>
+        </Dropdown>
 
-        <div className="pt-4 flex items-center gap-3">
-          <Button variant="brand" appearance="filled" size="sm" onClick={handleSave} className="rounded-full">
-            Save Changes
+        {/* Save changes Button */}
+        <div className="pt-2 flex items-center gap-3">
+          <Button
+            variant="brand"
+            appearance="filled"
+            size="sm"
+            flat
+            onClick={handleSave}
+            className="rounded-full px-6"
+          >
+            Save changes
           </Button>
           {saved && (
             <span className="inline-flex items-center gap-1 text-xs text-teal-400 font-medium animate-fade-in">
@@ -739,47 +864,121 @@ function WorkspaceTab() {
 
 // ─── Tab 4: Email ──────────────────────────────────────────────────────────────
 
-function EmailTab({
-  notifications,
-  onToggle,
-}: {
-  notifications: Record<string, boolean>;
-  onToggle: (id: string) => void;
-}) {
+function EmailTab() {
+  const [enabled, setEnabled] = useState(true);
+  const [allNotifications, setAllNotifications] = useState(false);
+
+  const [items, setItems] = useState<Record<string, boolean>>({
+    transactions: true,
+    mpcWallets: true,
+    gnosisSafe: true,
+    policy: true,
+    members: false,
+    trackedWallets: false,
+  });
+
+  const toggleItem = (key: string) => {
+    setItems((prev) => {
+      const next = { ...prev, [key]: !prev[key] };
+      const allChecked = Object.values(next).every(Boolean);
+      setAllNotifications(allChecked);
+      return next;
+    });
+  };
+
+  const handleAllToggle = () => {
+    const nextVal = !allNotifications;
+    setAllNotifications(nextVal);
+    setItems({
+      transactions: nextVal,
+      mpcWallets: nextVal,
+      gnosisSafe: nextVal,
+      policy: nextVal,
+      members: nextVal,
+      trackedWallets: nextVal,
+    });
+  };
+
   return (
-    <div className="flex flex-col gap-6 max-w-2xl">
+    <div className="flex flex-col gap-6 max-w-2xl pb-6">
       <div>
         <h1 className="text-3xl font-medium tracking-tight text-white">Email Notifications</h1>
-        <p className="text-sm text-[var(--color-text-secondary)] mt-1">
-          Choose which transaction and proposal notifications are delivered to your inbox.
-        </p>
       </div>
 
-      <div className="border border-white/[0.08] bg-white/[0.02] rounded-2xl divide-y divide-white/[0.06] overflow-hidden">
+      <div className="flex flex-col gap-4">
+        {/* Item 1: Enable email notifications - Toggle */}
         <ToggleRow
-          title="Proposal Approvals"
-          description="Receive an instant email alert when a new proposal requires your signature."
-          checked={notifications.proposalApprovals}
-          onChange={() => onToggle("proposalApprovals")}
+          title="Enable email notifications"
+          description="Inform workspace members about activities over email."
+          checked={enabled}
+          onChange={() => setEnabled((v) => !v)}
         />
-        <ToggleRow
-          title="Executed Transactions"
-          description="Receive email notification when a transaction completes execution on-chain."
-          checked={notifications.executedTransactions}
-          onChange={() => onToggle("executedTransactions")}
+
+        {/* Item 2: All notifications - Checkbox */}
+        <CheckboxRow
+          title="All notifications"
+          description="All activity will be notified to all members."
+          checked={allNotifications}
+          disabled={!enabled}
+          onChange={handleAllToggle}
         />
-        <ToggleRow
-          title="Security & Threshold Updates"
-          description="Get notified immediately when vault owners or signature thresholds change."
-          checked={notifications.securityAlerts}
-          onChange={() => onToggle("securityAlerts")}
-        />
-        <ToggleRow
-          title="Weekly Summary Digest"
-          description="Receive a weekly report of wallet balances, spent gas, and activity logs."
-          checked={notifications.weeklyReport}
-          onChange={() => onToggle("weeklyReport")}
-        />
+
+        {/* Grouped Container for remaining items (separator removed) */}
+        <div className="border border-white/[0.08] bg-white/[0.02] rounded-2xl divide-y divide-white/[0.06] overflow-hidden mt-1">
+          <CheckboxRow
+            grouped
+            title="Transactions"
+            description="All transactions will be notified to their approvers."
+            checked={items.transactions}
+            disabled={!enabled}
+            onChange={() => toggleItem("transactions")}
+          />
+
+          <CheckboxRow
+            grouped
+            title="MPC Wallets"
+            description="Activities in an MPC wallet will be notified to their approvers & admin"
+            checked={items.mpcWallets}
+            disabled={!enabled}
+            onChange={() => toggleItem("mpcWallets")}
+          />
+
+          <CheckboxRow
+            grouped
+            title="Gnosis Safe"
+            description="Safe activity will be notified to their signers & admin"
+            checked={items.gnosisSafe}
+            disabled={!enabled}
+            onChange={() => toggleItem("gnosisSafe")}
+          />
+
+          <CheckboxRow
+            grouped
+            title="Policy"
+            description="Any change in MPC vault / Gnosis Safe policy will be notified to approvers."
+            checked={items.policy}
+            disabled={!enabled}
+            onChange={() => toggleItem("policy")}
+          />
+
+          <CheckboxRow
+            grouped
+            title="Members"
+            description="New invitation, suspension will be notified to existing members."
+            checked={items.members}
+            disabled={!enabled}
+            onChange={() => toggleItem("members")}
+          />
+
+          <CheckboxRow
+            grouped
+            title="Tracked wallets"
+            description="Tracked wallet transactions will be notified to all members."
+            checked={items.trackedWallets}
+            disabled={!enabled}
+            onChange={() => toggleItem("trackedWallets")}
+          />
+        </div>
       </div>
     </div>
   );
@@ -795,7 +994,7 @@ function OthersTab({
   onToggle: (id: string) => void;
 }) {
   return (
-    <div className="flex flex-col gap-6 max-w-2xl">
+    <div className="flex flex-col gap-6 max-w-2xl pb-6">
       <div>
         <h1 className="text-3xl font-medium tracking-tight text-white">Other Preferences</h1>
         <p className="text-sm text-[var(--color-text-secondary)] mt-1">
@@ -803,7 +1002,8 @@ function OthersTab({
         </p>
       </div>
 
-      <div className="border border-white/[0.08] bg-white/[0.02] rounded-2xl divide-y divide-white/[0.06] overflow-hidden">
+      {/* Toggle Rows directly without redundant outer container box */}
+      <div className="flex flex-col gap-3">
         <ToggleRow
           title="Browser Push Notifications"
           description="Show desktop notifications when active proposals are updated."
@@ -818,16 +1018,16 @@ function OthersTab({
         />
       </div>
 
-      {/* Webhooks Section */}
-      <div className="border border-white/[0.08] bg-white/[0.02] rounded-2xl p-6 flex flex-col gap-4 mt-2">
+      {/* Webhooks Section directly without redundant outer card box */}
+      <div className="flex flex-col gap-3 pt-2">
         <div className="flex flex-col gap-1">
           <h3 className="text-lg font-medium text-white">Custom Webhook Endpoint</h3>
           <p className="text-xs text-[var(--color-text-secondary)]">
             Stream real-time vault event JSON payloads to your backend infrastructure.
           </p>
         </div>
-        <TextInput placeholder="https://api.yourdomain.com/webhooks/kushari" />
-        <div className="pt-2">
+        <TextInput fullWidth placeholder="https://api.yourdomain.com/webhooks/kushari" />
+        <div className="pt-1">
           <Button variant="neutral" appearance="tonal" size="sm" className="rounded-full">
             Test Endpoint
           </Button>
@@ -843,37 +1043,81 @@ function ToggleRow({
   title,
   description,
   checked,
+  disabled,
   onChange,
 }: {
   title: string;
   description: string;
   checked: boolean;
+  disabled?: boolean;
   onChange: () => void;
 }) {
   return (
-    <div className="p-5 flex items-center justify-between gap-4 hover:bg-white/[0.02] transition-all">
-      <div className="flex flex-col gap-0.5 min-w-0">
-        <span className="text-sm font-medium text-white">{title}</span>
-        <span className="text-xs text-[var(--color-text-secondary)]">{description}</span>
+    <div
+      onClick={() => !disabled && onChange()}
+      className={cn(
+        "p-4.5 flex items-center justify-between gap-4 rounded-xl border border-white/[0.08] bg-white/[0.03] hover:bg-white/[0.05] transition-all cursor-pointer select-none",
+        disabled && "opacity-40 cursor-not-allowed hover:bg-white/[0.03]"
+      )}
+    >
+      <div className="flex flex-col gap-1 min-w-0 pr-2">
+        <span className="text-sm font-semibold text-white tracking-tight">{title}</span>
+        <span className="text-xs text-[var(--color-text-secondary)] leading-normal">{description}</span>
       </div>
 
-      <button
-        type="button"
-        role="switch"
-        aria-checked={checked}
-        onClick={onChange}
-        className={cn(
-          "relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none",
-          checked ? "bg-[var(--color-interactive-brand-default)]" : "bg-white/[0.16]"
-        )}
-      >
-        <span
-          className={cn(
-            "pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out",
-            checked ? "translate-x-5" : "translate-x-0"
-          )}
+      <div className="shrink-0" onClick={(e) => e.stopPropagation()}>
+        <Toggle
+          checked={checked}
+          disabled={disabled}
+          onChange={onChange}
+          variant="brand"
+          size="sm"
+          aria-label={title}
         />
-      </button>
+      </div>
+    </div>
+  );
+}
+
+function CheckboxRow({
+  title,
+  description,
+  checked,
+  disabled,
+  grouped = false,
+  onChange,
+}: {
+  title: string;
+  description: string;
+  checked: boolean;
+  disabled?: boolean;
+  grouped?: boolean;
+  onChange: () => void;
+}) {
+  return (
+    <div
+      onClick={() => !disabled && onChange()}
+      className={cn(
+        "flex items-start justify-between gap-4 transition-all cursor-pointer select-none",
+        grouped
+          ? "p-4.5 hover:bg-white/[0.02]"
+          : "p-4 rounded-xl border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04]",
+        disabled && "opacity-40 cursor-not-allowed hover:bg-transparent"
+      )}
+    >
+      <div className="flex flex-col gap-1 min-w-0 pr-2">
+        <span className="text-sm font-medium text-white tracking-tight">{title}</span>
+        <span className="text-xs text-[var(--color-text-secondary)] leading-normal">{description}</span>
+      </div>
+
+      <div className="shrink-0 pt-0.5" onClick={(e) => e.stopPropagation()}>
+        <Checkbox
+          checked={checked}
+          disabled={disabled}
+          onChange={onChange}
+          aria-label={title}
+        />
+      </div>
     </div>
   );
 }

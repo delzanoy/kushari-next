@@ -113,15 +113,15 @@ export default function CreateVault({ onClose, members: propMembers = [], onVaul
     // Filter and sort members alphabetically
     const filteredOptions = useMemo(() => {
         const query = searchQuery.toLowerCase().trim();
-        const baseOptions = [...propMembers];
+        const baseOptions = propMembers ? propMembers.filter(m => Boolean(m && typeof m === 'object')) : [];
 
         // Sort alphabetically by member.name
-        baseOptions.sort((a, b) => a.name.localeCompare(b.name));
+        baseOptions.sort((a, b) => (a?.name || '').localeCompare(b?.name || ''));
 
         if (!query) return baseOptions;
         return baseOptions.filter(member =>
-            member.name.toLowerCase().includes(query) ||
-            member.email.toLowerCase().includes(query)
+            (member?.name || '').toLowerCase().includes(query) ||
+            (member?.email || '').toLowerCase().includes(query)
         );
     }, [propMembers, searchQuery]);
 

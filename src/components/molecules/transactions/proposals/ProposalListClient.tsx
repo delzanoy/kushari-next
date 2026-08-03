@@ -404,7 +404,7 @@ export default function ProposalListClient({
         });
 
         return Array.from(walletMap.values())
-            .sort((a, b) => a.name.localeCompare(b.name))
+            .sort((a, b) => (a?.name || '').localeCompare(b?.name || ''))
             .map(wallet => ({
                 value: wallet.id.toString(),
                 id: wallet.id.toString(),
@@ -488,7 +488,7 @@ export default function ProposalListClient({
             }
         });
 
-        return options.sort((a, b) => a.displayProps.fullName.localeCompare(b.displayProps.fullName));
+        return options.sort((a, b) => (a?.displayProps?.fullName || '').localeCompare(b?.displayProps?.fullName || ''));
     }, [proposals, addresses]);
 
     const classificationOptions = useMemo((): FilterDropdownOption[] => {

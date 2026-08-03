@@ -127,7 +127,7 @@ export function SidebarNavItem({
         className="absolute inset-0 rounded-[10.5px] pointer-events-none"
         animate={{ opacity: active ? 1 : 0 }}
         transition={FAST}
-        style={{ boxShadow: `inset 0 0.5px 0 rgba(${B},0.45), 0 0 0 0.5px rgba(${B},0.15)` }}
+        style={{ boxShadow: `inset 0 0.5px 0 rgba(${B},0.45), inset 0 0 0 0.5px rgba(${B},0.15)` }}
       />
 
       {/* Hover: tonal-bg-hover fill + brand ring */}
@@ -137,7 +137,7 @@ export function SidebarNavItem({
         transition={FAST}
         style={{
           background: "var(--color-interactive-brand-tonal-bg-hover)",
-          boxShadow: `inset 0 0.5px 0 rgba(${B},0.60), 0 0 0 0.5px rgba(${B},0.18)`,
+          boxShadow: `inset 0 0.5px 0 rgba(${B},0.60), inset 0 0 0 0.5px rgba(${B},0.18)`,
         }}
       />
 
@@ -353,7 +353,7 @@ export function SidebarNavToggle({
         className="absolute inset-0 rounded-[10.5px] pointer-events-none"
         animate={{ opacity: isChecked && !hovered ? 1 : 0 }}
         transition={FAST}
-        style={{ boxShadow: `inset 0 0.5px 0 rgba(${B},0.30), 0 0 0 0.5px rgba(${B},0.10)` }}
+        style={{ boxShadow: `inset 0 0.5px 0 rgba(${B},0.30), inset 0 0 0 0.5px rgba(${B},0.10)` }}
       />
       {/* Hover fill + brand ring — same as nav item hover */}
       <motion.div
@@ -362,7 +362,7 @@ export function SidebarNavToggle({
         transition={FAST}
         style={{
           background: "var(--color-interactive-brand-tonal-bg-hover)",
-          boxShadow: `inset 0 0.5px 0 rgba(${B},0.60), 0 0 0 0.5px rgba(${B},0.18)`,
+          boxShadow: `inset 0 0.5px 0 rgba(${B},0.60), inset 0 0 0 0.5px rgba(${B},0.18)`,
         }}
       />
       {/* Resting hairline removed per request */}

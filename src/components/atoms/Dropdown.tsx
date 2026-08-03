@@ -500,7 +500,7 @@ export interface DropdownMenuProps {
   /** Max pixel height before the menu scrolls. Default 320. */
   maxHeight?: number;
   /** Minimum pixel width. Defaults to trigger width. */
-  minWidth?: number;
+  minWidth?: number | string;
   /** Horizontal alignment relative to the trigger. Default "start". */
   align?: "start" | "end" | "center";
   /** Gap between trigger and menu in px. Default 4. */
@@ -532,7 +532,8 @@ export function DropdownMenu({
     if (!triggerRef.current) return;
     const rect = triggerRef.current.getBoundingClientRect();
     const viewH = window.innerHeight;
-    const menuW = Math.max(minWidth ?? 0, rect.width);
+    const numericMinWidth = typeof minWidth === "number" ? minWidth : 0;
+    const menuW = Math.max(numericMinWidth, rect.width);
 
     const spaceBelow = viewH - rect.bottom - sideOffset;
     const spaceAbove = rect.top - sideOffset;
@@ -793,7 +794,7 @@ export interface DropdownItemProps {
    *  Defaults to false when checkStyle="checkbox", true otherwise. */
   closeOnSelect?: boolean;
   /** Called (and menu closed if closeOnSelect is true) when the item is activated. */
-  onSelect?: () => void;
+  onSelect?: (e?: React.MouseEvent) => void;
   className?: string;
 }
 
@@ -817,9 +818,9 @@ export function DropdownItem({
   const { setOpen, triggerRef, size } = useDropdown();
   const closeOnSelect = closeOnSelectProp ?? (checkStyle === "checkbox" ? false : true);
 
-  const handleSelect = () => {
+  const handleSelect = (e?: React.MouseEvent | React.SyntheticEvent) => {
     if (disabled) return;
-    onSelect?.();
+    onSelect?.(e as React.MouseEvent);
     if (closeOnSelect) {
       setOpen(false);
       triggerRef.current?.focus();
