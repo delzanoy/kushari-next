@@ -197,7 +197,7 @@ const WalletHeader = memo(({
                 <div className="flex justify-between items-start self-stretch">
                     <div className="flex flex-col items-start gap-1">
                         <div className="flex items-center gap-3">
-                            <div className="text-[var(--color-text-neutral)]">
+                            <div className="text-[var(--color-icon-primary)]">
                                 {renderTitleWalletIcon(wallet.type)}
                             </div>
                             <h1 className="text-[var(--color-text-primary)] font-display text-[28px] not-italic font-medium tracking-tight">

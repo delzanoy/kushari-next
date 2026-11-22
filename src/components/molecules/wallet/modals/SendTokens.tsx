@@ -46,6 +46,7 @@ import {
 import { BlockchainIconStack } from "@/components/atoms/BlockchainIconStack";
 import { GnosisSafeIcon } from "@/media/icons/GnosisSafeIcon";
 import type { WalletSummary, Wallet, Member } from "../types";
+import { MODAL_WIDTH } from "@/components/molecules/modal/Modal";
 
 const renderWalletIcon = (walletType?: number, size = 16) => {
     const iconMap: Record<number, React.ReactElement> = {
@@ -877,8 +878,8 @@ export default function SendTokens({ wallet: propWallet, selectedWallet: propSel
             className={cn(
                 "rounded-3xl border border-[var(--color-border-subtle)] bg-[var(--color-surface-sunken)] backdrop-blur-xl outline-none shadow-2xl",
                 isSubmitted
-                    ? "w-[500px] max-w-full p-6 flex flex-col gap-6"
-                    : "flex flex-col lg:flex-row w-[1372px] max-w-full p-4 items-start gap-[30px]"
+                    ? `${MODAL_WIDTH.standard} p-6 flex flex-col gap-6`
+                    : `flex flex-col lg:flex-row ${MODAL_WIDTH.wide} p-4 items-start gap-[30px]`
             )}
             aria-live="polite"
             role="status"

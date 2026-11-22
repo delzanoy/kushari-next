@@ -54,6 +54,7 @@ export default function TransactionListClient({
     const searchInputRef = useRef<HTMLInputElement>(null);
 
     // Complex Filter states
+    const [isExporting, setIsExporting] = useState(false);
     const [filterCriteria, setFilterCriteria] = useState<FilterCriterion[]>([]);
     const hasAppliedInitialFilter = useRef(false);
 
@@ -326,8 +327,49 @@ export default function TransactionListClient({
         };
     }, [searchQuery]);
 
-    const handleExportCSV = () => {
-        alert("Exporting CSV...");
+    // Exports every transaction matching the current search and filters, not just the visible page
+    const handleExportCSV = async () => {
+        if (isExporting) return;
+        setIsExporting(true);
+        try {
+            const columns = [
+                "Date", "Transaction ID", "Wallet", "Blockchain", "Direction", "Classification",
+                "In amount", "In token", "In USD", "Out amount", "Out token", "Out USD",
+                "Gas fee", "Gas token", "Gas fee USD", "Initiator", "Executer",
+            ];
+            const cell = (value: unknown) => {
+                if (value === null || value === undefined) return "";
+                const text = String(value);
+                return /[",\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+            };
+            const usd = (value?: number) => (value === undefined || value === null ? "" : value.toFixed(2));
+            const rows = transactionsWithDateInfo.map(tx => [
+                new Date(tx.timestamp).toISOString(),
+                tx.id,
+                tx.wallet,
+                tx.blockchain,
+                tx.incoming && tx.outgoing ? "Swap" : tx.incoming ? "Incoming" : "Outgoing",
+                tx.classification,
+                tx.inTokens, tx.inTokenSymbol, tx.inTokens != null ? usd(tx.incomingUSD) : "",
+                tx.outTokens, tx.outTokenSymbol, tx.outTokens != null ? usd(tx.outgoingUSD) : "",
+                tx.gasFee, tx.gasTokenSymbol, usd(tx.gasFeeUSD),
+                tx.initiator,
+                tx.executer,
+            ].map(cell).join(","));
+            const csv = [columns.join(","), ...rows].join("\n");
+
+            // Keep the exporting state on screen long enough to read
+            await new Promise(resolve => setTimeout(resolve, 800));
+
+            const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `kushari-transactions-${new Date().toISOString().slice(0, 10)}.csv`;
+            link.click();
+            URL.revokeObjectURL(url);
+        } finally {
+            setIsExporting(false);
+        }
     };
 
     return (
@@ -364,8 +406,8 @@ export default function TransactionListClient({
                 </div>
 
                 <div className="flex items-center gap-4">
-                    <Button size="sm" variant="neutral" appearance="tonal" onClick={handleExportCSV} leadingIcon={<RiDownloadCloud2Line />} flat>
-                        Export CSV
+                    <Button size="sm" variant="neutral" appearance="tonal" onClick={handleExportCSV} loading={isExporting} leadingIcon={<RiDownloadCloud2Line />} flat>
+                        {isExporting ? "Exporting CSV" : "Export CSV"}
                     </Button>
                 </div>
             </div>

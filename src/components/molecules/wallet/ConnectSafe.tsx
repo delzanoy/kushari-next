@@ -14,6 +14,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useModal, Modal } from "@/components/molecules/modal";
 import { useModalContext } from "@/components/molecules/modal/Modal";
 import { Button } from "@/components/atoms/Button";
+import { InlineAlert } from "@/components/atoms/InlineAlert";
 import { IconButton } from "@/components/atoms/IconButton";
 import { TextInput } from "@/components/atoms/TextInput";
 import { Avatar } from "@/components/atoms/Avatar";
@@ -31,12 +32,16 @@ import { GnosisSafeIcon } from "@/components/ui/GnosisSafeIcon";
 import { MetamaskIcon } from "@/components/ui/Metamask";
 import { WalletConnectIcon } from "@/components/ui/WalletConnect";
 import NoSafeFound from "./NoSafeFound";
+import { MODAL_WIDTH } from "@/components/molecules/modal/Modal";
 
 interface Member {
     id: number;
-    name: string;
+    name?: string; // pending invitees come from the API with an email but no name
     email: string;
 }
+
+// Invitees have no name yet, so fall back to the email
+const memberLabel = (member: Member) => member.name || member.email || "";
 
 interface ConnectSafeProps {
     onClose?: () => void;
@@ -62,7 +67,7 @@ const AVATAR_PRESETS = [
     "Chromatic", "Oil Slick", "Candy"
 ];
 
-const getPresetForUser = (username: string) => {
+const getPresetForUser = (username: string = "") => {
     let hash = 0;
     for (let i = 0; i < username.length; i++) {
         hash = username.charCodeAt(i) + ((hash << 5) - hash);
@@ -105,6 +110,8 @@ export default function ConnectSafe({ onClose, members: propMembers = [], onSafe
     const [detectedSafes, setDetectedSafes] = useState<SafeInfo[]>([]);
     const [selectedSafe, setSelectedSafe] = useState<string | null>(null);
     const [walletName, setWalletName] = useState("");
+    const [fieldErrors, setFieldErrors] = useState<{ walletName?: string; owners?: string }>({});
+    const [submitError, setSubmitError] = useState("");
     const [safeDetectionComplete, setSafeDetectionComplete] = useState(false);
 
     const { open, closeTop } = useModal();
@@ -174,12 +181,14 @@ export default function ConnectSafe({ onClose, members: propMembers = [], onSafe
 
         if (!query) return baseOptions;
         return baseOptions.filter(m =>
-            m.name.toLowerCase().includes(query) ||
-            m.email.toLowerCase().includes(query)
+            (m.name || '').toLowerCase().includes(query) ||
+            (m.email || '').toLowerCase().includes(query)
         );
     }, [localMembers, selectedOwners, searchQueries]);
 
     const handleOwnerChange = (address: string, email: string) => {
+        setSubmitError("");
+        setFieldErrors(prev => (prev.owners ? { ...prev, owners: undefined } : prev));
         setSelectedOwners(prev => ({
             ...prev,
             [address]: email
@@ -200,6 +209,8 @@ export default function ConnectSafe({ onClose, members: propMembers = [], onSafe
         };
 
         setLocalMembers(prev => [...prev, newMember]);
+        setSubmitError("");
+        setFieldErrors(prev => (prev.owners ? { ...prev, owners: undefined } : prev));
         setSelectedOwners(prev => ({
             ...prev,
             [address]: email
@@ -480,14 +491,17 @@ export default function ConnectSafe({ onClose, members: propMembers = [], onSafe
     };
 
     const handleConfirmAndConnect = async () => {
-        if (!selectedSafe || !walletName.trim()) {
-            alert("Please complete all required fields");
+        setSubmitError("");
+        const safeDetails = selectedSafe ? detectedSafes.find(safe => safe.address === selectedSafe) : undefined;
+        if (!safeDetails) {
+            // The safe is gone or was never picked: send the user back to choose one
+            setCurrentStep("locate");
             return;
         }
 
-        const safeDetails = detectedSafes.find(safe => safe.address === selectedSafe);
-        if (!safeDetails) {
-            alert("Selected safe not found");
+        if (!walletName.trim()) {
+            setFieldErrors(prev => ({ ...prev, walletName: "Give the safe a name" }));
+            setCurrentStep("locate");
             return;
         }
 
@@ -497,7 +511,7 @@ export default function ConnectSafe({ onClose, members: propMembers = [], onSafe
         const assignedOwners = activeOwnerAddresses.map(addr => selectedOwners[addr]).filter(email => email !== "");
 
         if (assignedOwners.length === 0) {
-            alert("Please assign at least one owner");
+            setFieldErrors(prev => ({ ...prev, owners: "Assign at least one owner to connect this safe" }));
             return;
         }
 
@@ -506,7 +520,7 @@ export default function ConnectSafe({ onClose, members: propMembers = [], onSafe
         try {
             await createGnosisSafe({
                 name: walletName,
-                address: selectedSafe,
+                address: safeDetails.address,
                 chain: safeDetails.chain,
                 owners: assignedOwners,
                 threshold: threshold,
@@ -526,7 +540,7 @@ export default function ConnectSafe({ onClose, members: propMembers = [], onSafe
             window.dispatchEvent(new CustomEvent("walletsUpdated"));
         } catch (error) {
             console.error("Error creating demo Gnosis Safe:", error);
-            alert("Failed to connect safe. Please try again.");
+            setSubmitError("Couldn't connect the safe. Your owner assignments are still here, so try again.");
         } finally {
             setIsSubmitting(false);
         }
@@ -582,7 +596,7 @@ export default function ConnectSafe({ onClose, members: propMembers = [], onSafe
         <div
             ref={modalRef as React.RefObject<HTMLDivElement>}
             tabIndex={-1}
-            className="flex flex-col lg:flex-row w-[1372px] max-w-full p-4 items-start gap-[30px] rounded-3xl border border-[var(--color-border-subtle)] bg-[var(--color-surface-sunken)] backdrop-blur-xl outline-none"
+            className={`flex flex-col lg:flex-row ${MODAL_WIDTH.wide} p-4 items-start gap-[30px] rounded-3xl border border-[var(--color-border-subtle)] bg-[var(--color-surface-sunken)] backdrop-blur-xl outline-none`}
             aria-live="polite"
             role="status"
         >
@@ -798,8 +812,13 @@ export default function ConnectSafe({ onClose, members: propMembers = [], onSafe
                                             label="Wallet name"
                                             placeholder="Use an identifiable name"
                                             value={walletName}
-                                            onChange={(e) => setWalletName(e.target.value)}
+                                            onChange={(e) => {
+                                                setWalletName(e.target.value);
+                                                setFieldErrors(prev => (prev.walletName ? { ...prev, walletName: undefined } : prev));
+                                            }}
                                             disabled={currentStep === "assign" || connecting || isSubmitting}
+                                            state={fieldErrors.walletName ? "error" : "default"}
+                                            errorMessage={fieldErrors.walletName}
                                             required
                                         />
                                         {currentStep !== "assign" && (
@@ -843,7 +862,7 @@ export default function ConnectSafe({ onClose, members: propMembers = [], onSafe
                                     Assign Owners to Safe
                                 </span>
                                 <div className="flex w-full flex-col items-start gap-4">
-                                    {activeOwnerAddresses.map((address) => {
+                                    {activeOwnerAddresses.map((address, index) => {
                                         const filteredOptions = getFilteredOptionsForAddress(address);
                                         const currentSelectedEmail = selectedOwners[address] || "";
                                         const currentSelectedMember = localMembers.find(m => m.email === currentSelectedEmail);
@@ -856,11 +875,16 @@ export default function ConnectSafe({ onClose, members: propMembers = [], onSafe
                                                 <div className="w-full flex flex-col lg:flex-row gap-4 items-center">
                                                     {/* Dropdown Input Column */}
                                                     <div className="w-full lg:w-[490px] flex-shrink-0">
-                                                        <Dropdown disabled={isSubmitting || connecting}>
+                                                        <Dropdown
+                                                            disabled={isSubmitting || connecting}
+                                                            // The rule covers the whole safe, so the message shows once, under the first owner
+                                                            state={fieldErrors.owners ? "error" : "default"}
+                                                            errorMessage={index === 0 ? fieldErrors.owners : undefined}
+                                                        >
                                                             <DropdownTrigger
                                                                 placeholder="Search or invite owner"
                                                                 leadingIcon={<RiSearchLine size={16} />}
-                                                                label={currentSelectedMember ? `${currentSelectedMember.name} (${currentSelectedMember.email})` : undefined}
+                                                                label={currentSelectedMember ? (currentSelectedMember.name ? `${currentSelectedMember.name} (${currentSelectedMember.email})` : currentSelectedMember.email) : undefined}
                                                             />
                                                             <DropdownMenu minWidth={380}>
                                                                 <DropdownSearch
@@ -874,11 +898,11 @@ export default function ConnectSafe({ onClose, members: propMembers = [], onSafe
                                                                             <DropdownItem
                                                                                 key={member.email}
                                                                                 selected={currentSelectedEmail === member.email}
-                                                                                icon={<Avatar name={member.name} size="xs" preset={getPresetForUser(member.name)} />}
-                                                                                description={member.email}
+                                                                                icon={<Avatar name={memberLabel(member)} size="xs" preset={getPresetForUser(memberLabel(member))} />}
+                                                                                description={member.name ? member.email : "Invited"}
                                                                                 onSelect={() => handleOwnerChange(address, member.email)}
                                                                             >
-                                                                                {member.name}
+                                                                                {memberLabel(member)}
                                                                             </DropdownItem>
                                                                         ))
                                                                     ) : (
@@ -887,7 +911,7 @@ export default function ConnectSafe({ onClose, members: propMembers = [], onSafe
                                                                         </div>
                                                                     )}
 
-                                                                    {searchQueries[address] && !filteredOptions.some(m => m.email.toLowerCase() === searchQueries[address].toLowerCase()) && (
+                                                                    {searchQueries[address] && !filteredOptions.some(m => (m.email || '').toLowerCase() === searchQueries[address].toLowerCase()) && (
                                                                         <DropdownCreateNew
                                                                             label={searchQueries[address]}
                                                                             customText="Invite and assign as owner"
@@ -907,9 +931,9 @@ export default function ConnectSafe({ onClose, members: propMembers = [], onSafe
                                                         {currentSelectedEmail && (
                                                             currentSelectedMember ? (
                                                                 <div className="flex items-center gap-2 min-w-0 text-xs font-semibold leading-none text-[var(--color-text-success)]">
-                                                                    <Avatar name={currentSelectedMember.name} size="xs" preset={getPresetForUser(currentSelectedMember.name)} />
+                                                                    <Avatar name={memberLabel(currentSelectedMember)} size="xs" preset={getPresetForUser(memberLabel(currentSelectedMember))} />
                                                                     <span className="truncate max-w-[150px] text-white">
-                                                                        {currentSelectedMember.name}
+                                                                        {memberLabel(currentSelectedMember)}
                                                                     </span>
                                                                     <span className="text-[var(--color-text-muted)] font-normal">
                                                                         will be assigned as an owner.
@@ -934,6 +958,10 @@ export default function ConnectSafe({ onClose, members: propMembers = [], onSafe
                                     })}
                                 </div>
                             </div>
+
+                            {submitError && (
+                                <InlineAlert>{submitError}</InlineAlert>
+                            )}
 
                             {/* Back and Confirm buttons */}
                             <div className="flex justify-between items-center self-stretch pt-6 border-t border-[var(--color-border-subtle)] mt-4">

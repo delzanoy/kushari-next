@@ -6,6 +6,7 @@ import { IconButton } from "@/components/atoms/IconButton";
 import { Tooltip } from "@/components/atoms/Tooltip";
 import { useModalContext } from "@/components/molecules/modal/Modal";
 import { useEffect, useState } from "react";
+import { MODAL_WIDTH } from "@/components/molecules/modal/Modal";
 
 interface NoSafeFoundProps {
     onClose: () => void;
@@ -25,7 +26,7 @@ export default function NoSafeFound({ onClose, onRetry }: NoSafeFoundProps) {
     }, [escStage, isTopModal]);
 
     return (
-        <div className="flex flex-col items-start p-4 bg-[rgba(10,10,10,0.95)] border border-[var(--color-border-subtle)] rounded-3xl max-w-[420px] w-full gap-6 text-left relative backdrop-blur-xl">
+        <div className={`flex flex-col items-start p-4 bg-[rgba(10,10,10,0.95)] border border-[var(--color-border-subtle)] rounded-3xl ${MODAL_WIDTH.small} gap-6 text-left relative backdrop-blur-xl`}>
             {/* Header Section */}
             <div className="flex flex-col items-start gap-3 self-stretch">
                 <div className="flex justify-between items-center self-stretch">

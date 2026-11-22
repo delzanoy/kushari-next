@@ -9,6 +9,7 @@ import {
 } from "@remixicon/react";
 import { useModalContext } from "@/components/molecules/modal/Modal";
 import { TextInput } from "@/components/atoms/TextInput";
+import { InlineAlert } from "@/components/atoms/InlineAlert";
 import { Button } from "@/components/atoms/Button";
 import { IconButton } from "@/components/atoms/IconButton";
 import { Avatar } from "@/components/atoms/Avatar";
@@ -22,13 +23,17 @@ import {
     DropdownCreateNew
 } from "@/components/atoms/Dropdown";
 import { createVault } from "@/lib/mock-cache";
+import { MODAL_WIDTH } from "@/components/molecules/modal/Modal";
 
 // Define the Member interface based on data structure
 interface Member {
     id: number;
-    name: string;
+    name?: string; // pending invitees come from the API with an email but no name
     email: string;
 }
+
+// Invitees have no name yet, so fall back to the email
+const memberLabel = (member: Member) => member.name || member.email || "";
 
 interface CreateVaultProps {
     onClose?: () => void;
@@ -58,7 +63,7 @@ const AVATAR_PRESETS = [
     "Candy"
 ];
 
-const getPresetForUser = (username: string) => {
+const getPresetForUser = (username: string = "") => {
     let hash = 0;
     for (let i = 0; i < username.length; i++) {
         hash = username.charCodeAt(i) + ((hash << 5) - hash);
@@ -77,6 +82,13 @@ export default function CreateVault({ onClose, members: propMembers = [], onVaul
     const [selectedApprovers, setSelectedApprovers] = useState<string[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [approversOpen, setApproversOpen] = useState(false);
+    // Field-level errors, shown with the TextInput / Dropdown error states
+    const [fieldErrors, setFieldErrors] = useState<{ name?: string; approvers?: string; threshold?: string }>({});
+    const [submitError, setSubmitError] = useState("");
+    const clearFieldError = (field: "name" | "approvers" | "threshold") => {
+        setFieldErrors(prev => (prev[field] ? { ...prev, [field]: undefined } : prev));
+        setSubmitError("");
+    };
 
     const { escStage, isTopModal } = useModalContext();
     const [showEscTooltip, setShowEscTooltip] = useState(false);
@@ -116,7 +128,7 @@ export default function CreateVault({ onClose, members: propMembers = [], onVaul
         const baseOptions = propMembers ? propMembers.filter(m => Boolean(m && typeof m === 'object')) : [];
 
         // Sort alphabetically by member.name
-        baseOptions.sort((a, b) => (a?.name || '').localeCompare(b?.name || ''));
+        baseOptions.sort((a, b) => memberLabel(a).localeCompare(memberLabel(b)));
 
         if (!query) return baseOptions;
         return baseOptions.filter(member =>
@@ -127,6 +139,7 @@ export default function CreateVault({ onClose, members: propMembers = [], onVaul
 
     // Handle input change
     const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+        clearFieldError("name");
         setFormData(prev => ({
             ...prev,
             vaultName: e.target.value
@@ -135,6 +148,8 @@ export default function CreateVault({ onClose, members: propMembers = [], onVaul
 
     // Toggle approver selection
     const handleToggleApprover = (email: string) => {
+        clearFieldError("approvers");
+        clearFieldError("threshold");
         const index = selectedApprovers.indexOf(email);
         let newApprovers: string[];
         if (index === -1) {
@@ -150,17 +165,20 @@ export default function CreateVault({ onClose, members: propMembers = [], onVaul
         }));
     };
 
-    // Invite new guest member by email
-    const handleInviteMember = (email: string) => {
+    // Invite new guest member by email. Returns true when the invite was added.
+    const handleInviteMember = (email: string): boolean => {
         const emailTrim = email.trim();
-        if (!emailTrim || selectedApprovers.includes(emailTrim)) return;
+        if (!emailTrim || selectedApprovers.includes(emailTrim)) return false;
 
-        // Simple email validate
-        if (!emailTrim.includes("@")) {
-            alert("Please enter a valid email address");
-            return;
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailTrim)) {
+            // Close the menu so the error under the field is visible; the typed text is kept
+            setFieldErrors(prev => ({ ...prev, approvers: "Enter a full email address to invite someone, like name@company.com" }));
+            setApproversOpen(false);
+            return false;
         }
 
+        clearFieldError("approvers");
+        clearFieldError("threshold");
         const newApprovers = [...selectedApprovers, emailTrim];
         setSelectedApprovers(newApprovers);
         setFormData(prev => ({
@@ -168,12 +186,14 @@ export default function CreateVault({ onClose, members: propMembers = [], onVaul
             approvers: newApprovers,
             threshold: Math.min(prev.threshold, Math.max(newApprovers.length, 1))
         }));
+        return true;
     };
 
     // Handle threshold change
     const handleThresholdChange = (value: string) => {
         const numValue = parseInt(value, 10);
         if (!isNaN(numValue) && numValue > 0 && numValue <= selectedApprovers.length) {
+            clearFieldError("threshold");
             setFormData(prev => ({
                 ...prev,
                 threshold: numValue
@@ -183,21 +203,18 @@ export default function CreateVault({ onClose, members: propMembers = [], onVaul
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
+        setSubmitError("");
         setIsSubmitting(true);
 
         try {
-            if (!formData.vaultName.trim()) {
-                alert("Please enter a vault name");
-                return;
-            }
-
-            if (selectedApprovers.length === 0) {
-                alert("Please select at least one approver");
-                return;
-            }
-
-            if (formData.threshold > selectedApprovers.length) {
-                alert("Threshold cannot be greater than number of approvers");
+            // Normally unreachable (the submit button is disabled until these hold),
+            // but if they fail, show it on the field instead of a browser alert.
+            const errors: { name?: string; approvers?: string; threshold?: string } = {};
+            if (!formData.vaultName.trim()) errors.name = "Give the vault a name";
+            if (selectedApprovers.length === 0) errors.approvers = "Choose at least one approver";
+            else if (formData.threshold > selectedApprovers.length) errors.threshold = "Approvals required can't be more than the number of approvers";
+            if (Object.keys(errors).length > 0) {
+                setFieldErrors(errors);
                 return;
             }
 
@@ -221,7 +238,7 @@ export default function CreateVault({ onClose, members: propMembers = [], onVaul
 
         } catch (error) {
             console.error("Error creating demo vault:", error);
-            alert("Failed to create vault. Please try again.");
+            setSubmitError("Couldn't create the vault. Your details are still here, so try again.");
         } finally {
             setIsSubmitting(false);
         }
@@ -260,7 +277,7 @@ export default function CreateVault({ onClose, members: propMembers = [], onVaul
     };
 
     return (
-        <form onSubmit={handleSubmit} className="flex w-[500px] p-4 flex-col items-start gap-6 rounded-3xl border border-[var(--color-border-subtle)] bg-[var(--color-surface-sunken)] shadow-2xl">
+        <form onSubmit={handleSubmit} className={`flex ${MODAL_WIDTH.standard} p-4 flex-col items-start gap-6 rounded-3xl border border-[var(--color-border-subtle)] bg-[var(--color-surface-sunken)] shadow-2xl`}>
             {/* Header Section */}
             <div className="flex flex-col items-start gap-3 self-stretch">
                 <div className="flex justify-between items-center self-stretch">
@@ -302,13 +319,22 @@ export default function CreateVault({ onClose, members: propMembers = [], onVaul
                         value={formData.vaultName}
                         onChange={handleInputChange}
                         disabled={isSubmitting}
+                        state={fieldErrors.name ? "error" : "default"}
+                        errorMessage={fieldErrors.name}
                         required
                     />
                 </div>
 
                 {/* Approvers Dropdown Selection */}
                 <div className="w-full flex flex-col gap-2.5">
-                    <Dropdown label="Approvers" open={approversOpen} onOpenChange={setApproversOpen} disabled={isSubmitting}>
+                    <Dropdown
+                        label="Approvers"
+                        open={approversOpen}
+                        onOpenChange={setApproversOpen}
+                        disabled={isSubmitting}
+                        state={fieldErrors.approvers ? "error" : "default"}
+                        errorMessage={fieldErrors.approvers}
+                    >
                         <DropdownTrigger
                             placeholder="Search or invite approver"
                             leadingIcon={<RiSearchLine size={16} />}
@@ -316,7 +342,10 @@ export default function CreateVault({ onClose, members: propMembers = [], onVaul
                         <DropdownMenu minWidth={452}>
                             <DropdownSearch
                                 value={searchQuery}
-                                onChange={setSearchQuery}
+                                onChange={(value: string) => {
+                                    setSearchQuery(value);
+                                    clearFieldError("approvers");
+                                }}
                                 placeholder="Search or invite approver"
                             />
                             <div className="overflow-y-auto max-h-[180px] p-1">
@@ -328,11 +357,11 @@ export default function CreateVault({ onClose, members: propMembers = [], onVaul
                                                 key={member.email}
                                                 checkStyle="checkbox"
                                                 selected={isSelected}
-                                                icon={<Avatar name={member.name} size="xs" preset={getPresetForUser(member.name)} />}
-                                                description={member.email}
+                                                icon={<Avatar name={memberLabel(member)} size="xs" preset={getPresetForUser(memberLabel(member))} />}
+                                                description={member.name ? member.email : "Invited"}
                                                 onSelect={() => handleToggleApprover(member.email)}
                                             >
-                                                {member.name}
+                                                {memberLabel(member)}
                                             </DropdownItem>
                                         );
                                     })
@@ -342,12 +371,12 @@ export default function CreateVault({ onClose, members: propMembers = [], onVaul
                                     </div>
                                 )}
 
-                                {searchQuery && !filteredOptions.some(m => m.email.toLowerCase() === searchQuery.toLowerCase()) && (
+                                {searchQuery && !filteredOptions.some(m => (m.email || '').toLowerCase() === searchQuery.toLowerCase()) && (
                                     <DropdownCreateNew
                                         label={searchQuery}
                                         onAction={() => {
-                                            handleInviteMember(searchQuery);
-                                            setSearchQuery("");
+                                            // Keep the typed text when the email is invalid, so it can be corrected
+                                            if (handleInviteMember(searchQuery)) setSearchQuery("");
                                         }}
                                     />
                                 )}
@@ -360,7 +389,7 @@ export default function CreateVault({ onClose, members: propMembers = [], onVaul
                         <div className="flex items-start content-start gap-2 self-stretch flex-wrap mt-1">
                             {selectedApprovers.map((email) => {
                                 const member = propMembers.find(m => m.email === email);
-                                const displayName = member ? member.name : email.split('@')[0];
+                                const displayName = member?.name || email.split('@')[0];
                                 return (
                                     <div
                                         key={email}
@@ -392,7 +421,13 @@ export default function CreateVault({ onClose, members: propMembers = [], onVaul
 
                 {/* Threshold Dropdown */}
                 <div className="w-full">
-                    <Dropdown label="Threshold" disabled={isSubmitting || selectedApprovers.length === 0} helperText={thresholdHelperText}>
+                    <Dropdown
+                        label="Threshold"
+                        disabled={isSubmitting || selectedApprovers.length === 0}
+                        helperText={thresholdHelperText}
+                        state={fieldErrors.threshold ? "error" : "default"}
+                        errorMessage={fieldErrors.threshold}
+                    >
                         <DropdownTrigger
                             placeholder={selectedApprovers.length === 0 ? "Add approvers first" : `${formData.threshold} of ${selectedApprovers.length}`}
                         />
@@ -409,6 +444,10 @@ export default function CreateVault({ onClose, members: propMembers = [], onVaul
                         </DropdownMenu>
                     </Dropdown>
                 </div>
+
+                {submitError && (
+                    <InlineAlert>{submitError}</InlineAlert>
+                )}
             </div>
 
             {/* Bottom Actions */}

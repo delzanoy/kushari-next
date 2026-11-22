@@ -3,10 +3,12 @@
 import { useState, useMemo, ChangeEvent, FormEvent } from 'react';
 import { RiUserAddLine, RiHashtag, RiCloseLine } from "@remixicon/react";
 import { IconButton } from "@/components/atoms/IconButton";
+import { InlineAlert } from "@/components/atoms/InlineAlert";
 import { TextInput } from "@/components/atoms/TextInput";
 import { Button } from "@/components/atoms/Button";
 import { Group } from './types';
 import { createAddress } from '@/lib/mock-cache';
+import { MODAL_WIDTH } from "@/components/molecules/modal/Modal";
 
 interface AddAddressModalProps {
   onClose: () => void;
@@ -99,7 +101,7 @@ export default function AddAddressModal({ onClose, groups = [], onAddressAdded }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex w-[500px] p-6 flex-col items-start gap-6 rounded-3xl border border-[var(--color-border-subtle)] bg-[var(--color-surface-sunken)] shadow-2xl">
+    <form onSubmit={handleSubmit} className={`flex ${MODAL_WIDTH.standard} p-6 flex-col items-start gap-6 rounded-3xl border border-[var(--color-border-subtle)] bg-[var(--color-surface-sunken)] shadow-2xl`}>
       <div className="flex flex-col items-start gap-2 self-stretch">
         <div className="flex justify-between items-start self-stretch">
           <div className="flex p-3 items-center justify-center rounded-xl bg-[var(--color-surface-overlay)] border border-[var(--color-border-subtle)]">
@@ -147,9 +149,7 @@ export default function AddAddressModal({ onClose, groups = [], onAddressAdded }
         </div>
 
         {error && (
-          <div className="text-sm text-[var(--color-text-danger)] bg-[var(--color-surface-danger)] px-3 py-2 rounded-lg w-full">
-            {error}
-          </div>
+          <InlineAlert>{error}</InlineAlert>
         )}
       </div>
 

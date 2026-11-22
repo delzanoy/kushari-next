@@ -19,6 +19,7 @@ import { TertiaryButton } from "@/components/atoms/TertiaryButton";
 import { GnosisSafeIcon } from "@/media/icons/GnosisSafeIcon";
 
 import { Wallet, WalletSummary } from "../types";
+import { MODAL_WIDTH } from "@/components/molecules/modal/Modal";
 
 interface MakeDepositProps {
     wallet: Wallet | WalletSummary;
@@ -102,7 +103,7 @@ export default function MakeDeposit({ wallet, onClose }: MakeDepositProps) {
     };
 
     return (
-        <div className="flex w-[568px] p-4 flex-col items-start gap-[30px] rounded-3xl border border-[var(--color-border-subtle)] bg-[var(--color-surface-sunken)] transition-all duration-300 shadow-2xl">
+        <div className={`flex ${MODAL_WIDTH.standard} p-4 flex-col items-start gap-[30px] rounded-3xl border border-[var(--color-border-subtle)] bg-[var(--color-surface-sunken)] transition-all duration-300 shadow-2xl`}>
             {/* Header Section */}
             <div className="flex flex-col items-start gap-2.5 self-stretch">
                 <div className="flex justify-between items-start self-stretch">

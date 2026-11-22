@@ -22,6 +22,7 @@ import { Toggle } from "@/components/atoms/Toggle";
 import ButtonPlayground from "@/components/molecules/designsystem/ButtonPlayground";
 import { Avatar, AvatarForge, AvatarGroup, type AvatarSize } from "@/components/atoms/Avatar";
 import { Tooltip, TooltipGroup, type TooltipPlacement } from "@/components/atoms/Tooltip";
+import { InlineAlert } from "@/components/atoms/InlineAlert";
 import {
   Dropdown,
   DropdownTrigger,
@@ -89,6 +90,7 @@ const NAV_ITEMS = [
   { id: "toggles", label: "Toggles", num: "14" },
   { id: "avatars", label: "Avatars", num: "15" },
   { id: "tooltips", label: "Tooltips", num: "16" },
+  { id: "inline-alert", label: "Inline Alert", num: "17" },
 ];
 
 // ---------------------------------------------------------------------------
@@ -2490,6 +2492,43 @@ function AvatarsSection() {
 }
 
 // ---------------------------------------------------------------------------
+// Inline Alert Section
+// ---------------------------------------------------------------------------
+
+function InlineAlertSection() {
+  return (
+    <div className="flex flex-col gap-16">
+
+      {/* ── In context ─────────────────────────────────────────────────── */}
+      <div className="flex flex-col gap-6">
+        <h3 className="text-xs font-mono uppercase tracking-widest text-[var(--color-text-muted)]">In a modal</h3>
+        <div className="w-[568px] max-w-full flex flex-col gap-6 p-6 rounded-3xl border border-[var(--color-border-subtle)] bg-[var(--color-surface-sunken)]">
+          <div className="flex flex-col gap-4">
+            <TextInput label="Vault name" value="Operations" onChange={() => {}} />
+            <InlineAlert>Couldn&apos;t create the vault. Your details are still here, so try again.</InlineAlert>
+          </div>
+          <div className="pt-4 border-t border-[var(--color-border-subtle)]">
+            <Button variant="brand" appearance="filled" flat className="w-full justify-center">Create vault</Button>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Usage ──────────────────────────────────────────────────────── */}
+      <div className="flex flex-col gap-6">
+        <h3 className="text-xs font-mono uppercase tracking-widest text-[var(--color-text-muted)]">Usage</h3>
+        <ul className="flex flex-col gap-2 text-sm text-[var(--color-text-secondary)] max-w-[640px] list-disc pl-5">
+          <li>For a failure that doesn&apos;t belong to one field, such as a save that didn&apos;t go through. Field errors use <code className="font-mono text-[var(--color-text-primary)]">state=&quot;error&quot;</code> on TextInput or Dropdown.</li>
+          <li>Place it last in the form body, just above the submit row.</li>
+          <li>Say what failed and what the user can do. Keep their input so retrying is one click.</li>
+          <li>Clear it when the user edits a field or tries again.</li>
+          <li>It renders with <code className="font-mono text-[var(--color-text-primary)]">role=&quot;alert&quot;</code>, so screen readers announce it when it appears.</li>
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Tooltips Section
 // ---------------------------------------------------------------------------
 
@@ -4721,6 +4760,10 @@ export default function AtomsPage() {
             ================================================================ */}
         <Section id="tooltips" num="16" title="Tooltips" subtitle="Contextual overlays — label, rich, action, and guided tour. Portal-rendered with direction-aware spring animations and 12 placements.">
           <TooltipsSection />
+        </Section>
+
+        <Section id="inline-alert" num="17" title="Inline Alert" subtitle="A form-level error for failures that don't belong to a single field. Sits above the submit row and clears on the next edit.">
+          <InlineAlertSection />
         </Section>
 
         <div className="max-w-[1040px] mx-auto w-full pt-32 border-t border-white/[0.04]">

@@ -184,7 +184,7 @@ export default function ButtonPlayground() {
                             onClick={handleCopy}
                             className="text-xs flex items-center gap-1.5 text-[var(--color-text-secondary)] hover:text-white transition-colors cursor-pointer"
                         >
-                            {copied ? <RiCheckLine size={14} className="text-[var(--color-success)]" /> : <RiFileCopyLine size={14} />}
+                            {copied ? <RiCheckLine size={14} className="text-[var(--color-icon-success)]" /> : <RiFileCopyLine size={14} />}
                             {copied ? "Copied" : "Copy code"}
                         </button>
                     </div>

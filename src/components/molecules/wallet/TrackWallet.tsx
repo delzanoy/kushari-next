@@ -4,11 +4,13 @@ import { useState, useEffect } from "react";
 import { RiWalletLine, RiCloseLine, RiCloseCircleFill } from "@remixicon/react";
 import { useModalContext } from "@/components/molecules/modal/Modal";
 import { TextInput } from "@/components/atoms/TextInput";
+import { InlineAlert } from "@/components/atoms/InlineAlert";
 import { RadioGroup, RadioButton } from "@/components/atoms/RadioButton";
 import { Button } from "@/components/atoms/Button";
 import { IconButton } from "@/components/atoms/IconButton";
 import { Tooltip } from "@/components/atoms/Tooltip";
 import { createTrackedWallet } from "@/lib/mock-cache";
+import { MODAL_WIDTH } from "@/components/molecules/modal/Modal";
 
 interface TrackWalletProps {
     onClose?: () => void;
@@ -124,8 +126,16 @@ export default function TrackWallet({ onClose, onWalletTracked }: TrackWalletPro
         return isValid;
     };
 
+    const [submitError, setSubmitError] = useState("");
+
+    // Any edit, or switching wallet type, dismisses the failure message
+    useEffect(() => {
+        setSubmitError("");
+    }, [selectedWalletType, ethereumAddress, ethereumName, binancePublicKey, binanceSecretKey, binanceName]);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        setSubmitError("");
         let isValid = false;
 
         if (selectedWalletType === "ethereum") {
@@ -171,7 +181,7 @@ export default function TrackWallet({ onClose, onWalletTracked }: TrackWalletPro
 
         } catch (error) {
             console.error("Error tracking wallet:", error);
-            alert("Failed to track wallet. Please try again.");
+            setSubmitError("Couldn't start tracking this wallet. Your details are still here, so try again.");
         } finally {
             setIsSubmitting(false);
             setStatus('idle');
@@ -179,7 +189,7 @@ export default function TrackWallet({ onClose, onWalletTracked }: TrackWalletPro
     };
 
     return (
-        <form onSubmit={handleSubmit} className="flex w-[500px] p-4 flex-col items-start gap-6 rounded-3xl border border-[var(--color-border-subtle)] bg-[var(--color-surface-sunken)] shadow-2xl">
+        <form onSubmit={handleSubmit} className={`flex ${MODAL_WIDTH.standard} p-4 flex-col items-start gap-6 rounded-3xl border border-[var(--color-border-subtle)] bg-[var(--color-surface-sunken)] shadow-2xl`}>
             {/* Header Section */}
             <div className="flex flex-col items-start gap-3 self-stretch">
                 <div className="flex justify-between items-center self-stretch">
@@ -293,6 +303,10 @@ export default function TrackWallet({ onClose, onWalletTracked }: TrackWalletPro
                             />
                         </div>
                     </>
+                )}
+
+                {submitError && (
+                    <InlineAlert>{submitError}</InlineAlert>
                 )}
             </div>
 

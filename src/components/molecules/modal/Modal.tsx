@@ -5,6 +5,20 @@ import { motion } from "framer-motion";
 
 export type ModalVariant = "default" | "danger" | "success" | "wide";
 
+/**
+ * The three modal widths. Every modal panel takes its width from here.
+ * - wide:     multi-step flows, proposal review, settings
+ * - standard: forms (create, track, add, deposit)
+ * - small:    confirmations and short messages
+ */
+export const MODAL_WIDTH = {
+  wide: "w-[1372px] max-w-full",
+  standard: "w-[568px] max-w-full",
+  small: "w-[420px] max-w-full",
+} as const;
+
+export type ModalSize = keyof typeof MODAL_WIDTH;
+
 export type ModalProps = {
   title?: React.ReactNode;
   subtitle?: React.ReactNode;

@@ -7,12 +7,14 @@ import {
   RiCloseCircleFill 
 } from '@remixicon/react';
 import { IconButton } from '@/components/atoms/IconButton';
+import { InlineAlert } from "@/components/atoms/InlineAlert";
 import { Button } from '@/components/atoms/Button';
 import { TextInput } from '@/components/atoms/TextInput';
 import { RadioGroup, RadioButton } from '@/components/atoms/RadioButton';
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, DropdownSearch } from '@/components/atoms/Dropdown';
 import { AddressCardProps } from "../addresses/types";
 import { createGroup } from '@/lib/mock-cache';
+import { MODAL_WIDTH } from "@/components/molecules/modal/Modal";
 
 interface CreateGroupModalProps {
     onClose: () => void;
@@ -85,7 +87,7 @@ export default function CreateGroupModal({ onClose, addresses = [], onGroupCreat
     return (
         <form 
             onSubmit={handleSubmit} 
-            className="flex w-[568px] p-6 flex-col items-start gap-8 rounded-2xl border border-[var(--color-border-subtle)] bg-[var(--color-surface-elevated)] shadow-[var(--shadow-2xl)]"
+            className={`flex ${MODAL_WIDTH.standard} p-6 flex-col items-start gap-8 rounded-2xl border border-[var(--color-border-subtle)] bg-[var(--color-surface-elevated)] shadow-[var(--shadow-2xl)]`}
         >
             <div className="flex flex-col items-start gap-2 self-stretch">
                 <div className="flex justify-between items-start self-stretch">
@@ -204,9 +206,7 @@ export default function CreateGroupModal({ onClose, addresses = [], onGroupCreat
                 )}
 
                 {error && !error.includes('name') && (
-                    <div className="text-sm text-[var(--color-text-danger)] bg-[rgba(239,68,68,0.1)] px-3 py-2 rounded w-full tracking-tight">
-                        {error}
-                    </div>
+                    <InlineAlert>{error}</InlineAlert>
                 )}
             </div>
 

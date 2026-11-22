@@ -40,6 +40,7 @@ import {
 import { Checkbox } from "@/components/atoms/Checkbox";
 import { SidebarNavGroup, SidebarNavItem } from "@/components/molecules/SidebarNav";
 import { useMembers } from "@/hooks/useData";
+import { MODAL_WIDTH } from "@/components/molecules/modal/Modal";
 
 export type SettingsTab = "members" | "workspace" | "email" | "others" | "integrations";
 
@@ -111,7 +112,7 @@ export function SettingsModal({
 
   return (
     <motion.div
-      className="relative flex flex-col w-[1372px] max-w-[calc(100vw-32px)] h-[840px] max-h-[calc(100vh-32px)] rounded-[28px] border border-[var(--color-border-subtle)] bg-[var(--color-surface-sunken)] backdrop-blur-2xl text-white shadow-2xl overflow-hidden outline-none select-none"
+      className={`relative flex flex-col ${MODAL_WIDTH.wide} h-[840px] max-h-[calc(100vh-32px)] rounded-[28px] border border-[var(--color-border-subtle)] bg-[var(--color-surface-sunken)] backdrop-blur-2xl text-white shadow-2xl overflow-hidden outline-none select-none`}
     >
       {/* ── Top Left Header Bar: Workspace back button ─────────────────── */}
       <div className="flex items-center justify-between px-6 pt-5 pb-2 shrink-0">
@@ -602,7 +603,7 @@ function MembersTab() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-[420px] max-w-full rounded-2xl border border-white/10 bg-[#161618] p-6 shadow-2xl flex flex-col gap-4 text-white"
+              className={`${MODAL_WIDTH.small} rounded-2xl border border-white/10 bg-[#161618] p-6 shadow-2xl flex flex-col gap-4 text-white`}
             >
               <div className="flex items-center justify-between">
                 <h3 className="text-lg font-semibold tracking-tight">Invite new member</h3>

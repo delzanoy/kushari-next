@@ -26,6 +26,7 @@ import { TertiaryButton } from "@/components/atoms/TertiaryButton";
 import { IconButton } from "@/components/atoms/IconButton";
 import { Avatar } from "@/components/atoms/Avatar";
 import { Button } from "@/components/atoms/Button";
+import { MODAL_WIDTH } from "@/components/molecules/modal/Modal";
 
 interface Props {
     proposal: Proposal & { showDate?: boolean; isFirstOfDate?: boolean };
@@ -263,7 +264,7 @@ export default function ProposalCard({ proposal, addresses, wallets, uniqueClass
     const handleAction = () => {
         open(
             <Modal onClose={closeTop}>
-                <div className="flex w-[400px] p-6 flex-col items-center gap-4 rounded-3xl border border-[var(--color-border-subtle)] bg-[var(--color-surface-sunken)] shadow-2xl text-center">
+                <div className={`flex ${MODAL_WIDTH.small} p-6 flex-col items-center gap-4 rounded-3xl border border-[var(--color-border-subtle)] bg-[var(--color-surface-sunken)] shadow-2xl text-center`}>
                     <h3 className="text-[var(--color-text-primary)] text-lg font-semibold">
                         {proposal.status === ProposalStatus.READY ? "Execute Proposal" :
                             proposal.status === ProposalStatus.FAILED || proposal.status === ProposalStatus.FAILED_REJECTED ? "Retry Proposal" :

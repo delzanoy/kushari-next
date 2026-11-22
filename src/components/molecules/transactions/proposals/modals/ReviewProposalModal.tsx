@@ -40,6 +40,7 @@ import { RecipientDisplay } from "../../RecipientDisplay";
 import { formatDollars, formatCents } from "@/lib/formatters";
 import { ProposalStatus, type Proposal } from "../types";
 import type { AddressCardProps } from "@/components/molecules/address-book/addresses/types";
+import { MODAL_WIDTH } from "@/components/molecules/modal/Modal";
 
 // ─── Preset Avatars ───────────────────────────────────────────────────────────
 
@@ -396,7 +397,7 @@ export default function ReviewProposalModal({
     <div
       ref={modalRef}
       tabIndex={-1}
-      className="flex flex-col w-[1372px] max-w-full p-4 rounded-3xl border border-[var(--color-border-subtle)] bg-[var(--color-surface-sunken)] backdrop-blur-xl shadow-2xl gap-6 outline-none select-none"
+      className={`flex flex-col ${MODAL_WIDTH.wide} p-4 rounded-3xl border border-[var(--color-border-subtle)] bg-[var(--color-surface-sunken)] backdrop-blur-xl shadow-2xl gap-6 outline-none select-none`}
       role="dialog"
       aria-label="Review proposal modal"
     >

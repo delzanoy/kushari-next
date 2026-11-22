@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button } from '@/components/atoms/Button';
+import { MODAL_WIDTH } from "@/components/molecules/modal/Modal";
 
 interface FeatureUnderDevelopmentProps {
     onClose?: () => void;
@@ -7,7 +8,7 @@ interface FeatureUnderDevelopmentProps {
 
 export default function FeatureUnderDevelopment({ onClose }: FeatureUnderDevelopmentProps) {
     return (
-        <div className="flex w-[400px] p-4 flex-col items-center gap-6 rounded-3xl border border-[var(--color-border-subtle)] bg-[var(--color-surface-sunken)] shadow-2xl relative">
+        <div className={`flex ${MODAL_WIDTH.small} p-4 flex-col items-center gap-6 rounded-3xl border border-[var(--color-border-subtle)] bg-[var(--color-surface-sunken)] shadow-2xl relative`}>
             <div className="flex flex-col items-center gap-2">
                 <span className="text-[var(--color-text-primary)] text-xl font-medium tracking-tight">
                     Coming Soon
