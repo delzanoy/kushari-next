@@ -6,6 +6,7 @@ import {
   DropdownTrigger,
   DropdownMenu,
   DropdownItem,
+  DropdownSeparator,
 } from "@/components/atoms/Dropdown";
 import { Button } from "@/components/atoms/Button";
 import { RiSearchLine, RiArrowRightSLine } from "@remixicon/react";
@@ -31,6 +32,10 @@ export interface FilterDropdownOption {
   id: string;
   searchText?: string;
   groupKey?: string;
+  /** Secondary text on the right of the option, e.g. a count. */
+  trailingText?: string;
+  /** Draw a divider under this option (hidden while searching). */
+  separatorAfter?: boolean;
 }
 
 export interface FilterField {
@@ -138,9 +143,10 @@ const FilterOptionsPanel: React.FC<FilterOptionsPanelProps> = ({
 
           // Note: using custom DropdownItem-like styling to support opacity/availability states
           return (
+            <React.Fragment key={option.id}>
             <DropdownItem
-              key={option.id}
               icon={option.displayProps.icon}
+              trailingText={option.trailingText}
               selected={isSelected}
               isPrevSelected={isPrevSelected}
               isNextSelected={isNextSelected}
@@ -151,6 +157,8 @@ const FilterOptionsPanel: React.FC<FilterOptionsPanelProps> = ({
             >
               {option.displayProps.fullName}
             </DropdownItem>
+            {option.separatorAfter && nextOption && !searchTerm.trim() && <DropdownSeparator />}
+            </React.Fragment>
           );
         })
       )}
@@ -209,13 +217,6 @@ export const ComplexFilter: React.FC<ComplexFilterProps> = ({
     } else {
       addCriterion(fieldKey, value);
     }
-  };
-
-  const hasSelectedValues = (criterion: FilterCriterion): boolean => {
-    if (Array.isArray(criterion.value)) {
-      return criterion.value.length > 0;
-    }
-    return criterion.value !== "" && criterion.value != null;
   };
 
   // Freeze options on first hover
@@ -301,22 +302,26 @@ export const ComplexFilter: React.FC<ComplexFilterProps> = ({
             {fields.map((field) => {
               const criterion = criteria.find((c) => c.field === field.key);
               const isHovered = hoveredField === field.key;
-              const hasValues = criterion && hasSelectedValues(criterion);
+              const hasValues =
+                !!criterion &&
+                (Array.isArray(criterion.value) ? criterion.value.length > 0 : !!criterion.value);
 
               return (
                 <div
                   key={field.key}
-                  {...pressable({ disabled: !!criterion })}
+                  {...pressable({ expanded: isHovered })}
                   className={cn(
                     "flex items-center justify-between px-2 py-1.5 rounded-md cursor-pointer transition-colors text-xs font-medium",
+                    "text-[var(--color-text-primary)]",
+                    // A field with selections uses the selected-option background from the second level.
                     hasValues
-                      ? "bg-[var(--color-surface-overlay)] text-[var(--color-text-primary)]"
-                      : "text-[var(--color-text-primary)] hover:bg-[var(--color-surface-overlay)]/50",
-                    isHovered && "bg-[var(--color-surface-overlay)]"
+                      ? "bg-[var(--color-control-tint-brand)]"
+                      : cn("hover:bg-[var(--color-surface-overlay)]/50", isHovered && "bg-[var(--color-surface-overlay)]")
                   )}
                   onMouseEnter={() => setHoveredField(field.key)}
                   onClick={() => {
                     if (!criterion) addCriterion(field.key);
+                    setHoveredField(field.key);
                   }}
                 >
                   <div className="flex items-center gap-2">
