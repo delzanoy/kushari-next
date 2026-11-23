@@ -10,6 +10,7 @@ import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { determineMultirecipients } from "./calculations";
 import { BlockchainIconStack } from "@/components/atoms/BlockchainIconStack";
 import { walletIcon } from "@/components/atoms/WalletIcon";
+import { UNCLASSIFIED, unclassifiedOption } from "../unclassified";
 import { transactionTypeIcon } from "@/components/atoms/TransactionTypeIcon";
 
 import {
@@ -117,11 +118,15 @@ export default function TransactionListClient({
         }));
 
         const activeClassifications = classifications.filter(Boolean).sort((a, b) => a.localeCompare(b));
-        const classificationOptions = activeClassifications.map(c => ({
-            id: c,
-            value: c,
-            displayProps: { fullName: c }
-        }));
+        const unclassified = unclassifiedOption(txList.filter(tx => !tx.classification).length);
+        const classificationOptions = [
+            ...(unclassified ? [unclassified] : []),
+            ...activeClassifications.map(c => ({
+                id: c,
+                value: c,
+                displayProps: { fullName: c }
+            })),
+        ];
 
         return [
             {
@@ -235,7 +240,7 @@ export default function TransactionListClient({
                         case 'blockchain':
                             return values.includes(tx.blockchain);
                         case 'classification':
-                            return values.includes(tx.classification);
+                            return values.includes(tx.classification || UNCLASSIFIED);
                         default:
                             return true;
                     }

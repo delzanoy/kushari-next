@@ -104,7 +104,7 @@ export default function ReviewProposalModal({
   const [copiedHash, setCopiedHash] = useState(false);
   const [copiedAddress, setCopiedAddress] = useState(false);
   const [commentText, setCommentText] = useState("");
-  const [classification, setClassification] = useState(proposal.classification || "Payroll");
+  const [classification, setClassification] = useState(proposal.classification ?? "");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [userDecision, setUserDecision] = useState<"approved" | "rejected" | null>(null);
 
@@ -489,7 +489,10 @@ export default function ReviewProposalModal({
           </span>
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2 min-w-0">
-              <BlockchainIconStack blockchain={proposal.blockchain || "Ethereum"} size={16} />
+              {/* leading-[0]: the stack's inner block would otherwise take a 24px text line box */}
+              <span className="flex shrink-0 leading-[0]">
+                <BlockchainIconStack blockchain={proposal.blockchain || "Ethereum"} size={16} />
+              </span>
               <span className="text-sm font-medium text-[var(--color-text-primary)] tracking-tight truncate">
                 {proposal.blockchain || "Ethereum"}
               </span>

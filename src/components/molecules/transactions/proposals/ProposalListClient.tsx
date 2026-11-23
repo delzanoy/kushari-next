@@ -11,6 +11,7 @@ import { ComplexFilter, FilterCriterion, FilterField, FilterDropdownOption } fro
 import { IconButton } from "@/components/atoms/IconButton";
 import { TextInput } from "@/components/atoms/TextInput";
 import { Button } from "@/components/atoms/Button";
+import { UNCLASSIFIED, unclassifiedOption } from "../unclassified";
 import { motion } from "framer-motion";
 import {
     RiSearchLine,
@@ -337,7 +338,7 @@ export default function ProposalListClient({
                 }
                 return "";
             case "classification":
-                return proposal.classification || "";
+                return proposal.classification || UNCLASSIFIED;
             case "status":
                 return proposal.status || "";
             default:
@@ -495,7 +496,8 @@ export default function ProposalListClient({
     }, [proposals, addresses]);
 
     const classificationOptions = useMemo((): FilterDropdownOption[] => {
-        return classificationsList.filter(Boolean).map(c => ({
+        const unclassified = unclassifiedOption(proposalList.filter(p => !p.classification).length);
+        return [...(unclassified ? [unclassified] : []), ...classificationsList.filter(Boolean).map(c => ({
             value: c,
             id: c,
             searchText: c.toLowerCase(),
@@ -505,8 +507,8 @@ export default function ProposalListClient({
                 </div>
             ),
             displayProps: { fullName: c }
-        }));
-    }, [classificationsList]);
+        }))];
+    }, [classificationsList, proposalList]);
 
     const filteredAllProposals = useMemo(() => {
         let filtered = categorizedProposals;
