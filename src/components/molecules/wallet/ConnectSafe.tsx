@@ -17,7 +17,7 @@ import { Button } from "@/components/atoms/Button";
 import { InlineAlert } from "@/components/atoms/InlineAlert";
 import { IconButton } from "@/components/atoms/IconButton";
 import { TextInput } from "@/components/atoms/TextInput";
-import { Avatar } from "@/components/atoms/Avatar";
+import { Avatar, presetForName } from "@/components/atoms/Avatar";
 import { Tooltip } from "@/components/atoms/Tooltip";
 import {
     Dropdown,
@@ -61,21 +61,6 @@ type WalletState = "idle" | "connecting" | "connected" | "detecting";
 type StepState = "connect" | "locate" | "assign";
 
 const steps: StepState[] = ["connect", "locate", "assign"];
-
-const AVATAR_PRESETS = [
-    "Cyan Dusk", "Deep Sea", "Midnight", "Ember", "Sunset",
-    "Rose Gold", "Emerald", "Aurora", "Neon", "Acid",
-    "Chromatic", "Oil Slick", "Candy"
-];
-
-const getPresetForUser = (username: string = "") => {
-    let hash = 0;
-    for (let i = 0; i < username.length; i++) {
-        hash = username.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    const index = Math.abs(hash) % AVATAR_PRESETS.length;
-    return AVATAR_PRESETS[index];
-};
 
 // ─── Inline Brand SVGs ────────────────────────────────────────────────────────
 
@@ -126,7 +111,6 @@ export default function ConnectSafe({ onClose, members: propMembers = [], onSafe
 
     const [localMembers, setLocalMembers] = useState<Member[]>(propMembers);
     const [hoveredWallet, setHoveredWallet] = useState<WalletType | null>(null);
-
 
     useEffect(() => {
         setLocalMembers(propMembers);
@@ -900,7 +884,7 @@ export default function ConnectSafe({ onClose, members: propMembers = [], onSafe
                                                                             <DropdownItem
                                                                                 key={member.email}
                                                                                 selected={currentSelectedEmail === member.email}
-                                                                                icon={<Avatar name={memberLabel(member)} size="xs" preset={getPresetForUser(memberLabel(member))} />}
+                                                                                icon={<Avatar name={memberLabel(member)} size="xs" preset={presetForName(memberLabel(member))} />}
                                                                                 description={member.name ? member.email : "Invited"}
                                                                                 onSelect={() => handleOwnerChange(address, member.email)}
                                                                             >
@@ -933,7 +917,7 @@ export default function ConnectSafe({ onClose, members: propMembers = [], onSafe
                                                         {currentSelectedEmail && (
                                                             currentSelectedMember ? (
                                                                 <div className="flex items-center gap-2 min-w-0 text-xs font-semibold leading-none text-[var(--color-text-success)]">
-                                                                    <Avatar name={memberLabel(currentSelectedMember)} size="xs" preset={getPresetForUser(memberLabel(currentSelectedMember))} />
+                                                                    <Avatar name={memberLabel(currentSelectedMember)} size="xs" preset={presetForName(memberLabel(currentSelectedMember))} />
                                                                     <span className="truncate max-w-[150px] text-white">
                                                                         {memberLabel(currentSelectedMember)}
                                                                     </span>

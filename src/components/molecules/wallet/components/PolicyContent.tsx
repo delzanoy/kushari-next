@@ -1,7 +1,7 @@
 import React, { memo, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from "@/components/atoms/Button";
-import { Avatar } from "@/components/atoms/Avatar";
+import { Avatar, presetForName } from "@/components/atoms/Avatar";
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, DropdownSearch, DropdownCreateNew } from "@/components/atoms/Dropdown";
 import { RiPencilLine, RiSearchLine, RiCloseLine } from "@remixicon/react";
 import { RadioButton, RadioGroup } from "@/components/atoms/RadioButton";
@@ -19,12 +19,6 @@ interface PolicyContentProps {
     members?: Member[];
 }
 
-const AVATAR_PRESETS = [
-    "Cyan Dusk", "Deep Sea", "Midnight", "Ember", "Sunset",
-    "Rose Gold", "Emerald", "Aurora", "Neon", "Acid",
-    "Chromatic", "Oil Slick", "Candy"
-];
-
 const SUPPORTED_NETWORKS = [
     "Ethereum", "Polygon", "Arbitrum", "Optimism",
     "Base", "Solana", "Bitcoin", "Avalanche", "BSC",
@@ -39,17 +33,6 @@ const getDaysAgo = (username: string) => {
         }
     }
     return (Math.abs(hash) % 10) + 1;
-};
-
-const getPresetForUser = (username: string, member?: any) => {
-    if (member?.avatarPreset) return member.avatarPreset;
-    if (!username) return AVATAR_PRESETS[0];
-    let hash = 0;
-    for (let i = 0; i < username.length; i++) {
-        hash = username.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    const index = Math.abs(hash) % AVATAR_PRESETS.length;
-    return AVATAR_PRESETS[index];
 };
 
 const NetworkListDisplay = ({ networks, isEditing, onRemove }: { networks: string | string[] | undefined, isEditing?: boolean, onRemove?: (network: string) => void }) => {
@@ -124,7 +107,7 @@ const ApproverCard = memo(({ member, isCurrentUser, userPreset, userPins, onRemo
         <div className="flex items-center justify-between w-full p-2 hover:bg-white/5 rounded-lg transition-colors cursor-default gap-4" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center gap-[12px] w-[200px] shrink-0">
                 <div className="relative flex items-center justify-center">
-                    <Avatar name={member.name} size="sm" preset={isCurrentUser ? userPreset : getPresetForUser(member.name, member)} pins={isCurrentUser ? (userPins || undefined) : undefined} />
+                    <Avatar name={member.name} size="sm" preset={isCurrentUser ? userPreset : presetForName(member.name, member?.avatarPreset)} pins={isCurrentUser ? (userPins || undefined) : undefined} />
                 </div>
                 <div className="flex flex-col items-start gap-[1px] min-w-0">
                     <span className="text-[#F8FCFF] font-[Geist] text-sm not-italic font-semibold leading-[normal] tracking-[0.7px] truncate max-w-full">{member.name}</span>
@@ -369,7 +352,7 @@ const PolicyContent = memo(({ wallet, cryptocurrencies = [], members = [] }: Pol
                                     return (
                                         <div key={member.id} className="flex items-start gap-[12px]">
                                             <div className="relative flex items-center justify-center">
-                                                <Avatar name={member.name} size="sm" preset={isCurrentUser ? userPreset : getPresetForUser(member.name, member)} pins={isCurrentUser ? (userPins || undefined) : undefined} />
+                                                <Avatar name={member.name} size="sm" preset={isCurrentUser ? userPreset : presetForName(member.name, member?.avatarPreset)} pins={isCurrentUser ? (userPins || undefined) : undefined} />
                                             </div>
                                             <div className="flex flex-col items-start gap-[1px]">
                                                 <span className="text-[#F8FCFF] font-[Geist] text-sm not-italic font-semibold leading-[normal] tracking-[0.7px]">{member.name}</span>
@@ -416,7 +399,7 @@ const PolicyContent = memo(({ wallet, cryptocurrencies = [], members = [] }: Pol
                                                             key={member.id}
                                                             checkStyle="checkbox"
                                                             selected={isSelected}
-                                                            icon={<Avatar name={member.name} size="xs" preset={getPresetForUser(member.name)} />}
+                                                            icon={<Avatar name={member.name} size="xs" preset={presetForName(member.name)} />}
                                                             description={member.email}
                                                             onSelect={() => {
                                                                 if (isSelected) {
@@ -631,7 +614,7 @@ const PolicyContent = memo(({ wallet, cryptocurrencies = [], members = [] }: Pol
                         >
                             <div className="flex flex-col gap-[12px]">
                                 <span className={titleClass}>Network limits</span>
-                                <span className={subTitleClass}>Create a block or allow only list for blockchain network here.</span>
+                                <span className={subTitleClass}>Create a block or allow only list for networks here.</span>
                             </div>
 
                             <div className="flex flex-col gap-[16px] w-full">

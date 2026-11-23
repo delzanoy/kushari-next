@@ -197,6 +197,30 @@ function presetPins(name: string): Pin[] {
   return SHADER_PRESETS[name].map((d) => ({ ...d, id: `ps-${++_psc}` }));
 }
 
+// ─── Preset from a name ──────────────────────────────────────────────────────
+
+/**
+ * The presets name-based avatars pick from. Order matters: changing it, or
+ * adding to it, gives existing people a different avatar.
+ */
+export const NAME_AVATAR_PRESETS = [
+  "Cyan Dusk", "Deep Sea", "Midnight", "Ember", "Sunset", "Rose Gold", "Emerald",
+  "Aurora", "Neon", "Acid", "Chromatic", "Oil Slick", "Candy",
+] as const;
+
+/**
+ * A stable avatar preset for a person: the one they chose (`chosen`), or one
+ * picked from their name, so the same name always gets the same gradient.
+ */
+export function presetForName(name: string = "", chosen?: string): string {
+  if (chosen) return chosen;
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return NAME_AVATAR_PRESETS[Math.abs(hash) % NAME_AVATAR_PRESETS.length];
+}
+
 // ─── Size system ─────────────────────────────────────────────────────────────
 
 export type AvatarSize = "xs" | "sm" | "md" | "lg" | "xl" | "2xl" | "3xl";

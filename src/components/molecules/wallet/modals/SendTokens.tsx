@@ -5,29 +5,27 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { useGroups, useAddresses } from "@/hooks/useData";
 import {
-    RiCloseLine,
-    RiCloseCircleFill,
-    RiArrowRightUpLine,
-    RiSafeLine,
-    RiWallet3Line,
-    RiWalletLine,
-    RiSendPlaneFill,
-    RiCheckLine,
-    RiQrCodeLine,
-    RiFileCopyLine,
-    RiArrowLeftSLine,
-    RiAddLine,
-    RiDeleteBinLine,
-    RiDeleteBinFill,
-    RiInformationLine,
-    RiUploadCloud2Line,
-    RiFileTextLine,
-    RiGroupLine,
-    RiFileDownloadLine,
-    RiSearchLine,
-    RiArrowUpLine,
-    RiPriceTag3Line,
-    RiErrorWarningLine,
+  RiCloseLine,
+  RiCloseCircleFill,
+  RiArrowRightUpLine,
+  RiSafeLine,
+  RiWallet3Line,
+  RiSendPlaneFill,
+  RiCheckLine,
+  RiQrCodeLine,
+  RiFileCopyLine,
+  RiArrowLeftSLine,
+  RiAddLine,
+  RiDeleteBinLine,
+  RiDeleteBinFill,
+  RiInformationLine,
+  RiUploadCloud2Line,
+  RiFileTextLine,
+  RiGroupLine,
+  RiFileDownloadLine,
+  RiSearchLine,
+  RiArrowUpLine,
+  RiErrorWarningLine,
 } from "@remixicon/react";
 import { QRCodeSVG } from 'qrcode.react';
 import { formatDollars, formatCents } from "@/lib/formatters";
@@ -44,19 +42,10 @@ import {
     DropdownItem,
 } from "@/components/atoms/Dropdown";
 import { BlockchainIconStack } from "@/components/atoms/BlockchainIconStack";
-import { GnosisSafeIcon } from "@/media/icons/GnosisSafeIcon";
 import type { WalletSummary, Wallet, Member } from "../types";
 import { MODAL_WIDTH } from "@/components/molecules/modal/Modal";
 import { pressable } from "@/lib/pressable";
-
-const renderWalletIcon = (walletType?: number, size = 16) => {
-    const iconMap: Record<number, React.ReactElement> = {
-        1: <RiSafeLine size={size} />,
-        2: <GnosisSafeIcon size={size} />,
-        3: <RiWalletLine size={size} />,
-    };
-    return (walletType && iconMap[walletType]) || <RiSafeLine size={size} />;
-};
+import { walletIcon } from "@/components/atoms/WalletIcon";
 
 interface SendTokensProps {
     wallet?: WalletSummary | Wallet;
@@ -903,7 +892,7 @@ export default function SendTokens({ wallet: propWallet, selectedWallet: propSel
                             Transfer proposed
                         </h2>
                         <div className="flex items-center gap-2 text-sm text-[var(--color-text-secondary)] flex-wrap">
-                            <span className="shrink-0">{renderWalletIcon(selectedWallet.type, 16)}</span>
+                            <span className="shrink-0">{walletIcon(selectedWallet.type, { fallback: 1 })}</span>
                             <span className="font-medium text-white">{selectedWallet.name}</span>
                             <span className="text-[var(--color-text-muted)] text-xs font-mono">
                                 {getThresholdDesc(selectedWallet)}
@@ -1043,7 +1032,7 @@ export default function SendTokens({ wallet: propWallet, selectedWallet: propSel
                                                     description={walletThresholdDescription}
                                                     trailingText={walletAvailableBalance}
                                                     trailingIconButton={<CopyQrButton wallet={selectedWallet} />}
-                                                    leadingIcon={renderWalletIcon(selectedWallet.type)}
+                                                    leadingIcon={walletIcon(selectedWallet.type, { fallback: 1 })}
                                                 />
                                                 <DropdownMenu minWidth={240}>
                                                     {sourceWalletsList.map((w) => {
@@ -1051,7 +1040,7 @@ export default function SendTokens({ wallet: propWallet, selectedWallet: propSel
                                                         return (
                                                             <DropdownItem
                                                                 key={w.id}
-                                                                icon={renderWalletIcon(w.type)}
+                                                                icon={walletIcon(w.type, { fallback: 1 })}
                                                                 description={getThresholdDesc(w)}
                                                                 trailingText={getBalanceDesc(w)}
                                                                 selected={isSel}
@@ -1095,7 +1084,7 @@ export default function SendTokens({ wallet: propWallet, selectedWallet: propSel
                                     {/* Row 2 */}
                                     <div className="flex w-full">
                                         <div className="w-1/2 pr-3 flex flex-col gap-2">
-                                            <Dropdown disabled={currentStep !== "source"} open={networkOpen} onOpenChange={setNetworkOpen} label="Blockchain network">
+                                            <Dropdown disabled={currentStep !== "source"} open={networkOpen} onOpenChange={setNetworkOpen} label="Network">
                                                 <DropdownTrigger
                                                     placeholder="Select network to use"
                                                     label={selectedNetwork ? capitalizeFirstLetter(selectedNetwork) : undefined}
@@ -1946,7 +1935,6 @@ export default function SendTokens({ wallet: propWallet, selectedWallet: propSel
                                                 <DropdownTrigger
                                                     placeholder="Select or create classification"
                                                     label={selectedClassification || undefined}
-                                                    leadingIcon={<RiPriceTag3Line size={16} />}
                                                 />
                                                 <DropdownMenu minWidth={220} maxHeight={220} align="end">
                                                     {/* Search Bar Header */}

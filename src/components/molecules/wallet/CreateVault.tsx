@@ -12,7 +12,7 @@ import { TextInput } from "@/components/atoms/TextInput";
 import { InlineAlert } from "@/components/atoms/InlineAlert";
 import { Button } from "@/components/atoms/Button";
 import { IconButton } from "@/components/atoms/IconButton";
-import { Avatar } from "@/components/atoms/Avatar";
+import { Avatar, presetForName } from "@/components/atoms/Avatar";
 import { Tooltip } from "@/components/atoms/Tooltip";
 import {
     Dropdown,
@@ -46,31 +46,6 @@ interface VaultFormData {
     approvers: string[];
     threshold: number;
 }
-
-const AVATAR_PRESETS = [
-    "Cyan Dusk",
-    "Deep Sea",
-    "Midnight",
-    "Ember",
-    "Sunset",
-    "Rose Gold",
-    "Emerald",
-    "Aurora",
-    "Neon",
-    "Acid",
-    "Chromatic",
-    "Oil Slick",
-    "Candy"
-];
-
-const getPresetForUser = (username: string = "") => {
-    let hash = 0;
-    for (let i = 0; i < username.length; i++) {
-        hash = username.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    const index = Math.abs(hash) % AVATAR_PRESETS.length;
-    return AVATAR_PRESETS[index];
-};
 
 export default function CreateVault({ onClose, members: propMembers = [], onVaultCreated }: CreateVaultProps) {
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -357,7 +332,7 @@ export default function CreateVault({ onClose, members: propMembers = [], onVaul
                                                 key={member.email}
                                                 checkStyle="checkbox"
                                                 selected={isSelected}
-                                                icon={<Avatar name={memberLabel(member)} size="xs" preset={getPresetForUser(memberLabel(member))} />}
+                                                icon={<Avatar name={memberLabel(member)} size="xs" preset={presetForName(memberLabel(member))} />}
                                                 description={member.name ? member.email : "Invited"}
                                                 onSelect={() => handleToggleApprover(member.email)}
                                             >
@@ -395,7 +370,7 @@ export default function CreateVault({ onClose, members: propMembers = [], onVaul
                                         key={email}
                                         className="flex items-center gap-2.5 pl-2 pr-1.5 py-1.5 rounded-full border border-[var(--color-border-subtle)] bg-[var(--color-surface-overlay)]/10 hover:border-[var(--color-border-default)] transition-colors duration-150 select-none max-w-full"
                                     >
-                                        <Avatar name={displayName} size="xs" preset={getPresetForUser(displayName)} />
+                                        <Avatar name={displayName} size="xs" preset={presetForName(displayName)} />
                                         <div className="flex flex-col min-w-0 pr-1">
                                             <span className="text-[var(--color-text-primary)] text-xs font-semibold leading-tight truncate max-w-[120px]">{displayName}</span>
                                             <span className="text-[var(--color-text-muted)] text-[10px] leading-none mt-0.5 truncate max-w-[140px]">{email}</span>
