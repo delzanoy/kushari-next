@@ -3,12 +3,10 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { QRCodeSVG } from 'qrcode.react';
 import {
-    RiSafeLine,
-    RiWalletLine,
-    RiCloseLine,
-    RiCloseCircleFill,
-    RiFileCopyLine,
-    RiCheckLine
+  RiCloseLine,
+  RiCloseCircleFill,
+  RiFileCopyLine,
+  RiCheckLine,
 } from "@remixicon/react";
 
 import { useModalContext } from "@/components/molecules/modal/Modal";
@@ -16,10 +14,10 @@ import { IconButton } from "@/components/atoms/IconButton";
 import { Tooltip } from "@/components/atoms/Tooltip";
 import { BlockchainIconStack } from "@/components/atoms/BlockchainIconStack";
 import { TertiaryButton } from "@/components/atoms/TertiaryButton";
-import { GnosisSafeIcon } from "@/media/icons/GnosisSafeIcon";
 
 import { Wallet, WalletSummary } from "../types";
 import { MODAL_WIDTH } from "@/components/molecules/modal/Modal";
+import { walletIcon } from "@/components/atoms/WalletIcon";
 
 interface MakeDepositProps {
     wallet: Wallet | WalletSummary;
@@ -40,15 +38,6 @@ export default function MakeDeposit({ wallet, onClose }: MakeDepositProps) {
             setShowEscTooltip(false);
         }
     }, [escStage, isTopModal]);
-
-    const renderWalletIcon = (walletType: number) => {
-        const iconMap: Record<number, React.ReactElement> = {
-            1: <RiSafeLine size={24} />,
-            2: <GnosisSafeIcon size={24} />,
-            3: <RiWalletLine size={24} />,
-        };
-        return iconMap[walletType] || <RiSafeLine size={24} />;
-    };
 
     const renderWalletType = (walletType: number) => {
         const typeMap: Record<number, string> = {
@@ -108,7 +97,7 @@ export default function MakeDeposit({ wallet, onClose }: MakeDepositProps) {
             <div className="flex flex-col items-start gap-2.5 self-stretch">
                 <div className="flex justify-between items-start self-stretch">
                     <div className="flex p-2.5 items-center justify-center rounded-xl bg-[var(--color-text-brand)]/[0.08] border border-[var(--color-text-brand)]/[0.12] text-[var(--color-text-brand)]">
-                        {renderWalletIcon(wallet.type)}
+                        {walletIcon(wallet.type, { size: 24, fallback: 1 })}
                     </div>
 
                     <Tooltip content="Esc again to confirm" open={showEscTooltip} placement="bottom">

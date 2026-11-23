@@ -544,6 +544,10 @@ body {
      fade the ring in from their text colour (white) to cyan. */
   * {
     outline-color: var(--color-focus-ring);
+    /* One quiet scrollbar for the whole app: thin, subtle thumb, no track.
+       Same look the Dropdown menus already used. */
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-border-default) transparent;
   }
   :focus-visible {
     outline: 2px solid var(--color-focus-ring);

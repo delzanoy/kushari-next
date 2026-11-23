@@ -11,8 +11,6 @@ import {
   RiFileCopyLine,
   RiExternalLinkLine,
   RiDoubleQuotesL,
-  RiSafeLine,
-  RiWalletLine,
   RiUser3Line,
   RiGasStationLine,
   RiPencilLine,
@@ -30,7 +28,7 @@ import { Button } from "@/components/atoms/Button";
 import { IconButton } from "@/components/atoms/IconButton";
 import { TertiaryButton } from "@/components/atoms/TertiaryButton";
 import { Tooltip } from "@/components/atoms/Tooltip";
-import { Avatar } from "@/components/atoms/Avatar";
+import { Avatar, presetForName } from "@/components/atoms/Avatar";
 import { TextInput } from "@/components/atoms/TextInput";
 import { TextArea } from "@/components/atoms/TextArea";
 import { BlockchainIconStack } from "@/components/atoms/BlockchainIconStack";
@@ -41,23 +39,7 @@ import { formatDollars, formatCents } from "@/lib/formatters";
 import { ProposalStatus, type Proposal } from "../types";
 import type { AddressCardProps } from "@/components/molecules/address-book/addresses/types";
 import { MODAL_WIDTH } from "@/components/molecules/modal/Modal";
-
-// ─── Preset Avatars ───────────────────────────────────────────────────────────
-
-const AVATAR_PRESETS = [
-  "Cyan Dusk", "Deep Sea", "Midnight", "Ember", "Sunset",
-  "Rose Gold", "Emerald", "Aurora", "Neon", "Acid",
-  "Chromatic", "Oil Slick", "Candy"
-];
-
-const getPresetForUser = (name: string): string => {
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) {
-    hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  const index = Math.abs(hash) % AVATAR_PRESETS.length;
-  return AVATAR_PRESETS[index];
-};
+import { walletIcon } from "@/components/atoms/WalletIcon";
 
 const getExplorerUrl = (blockchain: string, id: string) => {
   switch (blockchain.toLowerCase()) {
@@ -380,15 +362,6 @@ export default function ReviewProposalModal({
     }, 600);
   };
 
-  const renderWalletIcon = (walletType?: number) => {
-    switch (walletType) {
-      case 1: return <RiSafeLine size={18} className="text-[var(--color-icon-muted)]" />;
-      case 2: return <GnosisSafeIcon size={18} color="var(--color-icon-muted)" className="text-[var(--color-icon-muted)]" />;
-      case 3: return <RiWalletLine size={18} className="text-[var(--color-icon-muted)]" />;
-      default: return <GnosisSafeIcon size={18} color="var(--color-icon-muted)" className="text-[var(--color-icon-muted)]" />;
-    }
-  };
-
   const calculateApprovedCount = useMemo(() => {
     return approvers.filter((a) => a.status === "approved").length;
   }, [approvers]);
@@ -451,7 +424,7 @@ export default function ReviewProposalModal({
             <span className="text-sm text-[var(--color-text-muted)] font-normal">
               Proposed by
             </span>
-            <Avatar name={initiatorName} size="xs" preset={getPresetForUser(initiatorName)} />
+            <Avatar name={initiatorName} size="xs" preset={presetForName(initiatorName)} />
             <span className="text-sm font-medium text-[var(--color-text-primary)]">
               {initiatorName}
             </span>
@@ -477,7 +450,7 @@ export default function ReviewProposalModal({
           </span>
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2 min-w-0">
-              {renderWalletIcon(proposal.walletType)}
+              {walletIcon(proposal.walletType, { size: 18, muted: true, fallback: 2 })}
               <span className="text-sm font-medium text-[var(--color-text-primary)] tracking-tight truncate">
                 {proposal.wallet || "Company Treasury"}
               </span>
@@ -509,10 +482,10 @@ export default function ReviewProposalModal({
           </div>
         </div>
 
-        {/* Blockchain Network */}
+        {/* Network */}
         <div className="flex flex-col gap-1.5 min-w-0">
           <span className="text-xs font-normal text-[var(--color-text-muted)] tracking-tight">
-            Blockchain network
+            Network
           </span>
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2 min-w-0">
@@ -572,7 +545,7 @@ export default function ReviewProposalModal({
               className="flex flex-col gap-1.5 min-w-0"
             >
               <div className="flex items-center gap-2.5">
-                <Avatar name={app.name} size="xs" preset={getPresetForUser(app.name)} />
+                <Avatar name={app.name} size="xs" preset={presetForName(app.name)} />
                 <span className="text-sm font-medium text-[var(--color-text-primary)] tracking-tight truncate">
                   {app.name}
                   {app.name.toLowerCase().includes("delanoy") && (

@@ -6,16 +6,14 @@ import {
   RiArrowUpLine,
   RiArrowDownLine,
   RiExternalLinkLine,
-  RiSafeLine,
-  RiWalletLine,
 } from "@remixicon/react";
-import { GnosisSafeIcon } from "@/media/icons/GnosisSafeIcon";
 import { Tooltip } from "@/components/atoms/Tooltip";
 import { IconButton } from "@/components/atoms/IconButton";
 import { BlockchainIconStack } from "@/components/atoms/BlockchainIconStack";
 import { formatDollars, formatCents, formatPercent } from "@/lib/formatters";
 import { Asset, getCoinMarketCapUrl } from "./types";
 import { cn } from "@/lib/utils";
+import { walletIcon } from "@/components/atoms/WalletIcon";
 
 interface NonExpandableAssetProps {
   asset: Asset;
@@ -31,19 +29,6 @@ export function NonExpandableAsset({ asset }: NonExpandableAssetProps) {
   const percentChange = asset.percent_change_24h ?? 0;
   const totalTokens = asset.totalTokens ?? 0;
   const usdValue = asset.USD ?? 0;
-
-  const renderWalletIcon = (walletType: number) => {
-    switch (walletType) {
-      case 1:
-        return <RiSafeLine size={16} className="text-[var(--color-icon-muted)]" />;
-      case 2:
-        return <GnosisSafeIcon size={16} color="var(--color-icon-muted)" />;
-      case 3:
-        return <RiWalletLine size={16} className="text-[var(--color-icon-muted)]" />;
-      default:
-        return null;
-    }
-  };
 
   return (
     <motion.div
@@ -137,12 +122,11 @@ export function NonExpandableAsset({ asset }: NonExpandableAssetProps) {
         </div>
 
         <div className="flex w-[146px] items-center gap-2 shrink-0">
-          {renderWalletIcon(singleWallet?.walletType)}
+          {walletIcon(singleWallet?.walletType, { muted: true })}
           <span className="truncate text-sm font-light tracking-tight text-[var(--color-text-muted)]">
             {singleWallet?.name}
           </span>
         </div>
-
 
       </div>
     </motion.div>

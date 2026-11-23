@@ -9,23 +9,20 @@ import { TextInput } from "@/components/atoms/TextInput";
 import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { determineMultirecipients } from "./calculations";
 import { BlockchainIconStack } from "@/components/atoms/BlockchainIconStack";
+import { walletIcon } from "@/components/atoms/WalletIcon";
+import { transactionTypeIcon } from "@/components/atoms/TransactionTypeIcon";
 
 import {
     RiSearchLine,
     RiCloseCircleFill,
-    RiExchangeLine,
-    RiSafe2Line,
-    RiSafeLine,
     RiWalletLine,
     RiArrowLeftSLine,
     RiArrowRightSLine,
-    RiGlobalLine,
+    RiNetworkLine,
     RiDownloadCloud2Line,
     RiBox3Line,
     RiFilter3Line,
-    RiArrowLeftDownLine,
-    RiArrowRightUpLine,
-    RiPriceTag3Line
+    RiShapesLine
 } from "@remixicon/react";
 
 interface TransactionListProps {
@@ -96,19 +93,10 @@ export default function TransactionListClient({
         });
     }, []);
 
-    const renderWalletIcon = (walletType: number) => {
-        switch (walletType) {
-            case 1: return <RiSafeLine size={16} />;
-            case 2: return <RiSafe2Line size={16} />;
-            case 3: return <RiWalletLine size={16} />;
-            default: return <RiSafeLine size={16} />;
-        }
-    };
-
     const typeOptions = [
-        { value: 'received', label: 'Received', icon: <RiArrowLeftDownLine size={16} /> },
-        { value: 'sent', label: 'Sent', icon: <RiArrowRightUpLine size={16} /> },
-        { value: 'interacted', label: 'Interacted', icon: <RiExchangeLine size={16} /> }
+        { value: 'received', label: 'Received', icon: transactionTypeIcon('received') },
+        { value: 'sent', label: 'Sent', icon: transactionTypeIcon('sent') },
+        { value: 'interacted', label: 'Interacted', icon: transactionTypeIcon('interacted') }
     ];
 
     const filterFields = useMemo<FilterField[]>(() => {
@@ -117,7 +105,7 @@ export default function TransactionListClient({
         const walletOptions = uniqueWallets.map(w => ({
             id: w.id?.toString() || w.name,
             value: w.id?.toString() || w.name,
-            displayProps: { fullName: w.name, icon: renderWalletIcon(w.type) }
+            displayProps: { fullName: w.name, icon: walletIcon(w.type, { fallback: 1 }) }
         }));
 
         const uniqueBlockchains = Array.from(new Set(txList.map(tx => tx.blockchain).filter(Boolean)));
@@ -132,7 +120,7 @@ export default function TransactionListClient({
         const classificationOptions = activeClassifications.map(c => ({
             id: c,
             value: c,
-            displayProps: { fullName: c, icon: <RiPriceTag3Line size={16} /> }
+            displayProps: { fullName: c }
         }));
 
         return [
@@ -156,16 +144,16 @@ export default function TransactionListClient({
             },
             {
                 key: 'blockchain',
-                label: 'Blockchain',
+                label: 'Network',
                 type: 'multiselect',
-                icon: <RiGlobalLine size={16} />,
+                icon: <RiNetworkLine size={16} />,
                 options: blockchainOptions
             },
             {
                 key: 'classification',
                 label: 'Classification',
                 type: 'multiselect',
-                icon: <RiPriceTag3Line size={16} />,
+                icon: <RiShapesLine size={16} />,
                 options: classificationOptions
             }
         ];
@@ -333,7 +321,7 @@ export default function TransactionListClient({
         setIsExporting(true);
         try {
             const columns = [
-                "Date", "Transaction ID", "Wallet", "Blockchain", "Direction", "Classification",
+                "Date", "Transaction ID", "Wallet", "Network", "Direction", "Classification",
                 "In amount", "In token", "In USD", "Out amount", "Out token", "Out USD",
                 "Gas fee", "Gas token", "Gas fee USD", "Initiator", "Executer",
             ];

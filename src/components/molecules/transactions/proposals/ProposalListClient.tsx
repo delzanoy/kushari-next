@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useMemo, useRef, useEffect, useCallback } from "react";
-import { Proposal, ProposalCategory, ProposalStatus } from "./types";
+import { PROPOSAL_CATEGORY_LABEL, Proposal, ProposalCategory, ProposalStatus } from "./types";
 import { AddressCardProps } from "@/components/molecules/address-book/addresses/types";
 import ProposalList from "./ProposalList";
 import NavTab from "@/components/atoms/NavTab";
+import { walletIcon } from "@/components/atoms/WalletIcon";
+import { BlockchainIconStack } from "@/components/atoms/BlockchainIconStack";
 import { ComplexFilter, FilterCriterion, FilterField, FilterDropdownOption } from "@/components/molecules/ComplexFilter";
 import { IconButton } from "@/components/atoms/IconButton";
 import { TextInput } from "@/components/atoms/TextInput";
@@ -12,6 +14,11 @@ import { Button } from "@/components/atoms/Button";
 import { motion } from "framer-motion";
 import {
     RiSearchLine,
+    RiWalletLine,
+    RiNetworkLine,
+    RiUserLine,
+    RiShapesLine,
+    RiProgress3Line,
     RiFilter3Line,
     RiArrowLeftSLine,
     RiArrowRightSLine,
@@ -39,11 +46,6 @@ const walletGroups = [
 ];
 
 const ITEMS_PER_PAGE = 25;
-
-const renderWalletIcon = (walletType: number) => {
-    // Return placeholder or name-based emoji/icon since we use remixicon
-    return null;
-};
 
 const renderStatusIcon = (status: ProposalStatus) => {
     switch (status) {
@@ -419,7 +421,7 @@ export default function ProposalListClient({
                 ),
                 displayProps: {
                     fullName: wallet.name,
-                    icon: renderWalletIcon(wallet.walletType)
+                    icon: walletIcon(wallet.walletType, { fallback: 1 })
                 }
             }));
     }, [proposals]);
@@ -452,6 +454,7 @@ export default function ProposalListClient({
             ),
             displayProps: {
                 fullName: network,
+                icon: <BlockchainIconStack blockchain={network} size={16} max={1} />,
             }
         }));
     }, [proposals]);
@@ -567,11 +570,11 @@ export default function ProposalListClient({
     }, [currentPage, totalPages]);
 
     const filterFields: FilterField[] = useMemo(() => [
-        { key: "wallet", label: "Wallet", type: "multiselect", options: walletOptions, groups: walletGroups },
-        { key: "network", label: "Network", type: "multiselect", options: networkOptions },
-        { key: "address", label: "Address", type: "multiselect", options: addressOptions },
-        { key: "classification", label: "Classification", type: "multiselect", options: classificationOptions },
-        { key: "status", label: "Status", type: "multiselect", options: statusOptions }
+        { key: "wallet", label: "Wallet", type: "multiselect", icon: <RiWalletLine size={16} />, options: walletOptions, groups: walletGroups },
+        { key: "network", label: "Network", type: "multiselect", icon: <RiNetworkLine size={16} />, options: networkOptions },
+        { key: "address", label: "Address", type: "multiselect", icon: <RiUserLine size={16} />, options: addressOptions },
+        { key: "classification", label: "Classification", type: "multiselect", icon: <RiShapesLine size={16} />, options: classificationOptions },
+        { key: "status", label: "Status", type: "multiselect", icon: <RiProgress3Line size={16} />, options: statusOptions }
     ], [walletOptions, networkOptions, addressOptions, classificationOptions, statusOptions]);
 
     const activeFilterFields = useMemo(() => {
@@ -674,7 +677,7 @@ export default function ProposalListClient({
                 <div className="flex items-center justify-between w-full border-b border-[var(--color-border-subtle)] pb-px">
                     <div className="flex items-center gap-8">
                         <NavTab
-                            title="Needs approval"
+                            title={PROPOSAL_CATEGORY_LABEL[ProposalCategory.NEEDS_APPROVAL]}
                             titleCount={categoryCounts[ProposalCategory.NEEDS_APPROVAL]}
                             titleColor="cyan"
                             isActive={activeTab === ProposalCategory.NEEDS_APPROVAL}
@@ -684,7 +687,7 @@ export default function ProposalListClient({
                             }}
                         />
                         <NavTab
-                            title="Ready to execute"
+                            title={PROPOSAL_CATEGORY_LABEL[ProposalCategory.READY_TO_EXECUTE]}
                             titleCount={categoryCounts[ProposalCategory.READY_TO_EXECUTE]}
                             titleColor="white"
                             isActive={activeTab === ProposalCategory.READY_TO_EXECUTE}
@@ -694,7 +697,7 @@ export default function ProposalListClient({
                             }}
                         />
                         <NavTab
-                            title="Discarded"
+                            title={PROPOSAL_CATEGORY_LABEL[ProposalCategory.DISCARDED]}
                             titleCount={categoryCounts[ProposalCategory.DISCARDED]}
                             titleColor="red"
                             isActive={activeTab === ProposalCategory.DISCARDED}

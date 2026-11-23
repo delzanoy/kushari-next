@@ -1,26 +1,12 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { GnosisSafeIcon } from "@/media/icons/GnosisSafeIcon";
-import { RiSafeLine, RiWalletLine } from "@remixicon/react";
 import { formatDollars, formatCents, formatPercent } from "@/lib/formatters";
 import type { WalletInfo } from "./types";
+import { walletIcon } from "@/components/atoms/WalletIcon";
 
 export function AssetBreakdown({ wallets }: { wallets: WalletInfo[] }) {
   const sortedWallets = [...wallets].sort((a, b) => b.balance - a.balance);
-
-  const renderWalletIcon = (walletType: number) => {
-    switch (walletType) {
-      case 1:
-        return <RiSafeLine size={16} className="text-[var(--color-icon-muted)]" />;
-      case 2:
-        return <GnosisSafeIcon size={16} color="var(--color-icon-muted)" />;
-      case 3:
-        return <RiWalletLine size={16} className="text-[var(--color-icon-muted)]" />;
-      default:
-        return null;
-    }
-  };
 
   return (
     <motion.div
@@ -49,7 +35,7 @@ export function AssetBreakdown({ wallets }: { wallets: WalletInfo[] }) {
               </div>
             </div>
             <div className="flex w-[146px] items-center gap-2 shrink-0">
-              {renderWalletIcon(wallet.walletType)}
+              {walletIcon(wallet.walletType, { muted: true })}
               <span className="truncate text-sm font-light tracking-tight text-[var(--color-text-secondary)]">
                 {wallet.name}
               </span>

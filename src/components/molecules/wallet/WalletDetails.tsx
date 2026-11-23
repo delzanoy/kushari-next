@@ -23,7 +23,7 @@ import { GnosisSafeIcon } from "@/media/icons/GnosisSafeIcon";
 import type { Wallet, Member } from "./types";
 import type { Cryptocurrency } from "@/components/molecules/assets/types";
 import type { Transaction } from "@/components/molecules/transactions/view-all/types";
-import { ProposalCategory, ProposalStatus, type Proposal } from "@/components/molecules/transactions/proposals/types";
+import { PROPOSAL_CATEGORY_LABEL, ProposalCategory, ProposalStatus, type Proposal } from "@/components/molecules/transactions/proposals/types";
 import { AddressCardProps } from "@/components/molecules/address-book/addresses/types";
 import { WalletInfo } from "@/components/molecules/assets/types";
 
@@ -39,6 +39,7 @@ import PolicyContent from "./components/PolicyContent";
 import MakeDeposit from "./modals/MakeDeposit";
 import SendTokens from "./modals/SendTokens";
 import FeatureUnderDevelopment from "@/components/molecules/FeatureUnderDevelopment";
+import { walletIcon } from "@/components/atoms/WalletIcon";
 
 interface TransactionWithDateInfo extends Transaction {
     showDate: boolean;
@@ -56,23 +57,13 @@ const getTabOrder = (walletType: number) => {
 };
 
 // --- Helper Functions ---
-const getHumanReadableCategory = (category: ProposalCategory): string => {
-    const nameMap: Record<ProposalCategory, string> = {
-        [ProposalCategory.NEEDS_APPROVAL]: "Needs approval",
-        [ProposalCategory.READY_TO_EXECUTE]: "Ready to execute",
-        [ProposalCategory.DISCARDED]: "Discarded",
-    };
-    return nameMap[category] || "Needs approval";
-};
+const getHumanReadableCategory = (category: ProposalCategory): string =>
+    PROPOSAL_CATEGORY_LABEL[category] || PROPOSAL_CATEGORY_LABEL[ProposalCategory.NEEDS_APPROVAL];
 
-const getCategoryFromHumanReadable = (humanReadableName: string): ProposalCategory => {
-    const categoryMap: Record<string, ProposalCategory> = {
-        "Needs approval": ProposalCategory.NEEDS_APPROVAL,
-        "Ready to execute": ProposalCategory.READY_TO_EXECUTE,
-        "Discarded": ProposalCategory.DISCARDED,
-    };
-    return categoryMap[humanReadableName] || ProposalCategory.NEEDS_APPROVAL;
-};
+const getCategoryFromHumanReadable = (humanReadableName: string): ProposalCategory =>
+    (Object.keys(PROPOSAL_CATEGORY_LABEL) as ProposalCategory[]).find(
+        (c) => PROPOSAL_CATEGORY_LABEL[c] === humanReadableName,
+    ) || ProposalCategory.NEEDS_APPROVAL;
 
 const capitalizeFirstLetter = (str: string): string => {
     if (!str || str.length === 0) return str;
@@ -85,15 +76,6 @@ const renderTitleWalletIcon = (walletType: number) => {
         1: <RiSafeLine size={24} />,
         2: <GnosisSafeIcon size={24} />,
         3: <RiWalletLine size={24} />,
-    };
-    return iconMap[walletType] || null;
-};
-
-const renderWalletIcon = (walletType: number) => {
-    const iconMap: Record<number, React.ReactElement> = {
-        1: <RiSafeLine size={16} />,
-        2: <GnosisSafeIcon size={16} />,
-        3: <RiWalletLine size={16} />,
     };
     return iconMap[walletType] || null;
 };
@@ -165,7 +147,7 @@ const WalletHeader = memo(({
                         <DropdownTrigger>
                             <TertiaryButton
                                 size="sm"
-                                leadingIcon={renderWalletIcon(wallet.type)}
+                                leadingIcon={walletIcon(wallet.type)}
                                 variant="neutral"
                             >
                                 {displayName}
@@ -174,19 +156,19 @@ const WalletHeader = memo(({
                         <DropdownMenu align="start" minWidth={240}>
                             <DropdownLabel>Vaults</DropdownLabel>
                             {wallets.filter(w => w.type === 1).map(w => (
-                                <DropdownItem key={w.id} onSelect={() => handleWalletChange(w.id)} icon={renderWalletIcon(w.type)}>
+                                <DropdownItem key={w.id} onSelect={() => handleWalletChange(w.id)} icon={walletIcon(w.type)}>
                                     {capitalizeFirstLetter(w.name)}
                                 </DropdownItem>
                             ))}
                             <DropdownLabel>Gnosis Safes</DropdownLabel>
                             {wallets.filter(w => w.type === 2).map(w => (
-                                <DropdownItem key={w.id} onSelect={() => handleWalletChange(w.id)} icon={renderWalletIcon(w.type)}>
+                                <DropdownItem key={w.id} onSelect={() => handleWalletChange(w.id)} icon={walletIcon(w.type)}>
                                     {capitalizeFirstLetter(w.name)}
                                 </DropdownItem>
                             ))}
                             <DropdownLabel>Tracked Wallets</DropdownLabel>
                             {wallets.filter(w => w.type === 3).map(w => (
-                                <DropdownItem key={w.id} onSelect={() => handleWalletChange(w.id)} icon={renderWalletIcon(w.type)}>
+                                <DropdownItem key={w.id} onSelect={() => handleWalletChange(w.id)} icon={walletIcon(w.type)}>
                                     {capitalizeFirstLetter(w.name)}
                                 </DropdownItem>
                             ))}
@@ -563,9 +545,9 @@ export default function WalletDetails({
                             isActive={activeTab === 'proposals'}
                             onClick={() => setActiveTab('proposals')}
                             subtitles={[
-                                { name: "Needs approval", count: proposalCategoryCounts[ProposalCategory.NEEDS_APPROVAL], color: "cyan" },
-                                { name: "Ready to execute", count: proposalCategoryCounts[ProposalCategory.READY_TO_EXECUTE], color: "white" },
-                                { name: "Discarded", count: proposalCategoryCounts[ProposalCategory.DISCARDED], color: "red" }
+                                { name: PROPOSAL_CATEGORY_LABEL[ProposalCategory.NEEDS_APPROVAL], count: proposalCategoryCounts[ProposalCategory.NEEDS_APPROVAL], color: "cyan" },
+                                { name: PROPOSAL_CATEGORY_LABEL[ProposalCategory.READY_TO_EXECUTE], count: proposalCategoryCounts[ProposalCategory.READY_TO_EXECUTE], color: "white" },
+                                { name: PROPOSAL_CATEGORY_LABEL[ProposalCategory.DISCARDED], count: proposalCategoryCounts[ProposalCategory.DISCARDED], color: "red" }
                             ]}
                             activeSubtitle={activeProposalFilter ? getHumanReadableCategory(activeProposalFilter) : null}
                             onSubtitleClick={(subtitleName) => {

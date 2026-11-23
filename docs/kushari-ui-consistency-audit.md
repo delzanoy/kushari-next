@@ -113,6 +113,7 @@ Before calling any difference a finding, ask:
   - Nothing on Transactions (the widest table) overflows sideways.
   - The cost is a blank 15px strip beside the sidebar, invisible on black, and 30px less width for the column.
 - **Overlay scrollbars:** macOS's default (trackpad) setting uses overlay scrollbars, which take no space. For those users nothing is reserved and nothing changes; they were already at 332.
+- **Scrollbar style (Delanoy's call):** the default 15px light-grey scrollbar looked out of place on the black UI. Every scrollbar in the app now uses the style the Dropdown menus already had: `scrollbar-width: thin` and a `--color-border-default` thumb on a transparent track. It's set once in `globals.css` (`@layer base`, on `*`). The reserved space drops from 2×15px to 2×11px and the title stays at x=332. Mac users with floating scrollbars see no change.
 - **Not a defect:** the title's vertical position (49 vs 53px). See section 5.
 
 #### U-21 🟡 ✅ Fixed — Settings' Invite dialog skipped the shared modal
@@ -213,8 +214,67 @@ These don't change what anyone sees today. They make future changes safe: one ed
 | U-14 | 12 z-index values (`z-[1]` to `z-[9999]`) | onboarding, dropdowns | A named z-scale with the current values, so layers stack predictably |
 | U-16 | `lib/motion` imported by 6 of 41 animated files; 20 inline durations, 16 spring stiffnesses; `transition-all` ×46 | spread | Name the timings in use. Swap `transition-all` for the properties that actually change (a performance fix; it looks the same). Choosing the motion character is review section 6 |
 | U-17 | Money formatted with `lib/formatters` in 10 files, and `toFixed`/`toLocaleString` in 11 | Transactions, Proposals, Assets, SendTokens | One formatter API. Which output each page shows is decided in Q-01 |
-| U-19 | Helpers copied: `renderWalletIcon` ×11, `getPresetForUser` ×6, `AVATAR_PRESETS` ×5, proposal status labels ×2 | spread | Shared `WalletIcon`, avatar presets inside `Avatar`, one `proposalStatusLabel()`. The copied `getPresetForUser` is how the Create Vault crash happened |
+| U-19 ✅ | Helpers copied: `renderWalletIcon` ×11, `getPresetForUser` ×6, `AVATAR_PRESETS` ×5, proposal status labels ×2 | spread | **Done**, see "U-19 — done" below |
 | U-20 | Two sidebar components (`SideNav`, `SidebarNav`) | app vs Settings and docs | Shared item styling, or one component with an `items` prop |
+
+### How hygiene changes are verified (render fingerprint)
+
+There are no image tools on this machine, so screens are checked by fingerprint instead of pixels.
+- **What's recorded:** for every element on a screen, its position and size plus 25 computed styles (colours, borders, radii, shadows, fonts and so on). The script runs in the browser and stores the result in IndexedDB.
+- **How it's used:** record before a refactor, compare after. Any element added, removed or restyled is listed.
+- **Screens covered** at 1440×900:
+  - **Pages:** Wallets, vault detail, Assets, Transactions, Proposals, Addresses, Groups.
+  - **Dialogs:** Send Tokens, Make Deposit, Review Proposal.
+  - Any screen a step touches is added as needed.
+- **Noise it ignores:**
+  - Live API numbers, which change on every load: numeric text, the widths and sideways shifts they cause, and the red/green trend colours.
+  - Looping animations: transform, opacity, and the geometry of anything inside an animating element.
+- **Proof it's reliable:** with no code changed, all 10 screens compare "identical".
+
+### U-19 — done
+- **`walletIcon(type, { size, muted, fallback })`** in `components/atoms/WalletIcon.tsx` replaces 9 copies of `renderWalletIcon`. Each call passes the options that reproduce its old copy: 16, 18 or 24px; muted or inherited colour; which icon to show for an unknown type.
+- **`presetForName(name, chosen?)` and `NAME_AVATAR_PRESETS`** live in `Avatar.tsx`. They replace 5 copies of `getPresetForUser` and `AVATAR_PRESETS`, so there's one place to change.
+  - Order matters: the list is the same 13 presets in the same order, so everyone keeps their avatar.
+  - The Policy tab's "use the member's chosen preset" behaviour is the `chosen` argument.
+- **`PROPOSAL_CATEGORY_LABEL`** in `proposals/types.ts` is used by the Proposals tabs and the vault's proposal tabs.
+- **Unused imports removed** from the old copies. The result is 187 fewer lines.
+- **Verified:**
+  - **Fingerprint:** 9 of the 10 screens are identical. Create Vault and the vault Policy tab were also checked, old code against new (via `git stash`): identical.
+  - **The one difference (Assets):** the Safe icons on its rows now carry the muted text class, like the other muted wallet icons. That changes their CSS `color` value only. The icon's fill was already the muted colour and is unchanged, so it can't be seen.
+  - **Not covered:** Connect Safe's later steps use random demo data, so they can't be fingerprinted. Its helper change is the same function.
+- **Inconsistencies it uncovered:**
+  1. ✅ **Transactions' Wallet filter** showed Safes with a generic safe icon (`RiSafe2Line`). It now uses `walletIcon()`, so Safes show the Gnosis Safe logo, the same as the Wallets page (Delanoy's call).
+  2. **Proposals' filter:**
+     - ✅ **The 5 fields now have icons**, matching Transactions where the idea is the same: Wallet (wallet), Network (network icon, see below), Address (person, as the sidebar's Addresses), Classification (shapes, see below), Status (progress ring) (Delanoy's call).
+     - ✅ **The wallets listed under Wallet now have icons** via `walletIcon()`: the vault icon for vaults and the Gnosis Safe logo for Safes, as in Transactions. The last two local `renderWalletIcon` copies are now gone (Delanoy's call).
+  3. **Send Tokens' approver avatars** use a fixed name→preset list (`USER_PRESETS`), not `presetForName`, so the same person can get a different gradient there than on the Policy tab. Left as is for now.
+- ✅ **Transaction type icons, one set for the whole app (Delanoy's call):**
+
+  | Type | Icon | Was in rows | Was in the Type filter |
+  |---|---|---|---|
+  | Sent | `RiArrowRightUpLongFill` | `RiArrowRightUpLine` | `RiArrowRightUpLine` |
+  | Received | `RiArrowLeftDownLongFill` | `RiArrowLeftDownLine` | `RiArrowLeftDownLine` |
+  | Interacted | `RiExpandDiagonalFill` | `RiExpandDiagonalLine` | `RiExchangeLine` (didn't match the rows) |
+
+  They come from one function, `transactionTypeIcon()` in `components/atoms/TransactionTypeIcon.tsx`. Transaction rows and the Transactions Type filter both use it. Those are the only two places a transaction type is shown.
+- **Not changed:**
+  - **Send buttons** keep the paper plane (`RiSendPlaneLine` / `RiSendPlaneFill`): on wallet cards, the vault page, Groups and Addresses rows, and the Send Tokens dialog. **Confirmed by Delanoy:** sending is an action, and the arrows mark a transaction's type.
+  - **The design-system docs demos** (a "Send / Receive / Swap" dropdown).
+- ✅ **Classification filter field icon (Delanoy's call):** the "Classification" field in both the Transactions and Proposals filters uses `RiShapesLine`. It replaced the price tag on the field. The classification names under it have no icon in either filter. The price tag was removed from Transactions' names to match Proposals, and from Send Tokens' Classification picker, which now has no leading icon (Delanoy's call). `RiPriceTag3Line` is no longer used in the app.
+- ✅ **"Network" everywhere, not "Blockchain" (Delanoy's call).** Renamed 6 visible labels:
+  - Transactions filter field: Blockchain → Network (matches Proposals).
+  - Assets filter: Blockchain → Network.
+  - Send Tokens field: "Blockchain network" → "Network".
+  - Review Proposal: "Blockchain network" → "Network".
+  - The Policy tab's Network limits description: "…for blockchain network here" → "…for networks here".
+  - The Transactions CSV export column header: Blockchain → Network.
+
+  Code names (`blockchain` keys and props) are unchanged. "On-chain" wording and the "Gnosis Chain" name are standard terms and stay.
+- ✅ **Network filter icons (Delanoy's call):**
+  - The Network field uses `RiNetworkLine` in all three filters (Transactions, Proposals, Assets). It replaced the globe.
+  - Each network in the list shows its own logo via `BlockchainIconStack`. Transactions and Assets already did; Proposals now does too.
+  - The globe stays only for the "website" link in the account menu.
+- **Also seen (hygiene, for later):** there are two `GnosisSafeIcon` components. `media/icons/` is used by 12 files; `components/ui/` is used only by Connect Safe.
 
 ---
 

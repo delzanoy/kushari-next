@@ -4,17 +4,14 @@ import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
 import {
-    RiSafeLine,
-    RiWalletLine,
-    RiCheckboxCircleLine,
-    RiExternalLinkLine,
-    RiLoaderFill,
-    RiInformationFill
+  RiCheckboxCircleLine,
+  RiExternalLinkLine,
+  RiLoaderFill,
+  RiInformationFill,
 } from "@remixicon/react";
 import { cn } from "@/lib/utils";
 import { Proposal, ProposalStatus } from "./types";
 import { AddressCardProps } from "@/components/molecules/address-book/addresses/types";
-import { GnosisSafeIcon } from "@/media/icons/GnosisSafeIcon";
 import { BlockchainIconStack } from "@/components/atoms/BlockchainIconStack";
 import { RecipientDisplay } from "../RecipientDisplay";
 import { ClassificationDropdown } from "../view-all/ClassificationDropdown";
@@ -24,10 +21,11 @@ import ReviewProposalModal from "./modals/ReviewProposalModal";
 import { Tooltip } from "@/components/atoms/Tooltip";
 import { TertiaryButton } from "@/components/atoms/TertiaryButton";
 import { IconButton } from "@/components/atoms/IconButton";
-import { Avatar } from "@/components/atoms/Avatar";
+import { Avatar, presetForName } from "@/components/atoms/Avatar";
 import { Button } from "@/components/atoms/Button";
 import { MODAL_WIDTH } from "@/components/molecules/modal/Modal";
 import { pressable } from "@/lib/pressable";
+import { walletIcon } from "@/components/atoms/WalletIcon";
 
 interface Props {
     proposal: Proposal & { showDate?: boolean; isFirstOfDate?: boolean };
@@ -61,45 +59,10 @@ const getExplorerName = (blockchain: string) => {
     }
 };
 
-const AVATAR_PRESETS = [
-    "Cyan Dusk",
-    "Deep Sea",
-    "Midnight",
-    "Ember",
-    "Sunset",
-    "Rose Gold",
-    "Emerald",
-    "Aurora",
-    "Neon",
-    "Acid",
-    "Chromatic",
-    "Oil Slick",
-    "Candy"
-];
-
-const getPresetForUser = (name: string): string => {
-    let hash = 0;
-    for (let i = 0; i < name.length; i++) {
-        hash = name.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    const index = Math.abs(hash) % AVATAR_PRESETS.length;
-    return AVATAR_PRESETS[index];
-};
-
 export default function ProposalCard({ proposal, addresses, wallets, uniqueClassifications, userGroups, addressGroups, onUpdateClassification }: Props) {
     const [hovered, setHovered] = useState(false);
     const [copied, setCopied] = useState(false);
     const { open, closeTop } = useModal();
-
-    const renderWalletIcon = (walletType: number) => {
-        switch (walletType) {
-            case 1: return <RiSafeLine size={18} className="text-[var(--color-icon-muted)]" />;
-            case 2: return <GnosisSafeIcon size={18} color="var(--color-icon-muted)" className="text-[var(--color-icon-muted)]" />;
-            case 3: return <RiWalletLine size={18} className="text-[var(--color-icon-muted)]" />;
-            default: return <RiWalletLine size={18} className="text-[var(--color-icon-muted)]" />;
-        }
-    };
-
 
     const renderStatusIcon = (status: ProposalStatus) => {
         switch (status) {
@@ -330,7 +293,7 @@ export default function ProposalCard({ proposal, addresses, wallets, uniqueClass
                     <div className="flex w-full items-center gap-4 self-stretch pb-3">
                         {/* Initiated */}
                         <div className="flex w-40 shrink-0 items-center gap-2 pl-4 min-w-0">
-                            <Avatar name={initiator} size="sm" preset={getPresetForUser(initiator)} />
+                            <Avatar name={initiator} size="sm" preset={presetForName(initiator)} />
                             <span className="text-[var(--color-text-primary)] text-sm font-medium tracking-tight truncate leading-tight">
                                 {initiator}
                             </span>
@@ -339,7 +302,7 @@ export default function ProposalCard({ proposal, addresses, wallets, uniqueClass
                         {/* Wallet & Network */}
                         <div className="flex w-40 shrink-0 items-center gap-2 min-w-0">
                             <span className="shrink-0 relative flex items-center">
-                                {renderWalletIcon(proposal.walletType)}
+                                {walletIcon(proposal.walletType, { size: 18, muted: true, fallback: 3 })}
                                 <div className="absolute bottom-[14px] left-[12px]">
                                     <BlockchainIconStack blockchain={proposal.blockchain} size={12} />
                                 </div>

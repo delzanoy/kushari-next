@@ -4,6 +4,13 @@ export enum ProposalCategory {
   DISCARDED = "DISCARDED",
 }
 
+/** How each proposal category is named in tabs and filters. */
+export const PROPOSAL_CATEGORY_LABEL: Record<ProposalCategory, string> = {
+  [ProposalCategory.NEEDS_APPROVAL]: "Needs approval",
+  [ProposalCategory.READY_TO_EXECUTE]: "Ready to execute",
+  [ProposalCategory.DISCARDED]: "Discarded",
+};
+
 export enum ProposalStatus {
   // Needs Approval statuses
   ACTION_REQUIRED = "ACTION_REQUIRED",

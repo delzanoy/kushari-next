@@ -4,15 +4,14 @@ import { useState, useMemo, useEffect, useRef } from "react";
 import {
   RiTokenSwapLine,
   RiWalletLine,
-  RiGlobalLine,
-  RiSafeLine,
+  RiNetworkLine,
 } from "@remixicon/react";
 import { Asset } from "./types";
 import { AssetList } from "./AssetList";
-import { GnosisSafeIcon } from "@/media/icons/GnosisSafeIcon";
 import { FilterDropdown } from "@/components/molecules/FilterDropdown";
 import { Button } from "@/components/atoms/Button";
 import { BlockchainIconStack } from "@/components/atoms/BlockchainIconStack";
+import { walletIcon } from "@/components/atoms/WalletIcon";
 
 interface AssetListClientProps {
   assets: Asset[];
@@ -27,19 +26,6 @@ export function AssetListClient({
   const [selectedWallets, setSelectedWallets] = useState<string[]>([]);
   const [selectedBlockchains, setSelectedBlockchains] = useState<string[]>([]);
   const hasAppliedInitialFilter = useRef(false);
-
-  const renderWalletIcon = (walletType: number) => {
-    switch (walletType) {
-      case 1:
-        return <RiSafeLine size={16} />;
-      case 2:
-        return <GnosisSafeIcon size={16} />;
-      case 3:
-        return <RiWalletLine size={16} />;
-      default:
-        return null;
-    }
-  };
 
   const toggleSelection = (
     value: string,
@@ -144,7 +130,7 @@ export function AssetListClient({
     return uniqueWallets.map((wallet) => ({
       value: wallet.walletId.toString(),
       label: wallet.name || `Wallet ${wallet.walletId}`,
-      icon: renderWalletIcon(wallet.walletType),
+      icon: walletIcon(wallet.walletType),
     }));
   }, [assetsForWalletOptions]);
 
@@ -261,8 +247,8 @@ export function AssetListClient({
           />
 
           <FilterDropdown
-            label="Blockchain"
-            buttonIcon={<RiGlobalLine size={16} />}
+            label="Network"
+            buttonIcon={<RiNetworkLine size={16} />}
             options={blockchainOptions.map((opt) => ({
               value: opt.value,
               displayProps: { fullName: opt.label, icon: opt.icon },

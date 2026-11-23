@@ -3,23 +3,19 @@
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import {
-    RiArrowRightUpLine,
-    RiArrowLeftDownLine,
-    RiSafeLine,
-    RiFileTextLine,
-    RiExpandDiagonalLine,
-    RiWalletLine,
-    RiUserLine,
-    RiGroupLine,
-    RiHashtag,
+  RiFileTextLine,
+  RiUserLine,
+  RiGroupLine,
+  RiHashtag,
 } from "@remixicon/react";
-import { GnosisSafeIcon } from "@/media/icons/GnosisSafeIcon";
 import { BlockchainIconStack } from "@/components/atoms/BlockchainIconStack";
 import { TransactionHeaderProps } from "./types";
 import { determineMultirecipients } from "./calculations";
 import { ClassificationDropdown } from "./ClassificationDropdown";
 import { RecipientDisplay } from "../RecipientDisplay";
 import { Tooltip } from "@/components/atoms/Tooltip";
+import { walletIcon } from "@/components/atoms/WalletIcon";
+import { transactionTypeIcon } from "@/components/atoms/TransactionTypeIcon";
 
 interface ExtendedHeaderProps extends TransactionHeaderProps {
     expanded: boolean;
@@ -32,9 +28,9 @@ export default function TransactionHeader({ transaction, addresses, uniqueClassi
     const router = useRouter();
 
     const getTransactionIcon = () => {
-        if (transaction.incoming && transaction.outgoing) return <RiExpandDiagonalLine size={16} className="text-[var(--color-icon-muted)]" />;
-        if (transaction.incoming) return <RiArrowLeftDownLine size={16} className="text-[var(--color-icon-muted)]" />;
-        if (transaction.outgoing) return <RiArrowRightUpLine size={16} className="text-[var(--color-icon-muted)]" />;
+        if (transaction.incoming && transaction.outgoing) return transactionTypeIcon("interacted", { muted: true });
+        if (transaction.incoming) return transactionTypeIcon("received", { muted: true });
+        if (transaction.outgoing) return transactionTypeIcon("sent", { muted: true });
         return <RiFileTextLine size={16} className="text-[var(--color-icon-muted)]" />;
     };
 
@@ -44,17 +40,6 @@ export default function TransactionHeader({ transaction, addresses, uniqueClassi
         if (transaction.outgoing) return "Sent";
         return "Unknown";
     };
-
-    const renderWalletIcon = (walletType: number) => {
-        switch (walletType) {
-            case 1: return <RiSafeLine size={18} className="text-[var(--color-icon-muted)]" />;
-            case 2: return <GnosisSafeIcon size={18} color="var(--color-icon-muted)" className="text-[var(--color-icon-muted)]" />;
-            case 3: return <RiWalletLine size={18} className="text-[var(--color-icon-muted)]" />;
-            default: return <RiWalletLine size={18} className="text-[var(--color-icon-muted)]" />;
-        }
-    };
-
-
 
     const formatDateHeader = (timestamp: number | string | Date): string => {
         const date = new Date(timestamp);
@@ -118,7 +103,7 @@ export default function TransactionHeader({ transaction, addresses, uniqueClassi
                 {/* Wallet & Network */}
                 <div className="flex w-40 shrink-0 items-center gap-2 min-w-0">
                     <span className="shrink-0 relative flex items-center">
-                        {renderWalletIcon(transaction.walletType)}
+                        {walletIcon(transaction.walletType, { size: 18, muted: true, fallback: 3 })}
                         <div className="absolute bottom-[14px] left-[12px]">
                             <BlockchainIconStack blockchain={transaction.blockchain} size={12} />
                         </div>
