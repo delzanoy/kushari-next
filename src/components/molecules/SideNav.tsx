@@ -178,7 +178,7 @@ function WorkspaceSwitcher({
           <div
             role="button"
             tabIndex={0}
-            className="relative self-start inline-flex items-center gap-[10px] pl-[4px] pr-[10px] py-[7px] rounded-full text-left focus-visible:outline-none select-none cursor-pointer
+            className="relative self-start inline-flex items-center gap-[10px] pl-[4px] pr-[10px] py-[7px] rounded-full text-left select-none cursor-pointer
               border border-transparent
               group-hover/sidebar:bg-[var(--color-interactive-neutral-tonal-bg)]
               group-hover/sidebar:border-[var(--color-interactive-neutral-tonal-border)]
@@ -300,7 +300,7 @@ function UserFooter() {
       <DropdownTrigger>
         <button
           type="button"
-          className="group/footer relative block w-full text-left select-none rounded-full focus-visible:outline-none cursor-pointer active:scale-[0.98] transition-transform duration-100"
+          className="group/footer relative block w-full text-left select-none rounded-full cursor-pointer active:scale-[0.98] transition-transform duration-100"
         >
           {/* Hover fill + brand ring — also persists when open */}
           <div

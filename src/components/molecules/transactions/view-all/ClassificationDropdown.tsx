@@ -9,6 +9,7 @@ import {
     RiAddCircleFill,
     RiCheckboxCircleFill,
 } from "@remixicon/react";
+import { pressable } from "@/lib/pressable";
 
 type ClassificationDropdownProps = {
     options: string[];
@@ -134,7 +135,7 @@ export function ClassificationDropdown({
         <div className="relative" ref={dropdownRef}>
             <div className="flex w-40 h-[18px] items-center">
                 {value ? (
-                    <div
+                    <div {...pressable({ disabled })}
                         className={cn(
                             "group/dropdown flex py-[2px] pl-[8px] pr-[8px] items-center rounded-md border-[0.5px] border-solid border-[var(--color-border-subtle)] bg-[color-mix(in_srgb,var(--color-neutral-50)_2%,transparent)] transition-all duration-150 ease-in-out gap-[2px] select-none",
                             "group-hover/tx:pr-[6px] hover:border-[var(--color-neutral-50)] hover:bg-[color-mix(in_srgb,var(--color-neutral-50)_16%,transparent)] hover:cursor-pointer hover:gap-[6px]",
@@ -154,7 +155,7 @@ export function ClassificationDropdown({
                         )}
                     </div>
                 ) : (
-                    <div
+                    <div {...pressable({ disabled })}
                         className={cn(
                             "group/dropdown flex py-[2px] px-[8px] items-center rounded-md border-[0.5px] gap-[4px] border-dashed transition-all duration-150 ease-in-out select-none",
                             "border-[var(--color-border-subtle)] bg-[color-mix(in_srgb,var(--color-neutral-50)_2%,transparent)]",
@@ -199,6 +200,7 @@ export function ClassificationDropdown({
                                 {filteredOptions.map((option) => (
                                     <div
                                         key={option}
+                                        {...pressable({ pressed: option === value })}
                                         className={cn(
                                             "group/option flex flex-row justify-between items-center px-3 py-1.5 rounded-lg hover:cursor-pointer transition-colors duration-150",
                                             option === value

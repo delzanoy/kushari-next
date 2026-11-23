@@ -718,7 +718,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
           onClick={() => setShowPassword(v => !v)}
           aria-label={showPassword ? "Hide password" : "Show password"}
           aria-pressed={showPassword}
-          className="inline-flex text-[var(--color-icon-muted)] hover:text-[var(--color-icon-secondary)] transition-colors duration-150 focus:outline-none"
+          className="inline-flex text-[var(--color-icon-muted)] hover:text-[var(--color-icon-secondary)] transition-colors duration-150 rounded-sm"
         >
           {showPassword
             ? <RiEyeOffLine className={iconCls} />
@@ -738,7 +738,7 @@ export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
           tabIndex={-1}
           onClick={handleClear}
           aria-label="Clear input"
-          className="inline-flex text-[var(--color-icon-muted)] hover:text-[var(--color-icon-secondary)] transition-colors duration-150 focus:outline-none"
+          className="inline-flex text-[var(--color-icon-muted)] hover:text-[var(--color-icon-secondary)] transition-colors duration-150 rounded-sm"
         >
           <RiCloseCircleLine className={iconCls} />
         </button>

@@ -10,6 +10,7 @@ import {
 import { Button } from "@/components/atoms/Button";
 import { RiSearchLine, RiArrowRightSLine } from "@remixicon/react";
 import { cn } from "@/lib/utils";
+import { pressable } from "@/lib/pressable";
 
 // --- Types ---
 
@@ -249,7 +250,7 @@ export const ComplexFilter: React.FC<ComplexFilterProps> = ({
       <DropdownTrigger>
         <button
           className={cn(
-            "flex items-center gap-1 rounded-full h-7 px-2.5 text-xs transition-all border outline-none cursor-pointer font-medium tracking-wide box-border",
+            "flex items-center gap-1 rounded-full h-7 px-2.5 text-xs transition-all border cursor-pointer font-medium tracking-wide box-border",
             hasActiveFilters
               ? "bg-[var(--color-interactive-brand-tonal-bg)] border-[var(--color-interactive-brand-tonal-border)] text-[var(--color-text-brand)] hover:bg-[var(--color-interactive-brand-tonal-bg-hover)]"
               : "bg-[var(--color-filter-default-bg)] border-[var(--color-filter-default-border)] text-[var(--color-text-primary)] hover:bg-[var(--color-filter-hover-bg)] hover:border-[var(--color-filter-hover-border)]"
@@ -305,6 +306,7 @@ export const ComplexFilter: React.FC<ComplexFilterProps> = ({
               return (
                 <div
                   key={field.key}
+                  {...pressable({ disabled: !!criterion })}
                   className={cn(
                     "flex items-center justify-between px-2 py-1.5 rounded-md cursor-pointer transition-colors text-xs font-medium",
                     hasValues

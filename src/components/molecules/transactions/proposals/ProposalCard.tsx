@@ -27,6 +27,7 @@ import { IconButton } from "@/components/atoms/IconButton";
 import { Avatar } from "@/components/atoms/Avatar";
 import { Button } from "@/components/atoms/Button";
 import { MODAL_WIDTH } from "@/components/molecules/modal/Modal";
+import { pressable } from "@/lib/pressable";
 
 interface Props {
     proposal: Proposal & { showDate?: boolean; isFirstOfDate?: boolean };
@@ -306,7 +307,7 @@ export default function ProposalCard({ proposal, addresses, wallets, uniqueClass
 
     return (
         <div className="flex flex-col w-full">
-            <motion.div
+            <motion.div {...pressable()}
                 className={cn(
                     "group/tx flex flex-col w-full max-w-[1040px] mx-auto cursor-pointer border-b transition-all duration-200",
                     getStatusStyle()
@@ -318,12 +319,11 @@ export default function ProposalCard({ proposal, addresses, wallets, uniqueClass
                 <div className="flex flex-col w-full self-stretch py-1">
                     {/* Date Row */}
                     <div className="flex items-center pl-4 select-none min-h-[14px]">
-                        <span
-                            className="text-[var(--color-text-muted)] text-[10px] font-normal leading-none transition-colors duration-150"
-                            title={format(new Date(proposal.timestamp), "MMM d, yyyy, h:mm a")}
-                        >
-                            {dateText}
-                        </span>
+                        <Tooltip content={format(new Date(proposal.timestamp), "MMM d, yyyy, h:mm a")} placement="top" delay={200}>
+                            <span className="text-[var(--color-text-muted)] text-[10px] font-normal leading-none transition-colors duration-150">
+                                {dateText}
+                            </span>
+                        </Tooltip>
                     </div>
 
                     {/* Columns Row */}
@@ -412,7 +412,7 @@ export default function ProposalCard({ proposal, addresses, wallets, uniqueClass
                             </div>
                             {/* Action Button on Hover */}
                             {hasAction && (
-                                <div className="absolute inset-0 flex items-center justify-end opacity-0 group-hover/tx:opacity-100 transition-opacity duration-200 pointer-events-none group-hover/tx:pointer-events-auto pr-4">
+                                <div className="absolute inset-0 flex items-center justify-end opacity-0 group-hover/tx:opacity-100 group-focus-within/tx:opacity-100 transition-opacity duration-200 pointer-events-none group-hover/tx:pointer-events-auto pr-4">
                                     <TertiaryButton
                                         size="sm"
                                         variant={proposal.status === ProposalStatus.READY ? "brand" : "neutral"}

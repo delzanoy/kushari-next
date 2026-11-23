@@ -39,7 +39,7 @@ export function BlockchainIcon({
         backgroundColor: bg,
         borderRadius: "26%",
       }}
-      title={icon.title}
+      role="img"
       aria-label={icon.title}
     >
       <svg

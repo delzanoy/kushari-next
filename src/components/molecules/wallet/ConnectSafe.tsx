@@ -33,6 +33,7 @@ import { MetamaskIcon } from "@/components/ui/Metamask";
 import { WalletConnectIcon } from "@/components/ui/WalletConnect";
 import NoSafeFound from "./NoSafeFound";
 import { MODAL_WIDTH } from "@/components/molecules/modal/Modal";
+import { pressable } from "@/lib/pressable";
 
 interface Member {
     id: number;
@@ -675,7 +676,7 @@ export default function ConnectSafe({ onClose, members: propMembers = [], onSafe
                         </span>
                         <div className="flex flex-col lg:flex-row gap-4 w-full items-start">
                             {/* Metamask */}
-                            <div
+                            <div {...pressable({ pressed: selectedWallet === "metamask", disabled: connecting || isSubmitting })}
                                 className={`flex flex-col p-4 rounded-2xl border transition-all duration-200 gap-3 relative w-full lg:w-[490px] flex-shrink-0 ${selectedWallet === "metamask"
                                     ? "border-[var(--color-text-brand)] bg-[var(--color-text-brand)]/[0.03] cursor-default"
                                     : "border-[var(--color-border-subtle)] bg-white/[0.02] cursor-pointer hover:border-white/20 hover:bg-white/[0.04]"
@@ -716,7 +717,7 @@ export default function ConnectSafe({ onClose, members: propMembers = [], onSafe
                             </div>
 
                             {/* WalletConnect */}
-                            <div
+                            <div {...pressable({ pressed: selectedWallet === "walletconnect", disabled: connecting || isSubmitting })}
                                 className={`flex flex-col p-4 rounded-2xl border transition-all duration-200 gap-3 relative w-full lg:w-[490px] flex-shrink-0 ${selectedWallet === "walletconnect"
                                     ? "border-[var(--color-text-brand)] bg-[var(--color-text-brand)]/[0.03] cursor-default"
                                     : "border-[var(--color-border-subtle)] bg-white/[0.02] cursor-pointer hover:border-white/20 hover:bg-white/[0.04]"
@@ -771,6 +772,7 @@ export default function ConnectSafe({ onClose, members: propMembers = [], onSafe
                                         {detectedSafes.map((safe) => (
                                             <div
                                                 key={safe.address}
+                                                {...pressable({ pressed: selectedSafe === safe.address, disabled: !isSafeClickable() })}
                                                 className={`flex flex-col p-4 rounded-2xl border transition-all duration-200 gap-3 relative w-full ${selectedSafe === safe.address
                                                     ? "border-[var(--color-text-brand)] bg-[var(--color-text-brand)]/[0.03] cursor-default"
                                                     : "border-[var(--color-border-subtle)] bg-white/[0.02] cursor-pointer hover:border-white/20 hover:bg-white/[0.04]"

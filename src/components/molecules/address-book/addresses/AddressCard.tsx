@@ -74,7 +74,7 @@ export default function AddressCard({ address, onSelect, selected }: AddressCard
                 <span className="truncate pr-4 text-[var(--color-text-primary)] font-mono text-sm font-light tracking-tight">
                     {address.walletHash}
                 </span>
-                <div className="opacity-0 group-hover/address:opacity-100 transition-opacity shrink-0">
+                <div className="opacity-0 group-hover/address:opacity-100 group-focus-within/address:opacity-100 transition-opacity shrink-0">
                     <IconButton
                         icon={<RiQrCodeLine />}
                         variant="neutral"
@@ -128,7 +128,7 @@ export default function AddressCard({ address, onSelect, selected }: AddressCard
                 </div>
             </div>
 
-            <div className="absolute right-4 flex justify-end items-center gap-2 opacity-0 group-hover/address:opacity-100 transition-opacity bg-inherit pl-4">
+            <div className="absolute right-4 flex justify-end items-center gap-2 opacity-0 group-hover/address:opacity-100 group-focus-within/address:opacity-100 transition-opacity bg-inherit pl-4">
                 <IconButton
                     icon={<RiEditLine />}
                     variant="neutral"

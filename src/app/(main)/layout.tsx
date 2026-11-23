@@ -49,7 +49,7 @@ export default function MainLayout({
               <ModalProvider>
                 <OnboardingShell>
                   <SideNav />
-                  <main className="flex-1 h-full overflow-auto">
+                  <main className="flex-1 h-full overflow-auto [scrollbar-gutter:stable_both-edges]">
                     {children}
                   </main>
                 </OnboardingShell>

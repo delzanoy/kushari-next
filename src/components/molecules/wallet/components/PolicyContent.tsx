@@ -11,6 +11,7 @@ import { Cryptocurrency } from '@/components/molecules/assets/types';
 import { BlockchainIconStack } from "@/components/atoms/BlockchainIconStack";
 import { formatDollars } from '@/lib/formatters';
 import { useOnboarding } from "@/lib/onboarding";
+import { pressable } from "@/lib/pressable";
 
 interface PolicyContentProps {
     wallet: Wallet;
@@ -345,7 +346,7 @@ const PolicyContent = memo(({ wallet, cryptocurrencies = [], members = [] }: Pol
     return (
         <div className="flex flex-col w-full pb-16">
             {/* Approval Policy Section */}
-            <div className={getBlockClass("approval")} onClick={() => {
+            <div {...pressable({ disabled: editingSection !== null, label: "Edit approval policy" })} className={getBlockClass("approval")} onClick={() => {
                 if (editingSection !== "approval") setEditingSection("approval");
             }}>
                 <AnimatePresence mode="wait">
@@ -500,7 +501,7 @@ const PolicyContent = memo(({ wallet, cryptocurrencies = [], members = [] }: Pol
             </div>
 
             {/* Transaction Limit Section */}
-            <motion.div
+            <motion.div {...pressable({ disabled: editingSection !== null, label: "Edit transaction limit" })}
                 className={getBlockClass("transaction")}
                 onClick={() => {
                     if (editingSection !== "transaction") {
@@ -579,7 +580,7 @@ const PolicyContent = memo(({ wallet, cryptocurrencies = [], members = [] }: Pol
             </motion.div>
 
             {/* Network Limits Section */}
-            <div className={getBlockClass("network")} onClick={() => {
+            <div {...pressable({ disabled: editingSection !== null, label: "Edit network policy" })} className={getBlockClass("network")} onClick={() => {
                 if (editingSection !== "network") {
                     setEditingSection("network");
                     const type = mockAllowedNetworks.length > 0 ? "allow" : "block";
@@ -743,7 +744,7 @@ const PolicyContent = memo(({ wallet, cryptocurrencies = [], members = [] }: Pol
             </div>
 
             {/* Asset Limits Section */}
-            <div className={getBlockClass("asset")} onClick={() => {
+            <div {...pressable({ disabled: editingSection !== null, label: "Edit asset policy" })} className={getBlockClass("asset")} onClick={() => {
                 if (editingSection !== "asset") {
                     setEditingSection("asset");
                     const type = mockAllowedAssets.length > 0 ? "allow" : "block";

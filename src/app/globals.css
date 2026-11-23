@@ -512,6 +512,10 @@
 :root {
   --background: #000000;
   --foreground: #ededed;
+  /* Keyboard focus ring colour (U-22). Kept here, not in @theme inline, because
+     only plain CSS reads it and @theme inline variables aren't output. Same cyan
+     as --shadow-focus-ring-brand's outer ring. */
+  --color-focus-ring: rgba(38, 201, 201, 0.5);
 }
 
 /* ============================================================
@@ -528,6 +532,31 @@ body {
   padding: 0;
   min-height: 100vh;
   scrollbar-gutter: stable;
+}
+
+/* Keyboard focus ring (U-22). Shown only for keyboard focus (:focus-visible),
+   never on mouse click. Same cyan as --shadow-focus-ring-brand, drawn as an
+   outline so it doesn't fight elements' own box-shadows. In @layer base, so
+   components with their own ring (Button, IconButton, TertiaryButton, inputs)
+   override it with their utilities. */
+@layer base {
+  /* Set the ring colour up front so elements with transition-colors don't
+     fade the ring in from their text colour (white) to cyan. */
+  * {
+    outline-color: var(--color-focus-ring);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-focus-ring);
+    outline-offset: 2px;
+  }
+  /* Text fields, dialogs and programmatic focus targets show focus their own way. */
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible,
+  [role="dialog"]:focus-visible,
+  [tabindex="-1"]:focus-visible {
+    outline: none;
+  }
 }
 
 /* Autofill — override browser yellow/blue tint */

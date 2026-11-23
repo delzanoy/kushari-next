@@ -15,6 +15,7 @@ import { Tooltip } from "@/components/atoms/Tooltip";
 import { WalletIdentifier } from "@/components/atoms/WalletIdentifier";
 import type { WalletSummary } from "../types";
 import { formatDollars, formatCents, formatPercent } from "@/lib/formatters";
+import { pressable } from "@/lib/pressable";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -40,10 +41,13 @@ export function MPCVaultCard({ wallet, onClick, onDeposit, onSend }: MPCVaultCar
   const isNegative = wallet.percent_change_24h < 0;
 
   return (
-    <motion.div
+    <motion.div {...pressable({ disabled: !onClick })}
       className="relative w-full md:w-[336px] shrink-0 cursor-pointer select-none overflow-hidden rounded-[24px] border transition-all duration-500 backdrop-blur-xl"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      // Keyboard focus inside the card reveals its buttons, as hover does (U-22).
+      onFocus={() => setHovered(true)}
+      onBlur={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setHovered(false); }}
       onClick={onClick}
       initial={false}
       style={{

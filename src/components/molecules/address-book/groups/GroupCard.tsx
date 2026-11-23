@@ -14,6 +14,7 @@ import { GroupCardProps } from "./types";
 import { IconButton } from "@/components/atoms/IconButton";
 import { TertiaryButton } from "@/components/atoms/TertiaryButton";
 import { useRouter } from 'next/navigation';
+import { pressable } from "@/lib/pressable";
 
 interface GroupProps {
     group: GroupCardProps;
@@ -95,7 +96,7 @@ export default function GroupCard({ group }: GroupProps) {
     }
 
     return (
-        <div
+        <div {...pressable({ label: `View addresses in ${group.name}` })}
             className="group/group relative flex w-full min-w-[1040px] mx-auto px-0 py-4 items-center gap-4 self-stretch border-b transition-colors duration-200 cursor-pointer border-[var(--color-border-subtle)] hover:border-[var(--color-border-default)] hover:bg-[rgba(255,255,255,0.02)]"
             onClick={handleCardClick}
             onMouseEnter={handleMouseEnter}
@@ -116,7 +117,7 @@ export default function GroupCard({ group }: GroupProps) {
                     <span className="text-sm font-light tracking-tight shrink-0">on {formatDate(group.lastModified || group.createdAt)}</span>
                 </div>
 
-                <div className="absolute right-4 flex justify-end items-center gap-2 opacity-0 group-hover/group:opacity-100 transition-opacity bg-inherit pl-4">
+                <div className="absolute right-4 flex justify-end items-center gap-2 opacity-0 group-hover/group:opacity-100 group-focus-within/group:opacity-100 transition-opacity bg-inherit pl-4">
                     <IconButton
                         icon={<RiUserAddLine />}
                         variant="neutral"
