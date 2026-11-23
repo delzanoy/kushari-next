@@ -19,6 +19,7 @@ import { TransactionHeaderProps } from "./types";
 import { determineMultirecipients } from "./calculations";
 import { ClassificationDropdown } from "./ClassificationDropdown";
 import { RecipientDisplay } from "../RecipientDisplay";
+import { Tooltip } from "@/components/atoms/Tooltip";
 
 interface ExtendedHeaderProps extends TransactionHeaderProps {
     expanded: boolean;
@@ -97,12 +98,11 @@ export default function TransactionHeader({ transaction, addresses, uniqueClassi
         <div className="flex flex-col w-full self-stretch py-1">
             {/* Date Row (stably positioned above the columns to keep alignment uniform) */}
             <div className="flex items-center pl-4 select-none min-h-[14px]">
-                <span
-                    className="text-[var(--color-text-muted)] text-[10px] font-normal leading-none transition-colors duration-150"
-                    title={format(new Date(transaction.timestamp), "MMM d, yyyy, h:mm a")}
-                >
-                    {dateText}
-                </span>
+                <Tooltip content={format(new Date(transaction.timestamp), "MMM d, yyyy, h:mm a")} placement="top" delay={200}>
+                    <span className="text-[var(--color-text-muted)] text-[10px] font-normal leading-none transition-colors duration-150">
+                        {dateText}
+                    </span>
+                </Tooltip>
             </div>
 
             {/* Columns Row */}

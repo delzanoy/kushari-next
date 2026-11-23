@@ -739,7 +739,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
           tabIndex={-1}
           onClick={handleClear}
           aria-label="Clear text"
-          className="inline-flex text-[var(--color-icon-muted)] hover:text-[var(--color-icon-secondary)] transition-colors duration-150 focus:outline-none"
+          className="inline-flex text-[var(--color-icon-muted)] hover:text-[var(--color-icon-secondary)] transition-colors duration-150 rounded-sm"
         >
           <RiCloseCircleLine className={iconCls} />
         </button>

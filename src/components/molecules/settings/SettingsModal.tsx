@@ -22,7 +22,6 @@ import {
   RiMailLine,
   RiNotification3Line,
   RiUser2Line,
-  RiCloseLine,
 } from "@remixicon/react";
 import { useModal } from "@/components/molecules/modal";
 import { useOnboarding } from "@/lib/onboarding";
@@ -40,7 +39,8 @@ import {
 import { Checkbox } from "@/components/atoms/Checkbox";
 import { SidebarNavGroup, SidebarNavItem } from "@/components/molecules/SidebarNav";
 import { useMembers } from "@/hooks/useData";
-import { MODAL_WIDTH } from "@/components/molecules/modal/Modal";
+import { Modal, MODAL_WIDTH } from "@/components/molecules/modal/Modal";
+import { InviteMemberModal } from "./InviteMemberModal";
 
 export type SettingsTab = "members" | "workspace" | "email" | "others" | "integrations";
 
@@ -382,9 +382,7 @@ function MembersTab() {
   const [search, setSearch] = useState("");
   const { members: apiMembers } = useMembers();
 
-  const [inviteModalOpen, setInviteModalOpen] = useState(false);
-  const [inviteEmail, setInviteEmail] = useState("");
-  const [inviteRole, setInviteRole] = useState("Approver");
+  const { open, closeTop } = useModal();
 
   const [memberList, setMemberList] = useState<MemberRowItem[]>([]);
 
@@ -468,24 +466,27 @@ function MembersTab() {
     }
   };
 
-  const handleInviteSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!inviteEmail.trim()) return;
+  const handleInvite = (email: string, role: string) => {
     const newMember: MemberRowItem = {
       id: String(Date.now()),
       type: "invited",
-      email: inviteEmail.trim(),
+      email,
       status: "Invited",
-      role: inviteRole,
+      role,
       actions: [
         { label: "Withdraw", action: "withdraw", danger: true },
         { label: "Resend", action: "resend" },
       ],
     };
     setMemberList((prev) => [newMember, ...prev]);
-    setInviteEmail("");
-    setInviteModalOpen(false);
   };
+
+  const openInviteModal = () =>
+    open(
+      <Modal onClose={closeTop}>
+        <InviteMemberModal onClose={closeTop} onInvite={handleInvite} />
+      </Modal>
+    );
 
   const filteredMembers = memberList.filter((m) => {
     const query = search.toLowerCase();
@@ -503,7 +504,7 @@ function MembersTab() {
         <h1 className="text-3xl font-semibold tracking-tight text-white">Members</h1>
         <button
           type="button"
-          onClick={() => setInviteModalOpen(true)}
+          onClick={openInviteModal}
           className="px-5 py-2 text-sm font-medium rounded-full bg-[#D5D7E8] text-black hover:bg-white active:scale-95 transition-all cursor-pointer shadow-sm"
         >
           Invite member
@@ -595,76 +596,6 @@ function MembersTab() {
         ))}
       </div>
 
-      {/* Invite Member Popup Modal */}
-      <AnimatePresence>
-        {inviteModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className={`${MODAL_WIDTH.small} rounded-2xl border border-white/10 bg-[#161618] p-6 shadow-2xl flex flex-col gap-4 text-white`}
-            >
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-semibold tracking-tight">Invite new member</h3>
-                <button
-                  type="button"
-                  onClick={() => setInviteModalOpen(false)}
-                  className="text-white/60 hover:text-white transition-colors cursor-pointer"
-                >
-                  <RiCloseLine size={20} />
-                </button>
-              </div>
-
-              <form onSubmit={handleInviteSubmit} className="flex flex-col gap-4">
-                <div>
-                  <label className="block text-xs font-medium text-white/70 mb-1.5">Email address</label>
-                  <TextInput
-                    placeholder="name@company.com"
-                    value={inviteEmail}
-                    onChange={(e) => setInviteEmail(e.target.value)}
-                    autoFocus
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-medium text-white/70 mb-1.5">Role</label>
-                  <Dropdown>
-                    <DropdownTrigger placeholder="Select role" label={inviteRole} />
-                    <DropdownMenu minWidth={200}>
-                      <DropdownItem selected={inviteRole === "Approver"} onSelect={() => setInviteRole("Approver")}>
-                        Approver
-                      </DropdownItem>
-                      <DropdownItem selected={inviteRole === "Admin"} onSelect={() => setInviteRole("Admin")}>
-                        Admin
-                      </DropdownItem>
-                      <DropdownItem selected={inviteRole === "Viewer"} onSelect={() => setInviteRole("Viewer")}>
-                        Viewer
-                      </DropdownItem>
-                    </DropdownMenu>
-                  </Dropdown>
-                </div>
-
-                <div className="flex items-center justify-end gap-3 pt-2">
-                  <Button
-                    variant="neutral"
-                    appearance="filled"
-                    size="sm"
-                    flat
-                    type="button"
-                    onClick={() => setInviteModalOpen(false)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button variant="brand" appearance="filled" size="sm" type="submit">
-                    Send invite
-                  </Button>
-                </div>
-              </form>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }

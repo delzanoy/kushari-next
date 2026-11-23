@@ -18,6 +18,7 @@ import { formatDollars, formatCents, formatPercent } from "@/lib/formatters";
 import { AssetBreakdown } from "./AssetBreakdown";
 import { Asset, WalletInfo, getCoinMarketCapUrl } from "./types";
 import { cn } from "@/lib/utils";
+import { pressable } from "@/lib/pressable";
 
 interface ExpandableAssetProps {
   asset: Asset;
@@ -65,7 +66,7 @@ export function ExpandableAsset({ asset }: ExpandableAssetProps) {
   };
 
   return (
-    <motion.div
+    <motion.div {...pressable({ expanded })}
       className={cn(
         "group relative flex w-full flex-col px-4 py-5 cursor-pointer",
         "border-b transition-colors duration-200",

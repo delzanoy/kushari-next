@@ -8,6 +8,7 @@ import { TransactionWithCalculations } from "./types";
 import { AddressCardProps } from "@/components/molecules/address-book/addresses/types";
 import TransactionHeader from "./TransactionHeader";
 import TransactionDetails from "./TransactionDetails";
+import { pressable } from "@/lib/pressable";
 
 interface Props {
     transaction: TransactionWithCalculations & { showDate?: boolean; isFirstOfDate?: boolean };
@@ -36,7 +37,7 @@ export default function TransactionCard({ transaction, addresses, uniqueClassifi
 
     return (
         <div className="flex flex-col w-full">
-            <motion.div
+            <motion.div {...pressable({ expanded })}
                 className={cn(
                     "group/tx flex flex-col w-full max-w-[1040px] mx-auto cursor-pointer",
                     "border-b transition-colors duration-200",

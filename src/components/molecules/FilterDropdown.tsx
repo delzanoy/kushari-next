@@ -102,7 +102,7 @@ export function FilterDropdown<T>({
       <DropdownTrigger>
         <button
           className={cn(
-            "flex items-center gap-1 rounded-full h-7 px-2.5 text-xs transition-all border outline-none cursor-pointer font-medium tracking-wide box-border",
+            "flex items-center gap-1 rounded-full h-7 px-2.5 text-xs transition-all border cursor-pointer font-medium tracking-wide box-border",
             isActive
               ? "bg-[var(--color-interactive-brand-tonal-bg)] border-[var(--color-interactive-brand-tonal-border)] text-[var(--color-text-brand)] hover:bg-[var(--color-interactive-brand-tonal-bg-hover)]"
               : "bg-[var(--color-filter-default-bg)] border-[var(--color-filter-default-border)] text-[var(--color-text-primary)] hover:bg-[var(--color-filter-hover-bg)] hover:border-[var(--color-filter-hover-border)]"

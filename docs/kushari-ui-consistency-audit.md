@@ -34,7 +34,7 @@ Before calling any difference a finding, ask:
 
 | Group | Findings | Action |
 |---|---|---|
-| **A. Visible defects** | U-01 ✅ fixed · U-02 ✅ fixed · U-10 ✅ fixed · U-09 · U-18 · U-21 · U-22 | Fix |
+| **A. Visible defects** | U-01 ✅ fixed · U-02 ✅ fixed · U-10 ✅ fixed · U-21 ✅ fixed · U-18 ✅ fixed · U-22 ✅ fixed · U-09 ✅ fixed | Done |
 | **B. Code hygiene** (no visible change) | U-03 · U-08 · U-11 · U-12 · U-13 · U-14 · U-16 · U-17 · U-19 · U-20 | Refactor without changing pixels |
 | **C. Deliberate variation** | U-04 · U-05 · U-06 · U-07 · U-15 · title position · vault-page title | **Keep. Don't flag again.** |
 | **D. Open questions** | Q-01 · Q-02 | Delanoy to decide |
@@ -89,24 +89,113 @@ Before calling any difference a finding, ask:
   - On failure it shows the raw error text (`err.message`) instead of written copy.
   - Its field errors are hand-built `<span>`s under the inputs, not the TextInput `state="error"` used elsewhere.
 
-#### U-09 🟢 Native `title=` tooltips
-- **Seen:** 24 uses, 14 of them in SettingsModal. Native tooltips appear after the OS delay in the OS style, next to the app's own `<Tooltip>` (30 uses).
-- **Fix:** use `<Tooltip>`, except where `title=` is just the full text of a truncated label.
+#### U-09 🟢 ✅ Fixed — Native `title=` tooltips
+- **Recount:** the first figure (24, with 14 in SettingsModal) counted component props that happen to be named `title`, such as Settings row headings and tab labels. A parser scan for real HTML `title` attributes found **5 in the app** and 6 in the design-system docs pages.
+- **Fixed:**
 
-#### U-18 🟢 Content jumps 7px between short and long pages
-- **Cause (measured):** `main` is the scroll area, but it has no `scrollbar-gutter`. Pages long enough to scroll (Assets, Transactions, Proposals, Addresses) show a 15px scrollbar, which shifts the centred column 7.5px left of where it sits on short pages (Wallets, Groups).
-- **Fix:** add `scrollbar-gutter: stable` to `main` in `app/(main)/layout.tsx`. `body` already has it, but `body` isn't the element that scrolls.
+  | Where | Was | Now |
+  |---|---|---|
+  | Network icons (`BlockchainIcon`), on every row and card | A native `title` *and* the `Tooltip` atom from `BlockchainIconStack`, so two tooltips showed on hover | Native `title` removed; the `Tooltip` atom only. `role="img"` added so its `aria-label` is read out |
+  | Transactions: the date above each row | Native `title` with the full date and time | `Tooltip` atom, same text ("Jul 31, 2026, 1:50 AM") |
+  | Proposals: the date above each card | Same | Same |
+  | Send Tokens: the "Remove" button on a recipient | `title="Remove recipient"` on a button already labelled "Remove" | `title` removed. `aria-label="Remove recipient"` keeps the full meaning for screen readers |
+
+- **Kept, as allowed:** Connect Safe's truncated safe address. `title` there just shows the full text of a cut-off label.
+- **Not changed:** the 6 in the design-system docs pages (copy buttons and swatch names). They're internal documentation, not the app.
+- **Verified in the browser:** the date tooltip appears in the app's style, and no `[title]` remains on the Transactions page.
+
+#### U-18 🟢 ✅ Fixed — Content jumped 7px between short and long pages
+- **Was:** `main` is the scroll area, but it had no `scrollbar-gutter`. Pages long enough to scroll (Assets, Transactions, Proposals, Addresses) showed a 15px scrollbar. That shifted the centred column 7.5px left of where it sat on short pages (Wallets, Groups): the title was at x=324.5 instead of 332.
+- **Fix applied:** `[scrollbar-gutter:stable_both-edges]` on `main` in `app/(main)/layout.tsx`. It reserves the scrollbar's 15px on **both** sides, on every page, so the column centres where it would with no scrollbar at all.
+  - **Why `both-edges` and not plain `stable` (decided with Delanoy):** plain `stable` also stops the jump, but it parks every page at 324.5. That's 7.5px left of the design, and of what Mac trackpad users see.
+- **Verified at 1440×900:**
+  - The title is at x=332 on all 6 list pages, both short and long ones.
+  - Nothing on Transactions (the widest table) overflows sideways.
+  - The cost is a blank 15px strip beside the sidebar, invisible on black, and 30px less width for the column.
+- **Overlay scrollbars:** macOS's default (trackpad) setting uses overlay scrollbars, which take no space. For those users nothing is reserved and nothing changes; they were already at 332.
 - **Not a defect:** the title's vertical position (49 vs 53px). See section 5.
 
-#### U-21 🟡 Settings' Invite dialog skips the shared modal
-- **Seen:** it's a hand-built overlay, so Escape doesn't close it, focus isn't trapped, and its backdrop and corners differ from every other modal.
-- **Fix:** open it through the shared `Modal` at `MODAL_WIDTH.small`.
+#### U-21 🟡 ✅ Fixed — Settings' Invite dialog skipped the shared modal
+- **Was:** a hand-built overlay. Escape didn't close it, focus wasn't kept inside it, and its backdrop and corners differed from every other modal.
+- **Fix applied:** the dialog is now `components/molecules/settings/InviteMemberModal.tsx`. It opens through the shared `Modal` at `MODAL_WIDTH.small` and stacks above Settings.
+  - **Layout:** it copies Create Group: an icon tile, a ghost close button, the title, then labelled fields. It uses tokens (`--color-surface-sunken`, `--color-border-subtle`, `--shadow-2xl`) instead of `#161618` and `white/10`. The Role dropdown is full width.
+  - **Stacked-modal rule (Delanoy):** a dialog opened on top of another uses the **same surface** as the one underneath (here Settings' `--color-surface-sunken`). Don't separate it with a lighter surface. The shared `Modal` already shows the order: the modal underneath scales down, blurs and dims, and the top one gets the `--shadow-2xl` edge.
+  - **Errors** use the `TextInput` error state and clear as you type. Before, an empty email silently did nothing.
+
+    | Case | Message |
+    |---|---|
+    | Empty | Enter the email address of the person you're inviting |
+    | Not an email | Enter a full email address, like name@company.com |
+
+- **Verified in the browser:**
+  - Both errors show.
+  - A valid invite adds an "Invited" row and closes the dialog. Focus returns to "Invite member".
+  - Tab stays inside the dialog.
+  - Escape (pressed twice, the shared modal's rule) closes only the invite and leaves Settings open.
+  - No console errors.
+- **Still a raw button:** "Invite member" itself. That's U-08 hygiene.
 - **The colour work in SettingsModal, SendTokens and ConnectSafe** (raw whites and hex) is hygiene; see U-03.
 
-#### U-22 🟡 Keyboard access
-- **Clickable non-buttons:** 38 `onClick`s on `div`/`span`/`li`, in 14 files. Most are in SendTokens (11) and PolicyContent (6). They can't be reached by keyboard.
-- **Focus styles:** `outline-none` is used 41 times against 16 `focus-visible:` styles, so many focusable elements show no focus.
-- **Fix:** use buttons for actions, and pair each `outline-none` with a `focus-visible:` ring from `--shadow-focus-ring-*`. This overlaps review K-08.
+#### U-22 🟡 ✅ Fixed — Keyboard access
+- **Was:**
+  - Clickable `div`/`span`/`motion.div` elements couldn't be reached with Tab, including the app's main rows and cards.
+  - `outline-none` hid focus on buttons that had no focus style of their own.
+  - Buttons that appear on hover stayed invisible when tabbed to.
+- **Re-scan:** done with the TypeScript parser. The first count (38) came from a regex that missed `motion.div`s, which are the transaction rows, proposal cards, asset rows and wallet cards. The parser found 51 clickable non-buttons.
+
+**1. `pressable()` helper (`lib/pressable.ts`).** It gives an element `role="button"`, puts it in the Tab order, and makes Enter or Space trigger its existing click. It can also set `aria-pressed` (selected cards) and `aria-expanded` (rows that open). Applied to 30 elements:
+
+| Where | What |
+|---|---|
+| Transactions | Rows (expand), Classification pill and its options |
+| Proposals | Cards (open review) |
+| Assets | Rows (expand) |
+| Wallets | Vault, Safe and tracked-wallet cards |
+| Groups | Rows (open the group's addresses) |
+| Connect Safe | Wallet and safe choice cards |
+| Send Tokens | Recipient-type and mass-option cards, group picker items, token/USD amount switches |
+| Vault policy | The 4 policy blocks (enter edit mode) |
+| Filters | Field options in the complex filter |
+
+  - **Why not `<button>`:** a `<button>` sizes to its content where a `div` fills its row, and several of these hold inputs or buttons, which a `<button>` can't contain. `pressable()` changes no pixels.
+  - **Disabled:** when a click does nothing (an option already chosen, the review step, another policy block being edited), the element leaves the Tab order.
+
+**2. One focus ring for the whole app (`globals.css`).**
+  - A `:focus-visible` outline: 2px in `--color-focus-ring` (the cyan of `--shadow-focus-ring-brand`), 2px out from the element. It follows rounded corners.
+  - It shows only for keyboard focus, never on mouse click.
+  - It sits in `@layer base`, so atoms with their own ring (Button, IconButton, TertiaryButton, Toggle, text fields) keep theirs.
+  - Text fields, dialogs and `tabindex="-1"` targets are excluded.
+  - `outline-color` is set on every element ahead of time. Without that, rows with `transition-colors` faded the ring in from white.
+  - `--color-focus-ring` lives in `:root`, not `@theme inline`, which isn't output (the same trap as U-01).
+
+**3. Focus no longer hidden.** `outline-none` was removed where nothing replaced it:
+  - Filter pills (FilterDropdown, ComplexFilter)
+  - Sidebar items (SideNav, SidebarNav: the ring is drawn flush, offset 0)
+  - Onboarding footer
+  - The clear and show-password icons in TextInput and TextArea
+
+  Mouse users see no change.
+
+**4. Hover-only buttons now appear on keyboard focus.**
+  - **Wallet cards:** their hover state also turns on while focus is inside, so Deposit and Send show and the border lights up.
+  - **Group, Address and Proposal rows:** the action buttons get `group-focus-within:opacity-100`.
+
+**5. Send Tokens CSV upload:** its file input was `hidden` (display:none), so the keyboard couldn't reach it. It's now `sr-only`, and the "Upload" link shows the ring.
+
+- **Verified in the browser at 1440×900:**
+  - **Groups:** Tab order is search → Create group → View ungrouped → each row and its buttons. Enter on a row opens its addresses.
+  - **Transactions:** Enter on a row expands it (`aria-expanded` true). Enter on its Classification pill opens the menu without collapsing the row.
+  - **Wallets:** vault cards show the ring around their rounded corners. Tabbing to Deposit reveals it.
+  - **Mouse:** a mouse click shows no ring.
+  - **Console:** no new errors.
+- **Left as is, with a keyboard route already:**
+  - **Address rows** (via the checkbox) and **Settings rows** (via the toggle or checkbox).
+  - **Click blockers:** 12 `onClick`s that only stop a click from reaching the row behind them. They aren't actions.
+  - **Inputs:** the wrappers that click through to an input.
+  - **Pointer-only:** the avatar-forge canvas.
+- **Still open:**
+  - **The FilterDropdown "×" clear icon** sits inside the pill's button, and a button can't hold another one. Keyboard users clear a filter by unticking it in the menu.
+  - **Hygiene (U-08):** turning the remaining raw `<button>`s into atoms.
 
 ---
 
@@ -155,7 +244,7 @@ Each of these looked like drift in a raw count. Each serves reading speed or mar
 
 ## 7. Order of work
 
-1. **Defects:** U-21 (Invite dialog), U-18 (scrollbar jump), then U-22 (keyboard) and U-09 (tooltips).
+1. **Defects:** all fixed.
 2. **Answer Q-01 and Q-02**, then U-17 (one formatter that produces the chosen output).
 3. **Hygiene, pixel-safe:** U-19 first (removes the crash pattern), then U-03, U-13, U-12, U-14, U-16, U-08, U-11 and U-20. Compare screenshots before and after each.
-4. **Guardrails:** a CI check for undefined `var(--…)` tokens and `alert(`. Don't lint against style variation; section 5 shows why.
+4. **Guardrails:** a CI check for undefined `var(--…)` tokens, `alert(`, and clickable non-buttons without `pressable()` (the parser scan from U-22). Don't lint against style variation; section 5 shows why.

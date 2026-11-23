@@ -209,7 +209,7 @@ export function SidebarNavItem({
   const rootClass = cn(
     // block ensures full-width stretch; text-left overrides button default
     "relative block w-full text-left select-none rounded-[10.5px]",
-    "focus-visible:outline-none",
+    "focus-visible:outline-offset-0",
     disabled ? "opacity-40 pointer-events-none" : "cursor-pointer",
     className,
   );
@@ -379,7 +379,7 @@ export function SidebarNavToggle({
       whileTap={disabled ? undefined : { scale: 0.975 }}
       transition={{ scale: SPRING_PRESS }}
       className={cn(
-        "relative flex items-center w-full text-left select-none rounded-[10.5px] focus-visible:outline-none",
+        "relative flex items-center w-full text-left select-none rounded-[10.5px] focus-visible:outline-offset-0",
         disabled ? "opacity-40 pointer-events-none" : "cursor-pointer",
         className,
       )}

@@ -106,7 +106,7 @@ function UserFooterClone() {
       >
         <button
           type="button"
-          className="group/footer relative block w-full text-left select-none rounded-full focus-visible:outline-none cursor-default"
+          className="group/footer relative block w-full text-left select-none rounded-full cursor-default"
         >
           <span
             className="absolute inset-0 rounded-full pointer-events-none"

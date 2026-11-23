@@ -47,6 +47,7 @@ import { BlockchainIconStack } from "@/components/atoms/BlockchainIconStack";
 import { GnosisSafeIcon } from "@/media/icons/GnosisSafeIcon";
 import type { WalletSummary, Wallet, Member } from "../types";
 import { MODAL_WIDTH } from "@/components/molecules/modal/Modal";
+import { pressable } from "@/lib/pressable";
 
 const renderWalletIcon = (walletType?: number, size = 16) => {
     const iconMap: Record<number, React.ReactElement> = {
@@ -1173,7 +1174,7 @@ export default function SendTokens({ wallet: propWallet, selectedWallet: propSel
                                             <div className="flex w-full items-start">
                                                 {/* Card 1: Pay to few */}
                                                 <div className="w-1/2 pr-3 flex flex-col">
-                                                    <div
+                                                    <div {...pressable({ pressed: recipientType === "few", disabled: currentStep === "review" })}
                                                         className={`flex flex-col p-4 rounded-2xl border transition-all duration-200 gap-3 relative w-full ${currentStep === "review" ? "opacity-70 pointer-events-none" : ""} ${recipientType === "few"
                                                             ? "border-[var(--color-text-brand)] bg-[var(--color-text-brand)]/[0.03] cursor-default"
                                                             : "border-[var(--color-border-subtle)] bg-white/[0.02] cursor-pointer hover:border-white/20 hover:bg-white/[0.04]"
@@ -1198,7 +1199,7 @@ export default function SendTokens({ wallet: propWallet, selectedWallet: propSel
 
                                                 {/* Card 2: Mass transfer */}
                                                 <div className="w-1/2 pl-3 flex flex-col">
-                                                    <div
+                                                    <div {...pressable({ pressed: recipientType === "mass", disabled: currentStep === "review" })}
                                                         className={`flex flex-col p-4 rounded-2xl border transition-all duration-200 gap-3 relative w-full ${currentStep === "review" ? "opacity-70 pointer-events-none" : ""} ${recipientType === "mass"
                                                             ? "border-[var(--color-text-brand)] bg-[var(--color-text-brand)]/[0.03] cursor-default"
                                                             : "border-[var(--color-border-subtle)] bg-white/[0.02] cursor-pointer hover:border-white/20 hover:bg-white/[0.04]"
@@ -1260,7 +1261,7 @@ export default function SendTokens({ wallet: propWallet, selectedWallet: propSel
                                                                         type="button"
                                                                         onClick={() => handleRemoveRecipient(row.id)}
                                                                         className="text-xs text-[var(--color-text-muted)] hover:text-[var(--color-text-danger)] transition-colors flex items-center gap-1"
-                                                                        title="Remove recipient"
+                                                                        aria-label="Remove recipient"
                                                                     >
                                                                         <RiDeleteBinLine size={13} />
                                                                         Remove
@@ -1269,7 +1270,7 @@ export default function SendTokens({ wallet: propWallet, selectedWallet: propSel
                                                             </div>
                                                             <div className="flex items-center w-full h-10 rounded-xl border border-[var(--color-input-border)] bg-[var(--color-input-bg)] hover:border-[var(--color-input-border-hover)] focus-within:border-[var(--color-input-border-focus)] focus-within:shadow-[0_0_0_2px_#0A0A0A,0_0_0_4px_rgba(38,201,201,0.50)] transition-all px-2">
                                                                 {/* Left side: Icon + Eth + Tokens placeholder */}
-                                                                <div
+                                                                <div {...pressable({ disabled: currentStep === "review" || row.activeAmountMode !== "usd", label: "Enter the amount in tokens" })}
                                                                     className={`flex items-center flex-1 gap-2 min-w-0 pr-1 transition-opacity ${row.activeAmountMode === "usd" ? "cursor-pointer opacity-50" : ""
                                                                         }`}
                                                                     onClick={() => {
@@ -1310,7 +1311,7 @@ export default function SendTokens({ wallet: propWallet, selectedWallet: propSel
                                                                 <div className="w-[1px] h-5 bg-white/15 shrink-0 mx-1" />
 
                                                                 {/* Right side: USD placeholder + USD label */}
-                                                                <div
+                                                                <div {...pressable({ disabled: currentStep === "review" || row.activeAmountMode !== "tokens", label: "Enter the amount in USD" })}
                                                                     className={`flex items-center flex-1 gap-1.5 min-w-0 pl-1 pr-1.5 transition-opacity ${row.activeAmountMode === "tokens" ? "cursor-pointer opacity-50" : ""
                                                                         }`}
                                                                     onClick={() => {
@@ -1368,7 +1369,7 @@ export default function SendTokens({ wallet: propWallet, selectedWallet: propSel
                                                 <div className="flex w-full items-start">
                                                     {/* Option 1: Transfer to group(s) */}
                                                     <div className="w-1/2 pr-3 flex flex-col">
-                                                        <div
+                                                        <div {...pressable({ pressed: massOption === "group", disabled: currentStep === "review" })}
                                                             className={`flex flex-col p-4 rounded-2xl border transition-all duration-200 gap-3 relative w-full ${massOption === "group"
                                                                 ? "border-[var(--color-text-brand)] bg-[var(--color-text-brand)]/[0.03] cursor-default"
                                                                 : "border-[var(--color-border-subtle)] bg-white/[0.02] cursor-pointer hover:border-white/20 hover:bg-white/[0.04]"
@@ -1438,6 +1439,7 @@ export default function SendTokens({ wallet: propWallet, selectedWallet: propSel
                                                                                     return (
                                                                                         <div
                                                                                             key={group.id}
+                                                                                            {...pressable({ pressed: isSelected })}
                                                                                             onClick={() => {
                                                                                                 if (isSelected) {
                                                                                                     setSelectedGroupIds(prev => prev.filter(id => id !== group.id));
@@ -1514,7 +1516,7 @@ export default function SendTokens({ wallet: propWallet, selectedWallet: propSel
 
                                                     {/* Option 2: Use a csv list (Pick & Drop Box aesthetic) */}
                                                     <div className="w-1/2 pl-3 flex flex-col">
-                                                        <div
+                                                        <div {...pressable({ pressed: massOption === "csv", disabled: currentStep === "review" })}
                                                             className={`flex flex-col p-4 rounded-2xl border border-dashed transition-all duration-200 gap-3 relative w-full ${massOption === "csv"
                                                                 ? "border-[var(--color-text-brand)] bg-[var(--color-text-brand)]/[0.04]"
                                                                 : "border-white/20 bg-white/[0.02] hover:border-white/30 hover:bg-white/[0.04]"
@@ -1600,13 +1602,13 @@ export default function SendTokens({ wallet: propWallet, selectedWallet: propSel
                                                             ) : (
                                                                 <>
                                                                     <p className="text-[var(--color-text-muted)] text-xs leading-relaxed">
-                                                                        <label className={`inline-flex ${currentStep === "review" ? "cursor-default" : "cursor-pointer text-[var(--color-text-brand)] hover:underline"} font-medium focus:outline-none`}>
+                                                                        <label className={`inline-flex ${currentStep === "review" ? "cursor-default" : "cursor-pointer text-[var(--color-text-brand)] hover:underline"} font-medium rounded-sm has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-solid has-[:focus-visible]:outline-[var(--color-focus-ring)] has-[:focus-visible]:outline-offset-2`}>
                                                                             Upload
                                                                             <input
                                                                                 type="file"
                                                                                 accept=".csv"
                                                                                 disabled={currentStep === "review"}
-                                                                                className="hidden"
+                                                                                className="sr-only"
                                                                                 onChange={(e) => {
                                                                                     const file = e.target.files?.[0];
                                                                                     if (file) {
@@ -1775,7 +1777,7 @@ export default function SendTokens({ wallet: propWallet, selectedWallet: propSel
                                                                                                     : "border-[var(--color-input-border)] bg-[var(--color-input-bg)] focus-within:border-[var(--color-input-border-focus)]"
                                                                                             )}>
                                                                                                 {/* Token cell */}
-                                                                                                <div
+                                                                                                <div {...pressable({ disabled: currentStep === "review" || activeTableMode !== "usd", label: "Enter amounts in tokens" })}
                                                                                                     className={`flex items-center flex-1 min-w-0 pr-1 transition-opacity ${activeTableMode === "usd" ? "cursor-pointer opacity-50" : ""
                                                                                                         }`}
                                                                                                     onClick={() => {
@@ -1797,7 +1799,7 @@ export default function SendTokens({ wallet: propWallet, selectedWallet: propSel
                                                                                                 <div className="w-[1px] h-3.5 bg-white/15 shrink-0 mx-1" />
 
                                                                                                 {/* USD cell */}
-                                                                                                <div
+                                                                                                <div {...pressable({ disabled: currentStep === "review" || activeTableMode !== "tokens", label: "Enter amounts in USD" })}
                                                                                                     className={`flex items-center flex-1 min-w-0 pl-1 transition-opacity ${activeTableMode === "tokens" ? "cursor-pointer opacity-50" : ""
                                                                                                         }`}
                                                                                                     onClick={() => {
