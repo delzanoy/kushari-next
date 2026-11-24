@@ -37,7 +37,7 @@ Before calling any difference a finding, ask:
 | **A. Visible defects** | U-01 ✅ fixed · U-02 ✅ fixed · U-10 ✅ fixed · U-21 ✅ fixed · U-18 ✅ fixed · U-22 ✅ fixed · U-09 ✅ fixed | Done |
 | **B. Code hygiene** (no visible change) | U-03 · U-08 · U-11 · U-12 · U-13 · U-14 · U-16 · U-17 · U-19 · U-20 | Refactor without changing pixels |
 | **C. Deliberate variation** | U-04 · U-05 · U-06 · U-07 · U-15 · title position · vault-page title | **Keep. Don't flag again.** |
-| **D. Open questions** | Q-01 · Q-02 | Delanoy to decide |
+| **D. Open questions** | Q-01 ✅ answered · Q-02 ✅ answered | Decided (24 Nov 2026), see section 6 |
 
 ---
 
@@ -213,7 +213,7 @@ These don't change what anyone sees today. They make future changes safe: one ed
 | U-13 | 24 shadow recipes; the shadow tokens are used 8 times; a focus ring copied inline | spread | Swap exact duplicates for tokens (the copied focus ring matches `--shadow-focus-ring-brand`) |
 | U-14 | 12 z-index values (`z-[1]` to `z-[9999]`) | onboarding, dropdowns | A named z-scale with the current values, so layers stack predictably |
 | U-16 | `lib/motion` imported by 6 of 41 animated files; 20 inline durations, 16 spring stiffnesses; `transition-all` ×46 | spread | Name the timings in use. Swap `transition-all` for the properties that actually change (a performance fix; it looks the same). Choosing the motion character is review section 6 |
-| U-17 | Money formatted with `lib/formatters` in 10 files, and `toFixed`/`toLocaleString` in 11 | Transactions, Proposals, Assets, SendTokens | One formatter API. Which output each page shows is decided in Q-01 |
+| U-17 (dropped) | Money formatted with `lib/formatters` in 10 files, and `toFixed`/`toLocaleString` in 11 | Transactions, Proposals, Assets, SendTokens | One formatter API that keeps each page's current output: no thousands separators in table amounts (Q-01), token prices at full precision, dollar amounts to 2 decimals (Q-02) |
 | U-19 ✅ | Helpers copied: `renderWalletIcon` ×11, `getPresetForUser` ×6, `AVATAR_PRESETS` ×5, proposal status labels ×2 | spread | **Done**, see "U-19 — done" below |
 | U-20 | Two sidebar components (`SideNav`, `SidebarNav`) | app vs Settings and docs | Shared item styling, or one component with an `items` prop |
 
@@ -297,14 +297,22 @@ Each of these looked like drift in a raw count. Each serves reading speed or mar
 
 ## 6. D — Open questions for Delanoy
 
-- **Q-01 — Thousands separators in tables.** Transactions and Proposals show amounts like `$26869.61` and `$4598688.52`; Wallets shows `35,854,402`. Is the unseparated form intended, for example to keep table columns narrow? If not, separators make 6–7 digit amounts faster to read. (Review K-16 raised this; it's not listed as a defect until you confirm.)
-- **Q-02 — Token precision.** Some prices show 6 decimals (`$1,690.382981`). Intended for precision, or should prices round to 2 and keep full precision for token quantities?
+- **Q-01 — Thousands separators in tables. ✅ Answered: intended, keep.**
+  - **The question:** Transactions and Proposals show amounts like `$26869.61` and `$4598688.52`, while Wallets shows `35,854,402`. Was the unseparated form intended?
+  - **Answer:** yes. It isn't only to keep columns narrow: it pairs the dollar value with the token amount under it (e.g. `$1245.35` over `GRAM 1258.5` in a Transactions row), so the two read as one unit.
+  - **Status:** not a defect. Review K-16 is closed by this answer.
+- **Q-02 — Precision. ✅ Answered.**
+  - **Token prices:** keep them as precise as possible, e.g. `$1,690.382981` stays as is.
+  - **Dollar amounts:** always 2 decimals at most (values, totals, balances).
+  - **Fee too small for 2 decimals:** shows `<$0.01`, not `$0.00`.
+  - **Done:** an audit of every money format found one break of the rule: the gas fee's dollar value in Transaction details showed 6 decimals (`($0.000037)`). It now shows `(<$0.01)`, or 2 decimals when it's a cent or more.
+  - **U-17 dropped:** every other amount already follows these rules, so one shared formatter would only tidy code without changing anything visible.
 
 ---
 
 ## 7. Order of work
 
 1. **Defects:** all fixed.
-2. **Answer Q-01 and Q-02**, then U-17 (one formatter that produces the chosen output).
+2. **Q-01 and Q-02 answered** (24 Nov 2026). U-17 dropped; the one break of the rule (gas fee dollars) is fixed.
 3. **Hygiene, pixel-safe:** U-19 first (removes the crash pattern), then U-03, U-13, U-12, U-14, U-16, U-08, U-11 and U-20. Compare screenshots before and after each.
 4. **Guardrails:** a CI check for undefined `var(--…)` tokens, `alert(`, and clickable non-buttons without `pressable()` (the parser scan from U-22). Don't lint against style variation; section 5 shows why.
