@@ -108,7 +108,11 @@ export default function TransactionDetails({ transaction }: TransactionDetailsPr
 
     const gasTokenSymbol = transaction.gasTokenSymbol || "ETH";
     const gasFee = transaction.gasFee !== undefined ? transaction.gasFee : 0.00000002;
+    // Token amounts keep full precision but as a plain decimal: 2e-8 reads "0.00000002".
+    const gasFeeText = gasFee.toLocaleString("en-US", { useGrouping: false, maximumSignificantDigits: 15 });
     const gasFeeUSD = transaction.gasFeeUSD !== undefined ? transaction.gasFeeUSD : 0.000037;
+    // Dollar amounts show at most 2 decimals; a fee too small for that reads "<$0.01", not "$0.00".
+    const gasFeeUSDText = gasFeeUSD > 0 && gasFeeUSD < 0.01 ? "<$0.01" : `$${gasFeeUSD.toFixed(2)}`;
 
     return (
         <div className="flex flex-col items-start w-full bg-transparent px-4 py-3">
@@ -167,10 +171,10 @@ export default function TransactionDetails({ transaction }: TransactionDetailsPr
                     </span>
                     <div className="flex items-baseline gap-1">
                         <span className="text-[var(--color-text-primary)] text-xs font-medium">
-                            {gasTokenSymbol} {gasFee}
+                            {gasTokenSymbol} {gasFeeText}
                         </span>
                         <span className="text-[var(--color-text-muted)] text-[10px] font-light">
-                            (${gasFeeUSD.toFixed(6)})
+                            ({gasFeeUSDText})
                         </span>
                     </div>
                 </div>
